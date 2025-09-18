@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import lessonProgressRoutes from "./route/lessonProgressRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -13,6 +14,9 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+// Routes
+app.use("/api/lesson-progress", lessonProgressRoutes);
+
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
@@ -21,5 +25,3 @@ mongoose.connect(process.env.MONGO_URI)
     app.listen(PORT, () => console.log(`Server running 🚀 on port ${PORT} and connected to MongoDB`));
   })
   .catch((err) => console.error("MongoDB connection error:", err));
-
-  // i am sankalpa , and who are you
