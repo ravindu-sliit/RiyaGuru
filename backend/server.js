@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import lessonProgressRoutes from "./route/lessonProgressRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -12,6 +13,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
+
+// Routes
+app.use("/api/lesson-progress", lessonProgressRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
