@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import lessonProgressRoutes from "./route/lessonProgressRoutes.js";
 import studentRoutes from "./route/StudentRoute.js";
+import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/lesson-progress", lessonProgressRoutes);
 app.use("/api/students", studentRoutes);
+app.use("/api/progress-tracking", progressTrackingRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
