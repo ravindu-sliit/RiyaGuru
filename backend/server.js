@@ -5,6 +5,8 @@ import lessonProgressRoutes from "./route/lessonProgressRoutes.js";
 import studentRoutes from "./route/StudentRoute.js";
 import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
 import userRoutes from "./route/UserRoute.js";
+import preferenceRoutes from "./route/PreferenceRoute.js";
+
 
 dotenv.config();
 const app = express();
@@ -22,6 +24,9 @@ app.use("/api/lesson-progress", lessonProgressRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/progress-tracking", progressTrackingRoutes);
 app.use("/api/users", userRoutes); 
+app.use("/api/preferences", preferenceRoutes);
+ 
+
 
 
 // MongoDB connection

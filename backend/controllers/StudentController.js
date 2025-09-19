@@ -34,7 +34,7 @@ export const addStudent = async (req, res) => {
       gender,
       address,
       email,
-      password: hashedPassword // store hashed password in Student too (optional)
+      
     });
     await student.save();
 
