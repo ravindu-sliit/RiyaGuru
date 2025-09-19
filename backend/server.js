@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 
 import path from "path";
 import { fileURLToPath } from "url";
-import PDFDocument from "pdfkit";
+
 
 import instructorRoutes from "./route/instructorRoutes.js";
 import vehicleRoutes from "./route/vehicleRoutes.js";
@@ -12,7 +12,6 @@ import bookingRoutes from "./route/bookingRoutes.js";
 import lessonProgressRoutes from "./route/lessonProgressRoutes.js"; 
 import authRoutes from "./route/authRoutes.js";
 
-import lessonProgressRoutes from "./route/lessonProgressRoutes.js";
 import studentRoutes from "./route/StudentRoute.js";
 import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
 import userRoutes from "./route/UserRoute.js";

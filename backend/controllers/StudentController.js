@@ -139,3 +139,8 @@ export const deleteStudent = async (req, res) => {
     res.status(500).json({ message: "Server error while deleting student" });
   }
 };
+
+
+
+
+//Senithhhh
