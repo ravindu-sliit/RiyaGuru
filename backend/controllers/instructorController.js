@@ -1,5 +1,5 @@
 import Instructor from "../models/Instructor.js";
-import User from "../models/User.js";
+import User from "../models/UserModel.js";
 import Counter from "../models/Counter.js";
 import bcrypt from "bcryptjs";
 import * as instructorService from "../services/instructorService.js";
@@ -39,7 +39,7 @@ export const createInstructor = async (req, res) => {
       userId: instructorId,
       email,
       password: hashedPassword,
-      role: "instructor"
+      role: "Instructor"
     });
     await user.save();
 
