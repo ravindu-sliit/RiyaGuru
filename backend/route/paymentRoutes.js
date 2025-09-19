@@ -5,8 +5,6 @@ import {
   addPayment,
   getPaymentById,
   updatePayment,
-  approvePayment,
-  rejectPayment,
   deletePayment,
 } from "../controllers/paymentController.js";
 
@@ -16,8 +14,6 @@ router.get("/", getAllPayments);
 router.post("/", addPayment);
 router.get("/:id", getPaymentById);
 router.put("/:id", updatePayment);
-router.patch("/:id/approve", approvePayment);
-router.patch("/:id/reject", rejectPayment);
 router.delete("/:id", deletePayment);
 
 export default router;

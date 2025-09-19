@@ -1,8 +1,14 @@
+// backend/server.js
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
+// routes
 import paymentRoutes from "./route/paymentRoutes.js";
+import installmentRoutes from "./route/installmentRoutes.js";
+import adminPaymentRoutes from "./route/adminPaymentRoutes.js";
+import receiptRoutes from "./route/receiptRoutes.js";
+import authRoutes from "./route/authRoutes.js";   // already in your project
 
 dotenv.config();
 const app = express();
@@ -10,7 +16,12 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-app.use("/api/payments", paymentRoutes); 
+// Routes
+app.use("/api/payments", paymentRoutes);           // student CRUD
+app.use("/api/installments", installmentRoutes);   // installment plans
+app.use("/api/admin/payments", adminPaymentRoutes); // admin approve/reject
+app.use("/api/receipts", receiptRoutes);           // receipt downloads
+app.use("/api/auth", authRoutes);                  // login/auth
 
 // Test route
 app.get("/", (req, res) => {
@@ -20,24 +31,9 @@ app.get("/", (req, res) => {
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    // Start server only after MongoDB connects
     const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Server running 🚀 on port ${PORT} and connected to MongoDB`));
+    app.listen(PORT, () =>
+      console.log(`Server running 🚀 on port ${PORT} and connected to MongoDB`)
+    );
   })
   .catch((err) => console.error("MongoDB connection error:", err));
-
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-
-app.listen(process.env.PORT || 5000, () => 
-  console.log(`Server running on port ${process.env.PORT || 5000}`)
-);
-
-=======
-  // checking sankalpa
-  
->>>>>>> Stashed changes
-=======
-  // checking sankalpa
-  
->>>>>>> Stashed changes
