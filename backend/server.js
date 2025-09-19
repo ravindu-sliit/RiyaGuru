@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+
 import path from "path";
 import { fileURLToPath } from "url";
 import PDFDocument from "pdfkit";
@@ -10,6 +11,13 @@ import vehicleRoutes from "./route/vehicleRoutes.js";
 import bookingRoutes from "./route/bookingRoutes.js";
 import lessonProgressRoutes from "./route/lessonProgressRoutes.js"; 
 import authRoutes from "./route/authRoutes.js";
+
+import lessonProgressRoutes from "./route/lessonProgressRoutes.js";
+import studentRoutes from "./route/StudentRoute.js";
+import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
+import userRoutes from "./route/UserRoute.js";
+import preferenceRoutes from "./route/PreferenceRoute.js";
+
 
 
 dotenv.config();
@@ -34,6 +42,13 @@ app.use("/api/instructors", instructorRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/lesson-progress", lessonProgressRoutes);
+app.use("/api/students", studentRoutes);
+app.use("/api/progress-tracking", progressTrackingRoutes);
+app.use("/api/users", userRoutes); 
+app.use("/api/preferences", preferenceRoutes);
+ 
+
+
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
