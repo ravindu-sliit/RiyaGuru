@@ -4,6 +4,9 @@ import mongoose from "mongoose";
 import lessonProgressRoutes from "./route/lessonProgressRoutes.js";
 import studentRoutes from "./route/StudentRoute.js";
 import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
+import userRoutes from "./route/UserRoute.js";
+import preferenceRoutes from "./route/PreferenceRoute.js";
+
 
 dotenv.config();
 const app = express();
@@ -20,14 +23,16 @@ app.get("/", (req, res) => {
 app.use("/api/lesson-progress", lessonProgressRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/progress-tracking", progressTrackingRoutes);
+app.use("/api/users", userRoutes); 
+app.use("/api/preferences", preferenceRoutes);
+ 
+
+
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    // Start server only after MongoDB connects
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running 🚀 on port ${PORT} and connected to MongoDB`));
   })
   .catch((err) => console.error("MongoDB connection error:", err));
-
-  
