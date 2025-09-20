@@ -16,20 +16,28 @@ const userSchema = new mongoose.Schema(
       type: String, 
       required: true 
     },
+
+    isVerified:{
+      type: Boolean,
+      default: false
+    },
+
+    verificationToken: {
+      type: String
+    },
+
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+
     role: { 
       type: String, 
       enum: ["Student", "Instructor", "Admin"], 
       default: "Student"  // sensible default
-    },
-    instructorId: { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "Instructor" 
     }
   },
   { timestamps: true }
 );
 
-// ✅ Prevent OverwriteModelError
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;
