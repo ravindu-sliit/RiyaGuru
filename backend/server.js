@@ -16,6 +16,9 @@ import studentRoutes from "./route/StudentRoute.js";
 import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
 import userRoutes from "./route/UserRoute.js";
 import preferenceRoutes from "./route/PreferenceRoute.js";
+import studentCourseRoutes from "./route/StudentCourseRoute.js";
+import otpRoutes from "./route/OtpRoute.js";
+
 
 
 
@@ -45,6 +48,8 @@ app.use("/api/students", studentRoutes);
 app.use("/api/progress-tracking", progressTrackingRoutes);
 app.use("/api/users", userRoutes); 
 app.use("/api/preferences", preferenceRoutes);
+app.use("/api/studentcourses", studentCourseRoutes);
+app.use("/api/otp", otpRoutes);
  
 
 
@@ -61,7 +66,3 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 
-
-  //Aneeeee Sannnnnnnnnn
-  //seniiiiiooooooooo
-  //ay nm baa mek anthim ek

@@ -1,5 +1,7 @@
 import User from "../models/UserModel.js";
 import Student from "../models/StudentModel.js";
+import Preference from "../models/PreferenceModel.js";
+import Instructor from "../models/Instructor.js"; 
 // if you have an InstructorModel
 
 // Add a new user (email & password from Student/Instructor/Admin)
@@ -101,7 +103,12 @@ export const deleteUser = async (req, res) => {
     // Delete corresponding student or instructor
     if (user.userId.startsWith("S")) {
       await Student.findOneAndDelete({ studentId: user.userId });
-    } else if (user.userId.startsWith("I")) {
+
+      // ✅ Also delete preferences linked to this student
+      await Preference.deleteMany({ studentId: user.userId });
+    } 
+  
+    else if (user.userId.startsWith("I")) {
       await Instructor.findOneAndDelete({ instructorId: user.userId });
     }
     // Admins may not have a separate table
