@@ -7,7 +7,7 @@ const vehicleSchema = new mongoose.Schema(
     brand: { type: String, required: true },                 // e.g. Honda
     type: { 
       type: String, 
-      enum: ["Car", "Van", "Bike","Lorry","Bus"], 
+      enum: ["Car", "Van", "ThreeWheeler","Lorry","Bus"], 
       required: true 
     },
     year: { type: Number, required: true },
@@ -19,11 +19,14 @@ const vehicleSchema = new mongoose.Schema(
     mileage: { type: Number, default: 0 },
     status: { 
       type: String, 
-      enum: ["available", "unavailable", "maintenance"], 
-      default: "available" 
+      enum: ["Active", "Not-Active", "Maintenance"], 
+      default: "Not-Active" 
     },
     lastServiceDate: { type: Date },
     nextServiceDue: { type: Date },
+
+    // Vehicle image (uploaded from device)
+    image: { type: String },  // path to uploaded photo
 
     // 🔗 Assign vehicle to an instructor
     assignedInstructor: { type: mongoose.Schema.Types.ObjectId, ref: "Instructor" }

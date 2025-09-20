@@ -1,5 +1,6 @@
 import express from "express";
 import * as instructorController from "../controllers/instructorController.js";
+import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ router.get("/availability/check", instructorController.getAvailableInstructors);
 
 // ✅ Status-based check (⚡ must come before "/:id")
 router.get("/status/:status", instructorController.getInstructorsByStatus);
-
+router.post("/", upload.single("image"), instructorController.createInstructor);
 // CRUD
 router.post("/", instructorController.createInstructor);
 router.get("/", instructorController.getInstructors);

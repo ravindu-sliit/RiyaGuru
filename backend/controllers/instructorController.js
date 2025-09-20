@@ -4,7 +4,7 @@ import Counter from "../models/Counter.js";
 import bcrypt from "bcryptjs";
 import * as instructorService from "../services/instructorService.js";
 
-// 🔹 Generate next InstructorID (A001, A002…)
+// 🔹 Generate next InstructorID (I001, I002…)
 const getNextInstructorId = async () => {
   const counter = await Counter.findOneAndUpdate(
     { id: "instructorId" },
@@ -31,19 +31,25 @@ export const createInstructor = async (req, res) => {
       availability
     } = req.body;
 
+    // ✅ Handle uploaded image
+    const image = req.file ? `/uploads/instructors/${req.file.filename}` : null;
+
+    // ✅ Generate unique instructorId
     const instructorId = await getNextInstructorId();
+
+    // ✅ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user record
+    // ✅ Create user record
     const user = new User({
       userId: instructorId,
       email,
       password: hashedPassword,
-      role: "Instructor"
+      role: "Instructor" // ⚡ keep lowercase for consistency
     });
     await user.save();
 
-    // Create instructor record
+    // ✅ Create instructor record
     const instructor = new Instructor({
       instructorId,
       name,
@@ -54,10 +60,12 @@ export const createInstructor = async (req, res) => {
       experienceYears,
       specialization,
       availability,
+      image,          // ⚡ now saving image path properly
       userId: user._id
     });
     await instructor.save();
 
+    // ✅ Link back to user
     user.instructorId = instructor._id;
     await user.save();
 
@@ -131,7 +139,7 @@ export const getAvailableInstructors = async (req, res) => {
 export const getInstructorsByStatus = async (req, res) => {
   try {
     const { status } = req.params;
-    const validStatuses = ["available", "unavailable"];
+    const validStatuses = ["Not-Active", "Active"];
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
