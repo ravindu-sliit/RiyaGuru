@@ -18,16 +18,31 @@ import studentCourseRoutes from "./route/StudentCourseRoute.js";
 import otpRoutes from "./route/OtpRoute.js";
 
 
+import paymentRoutes from "./route/paymentRoutes.js";
+import installmentRoutes from "./route/installmentRoutes.js";
+import authRoutes from "./route/authRoutes.js";
+import receiptRoutes from "./route/receiptRoutes.js";
+
+
+
+
 dotenv.config();
 const app = express();
 
 // Middleware
 app.use(express.json());
 
+
+app.use("/api/payments", paymentRoutes); 
+app.use("/api/installments", installmentRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/receipts", receiptRoutes);
+
 // ✅ Allow Express to serve uploaded files (instructors, etc.)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // Test route
 app.get("/", (req, res) => {
@@ -68,8 +83,4 @@ mongoose.connect(process.env.MONGO_URI)
     );
   })
   .catch((err) => console.error("MongoDB connection error:", err));
-
-
-
-//senith 7.46
 
