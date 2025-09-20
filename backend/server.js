@@ -16,12 +16,11 @@ import preferenceRoutes from "./route/PreferenceRoute.js";
 import courseRoutes from "./route/courseRoutes.js";
 import studentCourseRoutes from "./route/StudentCourseRoute.js";
 import otpRoutes from "./route/OtpRoute.js";
-
-
 import paymentRoutes from "./route/paymentRoutes.js";
 import installmentRoutes from "./route/installmentRoutes.js";
-
 import receiptRoutes from "./route/receiptRoutes.js";
+import certificateRoutes from "./route/certificateRoutes.js";
+import reportRoutes from "./route/reportRoutes.js";
 
 
 
@@ -59,12 +58,12 @@ app.use("/api/students", studentRoutes);
 app.use("/api/progress-tracking", progressTrackingRoutes);
 app.use("/api/users", userRoutes); 
 app.use("/api/preferences", preferenceRoutes);
-
+app.use("/api/certificates", certificateRoutes);
 
 app.use("/api/courses", courseRoutes);
 app.use("/api/studentcourses", studentCourseRoutes);
 app.use("/api/otp", otpRoutes);
- 
+app.use("/api/reports", reportRoutes);
 
 
 
