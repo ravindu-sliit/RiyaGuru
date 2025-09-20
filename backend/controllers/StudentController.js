@@ -41,9 +41,12 @@ export const addStudent = async (req, res) => {
     // 4️⃣ Create user entry automatically
     const user = new User({
       userId: studentId,
+      name: full_name,
       role: "Student",
       email,
       password: hashedPassword
+      password: hashedPassword,
+      
     });
     await user.save();
 
