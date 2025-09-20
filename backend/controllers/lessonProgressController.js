@@ -15,6 +15,7 @@ export const addLessonProgress = async (req, res) => {
       feedback,
     } = req.body;
 
+    // 1️⃣ Save the new lesson progress
     const newLesson = new LessonProgress({
       student_id,
       student_course_id,
@@ -26,9 +27,10 @@ export const addLessonProgress = async (req, res) => {
     });
     await newLesson.save();
 
-    // auto update progress for the course
-    const progress = await updateProgress(student_course_id);
+    // 2️⃣ Auto update progress for the student + course
+    const progress = await updateProgress(student_id, vehicle_type);
 
+    // 3️⃣ Return response
     res.status(201).json({
       message: "Lesson added and progress updated",
       data: { lesson: newLesson, progress },
@@ -41,9 +43,7 @@ export const addLessonProgress = async (req, res) => {
 // ✅ Get all lessons for a student
 export const getLessonsByStudent = async (req, res) => {
   try {
-    const lessons = await LessonProgress.find({ student_id: req.params.studentId })
-      .populate("instructor_id", "name email")
-      .populate("student_course_id", "course_id status");
+    const lessons = await LessonProgress.find({ student_id: req.params.studentId });
     res.json(lessons);
   } catch (error) {
     res.status(500).json({ error: error.message });
