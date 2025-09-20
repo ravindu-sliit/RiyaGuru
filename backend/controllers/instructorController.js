@@ -13,7 +13,7 @@ const getNextInstructorId = async () => {
   );
 
   const seqNum = counter.seq.toString().padStart(3, "0");
-  return `A${seqNum}`;
+  return `I${seqNum}`;
 };
 
 // ✅ Create Instructor (also creates linked User)

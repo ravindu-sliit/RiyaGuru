@@ -17,6 +17,10 @@ import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
 import userRoutes from "./route/UserRoute.js";
 import preferenceRoutes from "./route/PreferenceRoute.js";
 import courseRoutes from "./route/courseRoutes.js";
+import studentCourseRoutes from "./route/StudentCourseRoute.js";
+import otpRoutes from "./route/OtpRoute.js";
+
+
 
 
 dotenv.config();
@@ -46,6 +50,9 @@ app.use("/api/progress-tracking", progressTrackingRoutes);
 app.use("/api/users", userRoutes); 
 app.use("/api/preferences", preferenceRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/studentcourses", studentCourseRoutes);
+app.use("/api/otp", otpRoutes);
+ 
 
 
 
@@ -61,7 +68,3 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 
-
-  //Aneeeee Sannnnnnnnnn
-  //seniiiiiooooooooo
-  //ay nm baa mek anthim ek
