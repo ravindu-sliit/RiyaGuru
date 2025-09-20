@@ -23,7 +23,7 @@ export const addPreference = async (req, res) => {
     const student = await Student.findOne({ studentId });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
-    // ✅ Check if preference already exists for this student
+    // Check if preference already exists for this student
     const existingPreference = await Preference.findOne({ studentId });
     if (existingPreference) {
       return res.status(400).json({ message: "Preference for this student already exists" });
@@ -37,14 +37,15 @@ export const addPreference = async (req, res) => {
       schedulePref
     });
 
-    // ✅ Create StudentCourse entries for each vehicleType
-    const studentCourses = vehicleType.map((type) => ({
-      student_id: studentId,
-      course_id: courseIdMap[type],
-      status: "Active"
-    }));
-
-    await StudentCourse.insertMany(studentCourses);
+    // Create StudentCourse entries using save() to trigger pre-save hook
+    for (const type of vehicleType) {
+      const studentCourse = new StudentCourse({
+        student_id: studentId,
+        course_id: courseIdMap[type],
+        status: "Active"
+      });
+      await studentCourse.save(); // triggers auto-increment
+    }
 
     res.status(201).json({
       message: "Preference and StudentCourse records added successfully",
@@ -92,16 +93,17 @@ export const updatePreference = async (req, res) => {
 
     if (!preference) return res.status(404).json({ message: "Preference not found" });
 
-    // 🔄 Sync StudentCourse table
+    // Sync StudentCourse table: delete old and create new entries
     await StudentCourse.deleteMany({ student_id: req.params.studentId });
 
-    const studentCourses = vehicleType.map((type) => ({
-      student_id: req.params.studentId,
-      course_id: courseIdMap[type],
-      status: "Active"
-    }));
-
-    await StudentCourse.insertMany(studentCourses);
+    for (const type of vehicleType) {
+      const studentCourse = new StudentCourse({
+        student_id: req.params.studentId,
+        course_id: courseIdMap[type],
+        status: "Active"
+      });
+      await studentCourse.save(); // triggers auto-increment
+    }
 
     res.status(200).json({ message: "Preference & StudentCourses updated successfully", preference });
   } catch (err) {
@@ -116,7 +118,7 @@ export const deletePreference = async (req, res) => {
     const preference = await Preference.findOneAndDelete({ studentId: req.params.studentId });
     if (!preference) return res.status(404).json({ message: "Preference not found" });
 
-    // ❌ Also remove related StudentCourse records
+    // Remove related StudentCourse records
     await StudentCourse.deleteMany({ student_id: req.params.studentId });
 
     res.status(200).json({ message: "Preference & StudentCourses deleted successfully", preference });

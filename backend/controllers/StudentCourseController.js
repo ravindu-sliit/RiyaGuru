@@ -3,14 +3,15 @@ import StudentCourse from "../models/StudentCourse.js";
 // Add student course manually (if needed)
 export const addStudentCourse = async (req, res) => {
   try {
-    const { student_id, course_id, status } = req.body;
+    const { student_course_id, student_id, course_id, status } = req.body;
 
-    if (!student_id || !course_id) {
+    if (!student_course_id || !student_id || !course_id) {
       return res.status(400).json({ message: "student_id and course_id are required" });
     }
 
     // Create new course (student_course_id auto-generated)
     const newCourse = await StudentCourse.create({
+      student_course_id,
       student_id,
       course_id,
       status: status || "Active"
