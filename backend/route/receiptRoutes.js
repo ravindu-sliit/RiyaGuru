@@ -1,9 +1,10 @@
-// backend/route/receiptRoutes.js
+// backend/routes/receiptRoutes.js
 import { Router } from "express";
-import { getReceipt } from "../controllers/receiptController.js";
+import { downloadReceipt } from "../controllers/receiptController.js";
 
 const router = Router();
 
-router.get("/:id", getReceipt);
+// GET /api/receipts/:id
+router.get("/:id", downloadReceipt);
 
 export default router;

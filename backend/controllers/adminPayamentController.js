@@ -1,6 +1,7 @@
 // backend/controllers/adminPaymentController.js
 import Payment from "../models/Payment.js";
 import { generateReceipt } from "../utils/pdf.js";
+import path from "path";
 
 // PATCH /api/admin/payments/:id/approve
 export const approvePayment = async (req, res) => {

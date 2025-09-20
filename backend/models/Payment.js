@@ -1,11 +1,10 @@
-// backend/models/Payment.js
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const paymentSchema = new Schema(
   {
-    studentId: { type: String, required: true },   // ✅ now accepts "114" or "abc123"
-    courseId: { type: String },                    // ✅ optional string
+    studentId: { type: String, required: true },
+    courseName: { type: String, required: true },
     amount: { type: Number, required: true, min: 0 },
     paymentType: { type: String, enum: ["Full", "Installment"], required: true },
     status: { type: String, enum: ["Pending", "Approved", "Rejected"], default: "Pending" },
@@ -13,7 +12,15 @@ const paymentSchema = new Schema(
     slipURL: { type: String },
     receiptURL: { type: String },
     paidDate: { type: Date },
-    adminComment: { type: String }
+    adminComment: { type: String },
+
+    // ✅ New section for card payments
+    cardDetails: {
+      cardNumber: { type: String },
+      cardHolder: { type: String },
+      expiryDate: { type: String }, // MM/YY
+      cvv: { type: String }
+    }
   },
   { timestamps: true }
 );

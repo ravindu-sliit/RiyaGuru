@@ -1,5 +1,6 @@
 // backend/controllers/paymentController.js
 import Payment from "../models/Payment.js";
+import { processCardPayment } from "../utils/gateway.js"; // 👈 add this import
 
 // GET /api/payments  (supports ?studentId=&status=&from=&to=)
 export const getAllPayments = async (req, res) => {
@@ -24,8 +25,32 @@ export const getAllPayments = async (req, res) => {
 
 // POST /api/payments
 export const addPayment = async (req, res) => {
-  const { studentId, courseId, courseName, amount, paymentType, paymentMethod, slipURL } = req.body;
+  const { studentId, courseId, courseName, amount, paymentType, paymentMethod, slipURL, cardDetails } = req.body;
+
   try {
+    // ✅ Always approve Card payments
+    let status = "Pending";
+    let paidDate = null;
+    let transactionId = null;
+
+    if (paymentMethod === "Card") {
+      // Basic validation
+      if (
+        !cardDetails?.cardNumber ||
+        cardDetails.cardNumber.length !== 16 ||
+        !cardDetails?.cvv ||
+        (cardDetails.cvv.length !== 3 && cardDetails.cvv.length !== 4) ||
+        !cardDetails?.expiryDate
+      ) {
+        return res.status(400).json({ message: "Invalid card details" });
+      }
+
+      // ✅ Always success for demo/viva
+      status = "Approved";
+      paidDate = new Date();
+      transactionId = "TXN-" + Date.now();
+    }
+
     const payment = await Payment.create({
       studentId,
       courseId,
@@ -34,14 +59,26 @@ export const addPayment = async (req, res) => {
       paymentType,
       paymentMethod,
       slipURL,
-      status: "Pending",
+      status,
+      paidDate,
+      transactionId,
+      cardDetails,
     });
+
+    // 📌 Generate receipt immediately for Card payments
+if (paymentMethod === "Card" && status === "Approved") {
+  const filePath = generateReceipt(payment);
+  payment.receiptURL = filePath;
+  await payment.save();
+}
+
     return res.status(201).json({ payment });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Unable to add payment" });
   }
 };
+
 
 // GET /api/payments/:id
 export const getPaymentById = async (req, res) => {
@@ -57,13 +94,24 @@ export const getPaymentById = async (req, res) => {
 
 // PUT /api/payments/:id
 export const updatePayment = async (req, res) => {
-  const { amount, paymentType, paymentMethod, slipURL, adminComment, courseName, courseId } = req.body;
+  const { amount, paymentType, paymentMethod, slipURL, adminComment, courseName, courseId, cardDetails } = req.body;
+
   try {
-    const payment = await Payment.findByIdAndUpdate(
-      req.params.id,
-      { amount, paymentType, paymentMethod, slipURL, adminComment, courseName, courseId },
-      { new: true, runValidators: true }
-    );
+    const updateData = { amount, paymentType, paymentMethod, slipURL, adminComment, courseName, courseId };
+
+    // If updating card details
+    if (paymentMethod === "Card" && cardDetails) {
+      const result = await processCardPayment(cardDetails, amount);
+      if (!result.success) {
+        return res.status(400).json({ message: result.message });
+      }
+      updateData.cardDetails = cardDetails;
+      updateData.transactionId = result.transactionId;
+      updateData.status = "Approved";
+      updateData.paidDate = new Date();
+    }
+
+    const payment = await Payment.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
     if (!payment) return res.status(404).json({ message: "Unable to update payment" });
     return res.status(200).json({ payment });
   } catch (err) {

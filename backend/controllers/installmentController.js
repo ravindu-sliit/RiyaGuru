@@ -1,33 +1,43 @@
 // backend/controllers/installmentController.js
 import InstallmentPlan from "../models/InstallmentPlan.js";
 
-// POST /api/installments  -> Create a plan
+// POST /api/installments
 export const createPlan = async (req, res) => {
   try {
-    const {
-      studentId,
-      totalAmount,
-      downPayment = 0,
-      remainingAmount,
-      totalInstallments,
-      startDate,
-      schedule
-    } = req.body;
+    const { studentId, courseId, totalAmount, downPayment, totalInstallments, startDate } = req.body;
 
-    if (!Array.isArray(schedule) || schedule.length === 0) {
-      return res.status(400).json({ message: "Schedule is required and must have items" });
+    if (!studentId || !totalAmount || !downPayment || !totalInstallments || !startDate) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Auto-calc remaining if not provided
-    const remaining = typeof remainingAmount === "number"
-      ? remainingAmount
-      : (Number(totalAmount) - Number(downPayment));
+    // Remaining balance
+    const remainingAmount = totalAmount - downPayment;
+
+    // Installment amount
+    const installmentAmount = remainingAmount / totalInstallments;
+
+    // Auto-generate schedule
+    const schedule = [];
+    const start = new Date(startDate);
+
+    for (let i = 1; i <= totalInstallments; i++) {
+      const dueDate = new Date(start);
+      dueDate.setMonth(dueDate.getMonth() + i);
+
+      schedule.push({
+        installmentNumber: i,
+        amount: installmentAmount,
+        dueDate,
+        status: "Pending"
+      });
+    }
 
     const plan = await InstallmentPlan.create({
       studentId,
+      courseId,
       totalAmount,
       downPayment,
-      remainingAmount: remaining,
+      remainingAmount,
       totalInstallments,
       startDate,
       schedule
@@ -36,9 +46,10 @@ export const createPlan = async (req, res) => {
     return res.status(201).json({ plan });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Unable to create installment plan" });
+    return res.status(500).json({ message: "Unable to create plan" });
   }
 };
+
 
 // GET /api/installments  -> List plans (optional filters later)
 export const getAllPlans = async (req, res) => {
