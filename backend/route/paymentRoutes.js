@@ -1,19 +1,19 @@
-// backend/route/paymentRoutes.js
 import { Router } from "express";
+import { protect } from "../middleware/authMiddleware.js";
 import {
   getAllPayments,
   addPayment,
   getPaymentById,
   updatePayment,
-  deletePayment,
+  deletePayment
 } from "../controllers/paymentController.js";
 
 const router = Router();
 
-router.get("/", getAllPayments);
-router.post("/", addPayment);
-router.get("/:id", getPaymentById);
-router.put("/:id", updatePayment);
-router.delete("/:id", deletePayment);
+router.get("/", protect, getAllPayments);
+router.post("/", protect, addPayment);
+router.get("/:id", protect, getPaymentById);
+router.put("/:id", protect, updatePayment);
+router.delete("/:id", protect, deletePayment);
 
 export default router;
