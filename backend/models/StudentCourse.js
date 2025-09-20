@@ -37,4 +37,3 @@ studentCourseSchema.pre("save", async function(next) {
 
 const StudentCourse = mongoose.model("StudentCourse", studentCourseSchema);
 export default StudentCourse;
-
