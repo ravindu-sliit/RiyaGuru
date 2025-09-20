@@ -1,5 +1,14 @@
 import Preference from "../models/PreferenceModel.js";
 import Student from "../models/StudentModel.js";
+import StudentCourse from "../models/StudentCourse.js";
+
+// Map vehicleType to courseId
+const courseIdMap = {
+  Van: "Van",
+  Motorcycle: "Motorcycle",
+  ThreeWheeler: "ThreeWheeler",
+  Heavy: "HeavyVehicle"
+};
 
 // Add a new student preference
 export const addPreference = async (req, res) => {
@@ -14,17 +23,32 @@ export const addPreference = async (req, res) => {
     const student = await Student.findOne({ studentId });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
-    // ✅ Check if preference already exists for this student
+    // Check if preference already exists for this student
     const existingPreference = await Preference.findOne({ studentId });
     if (existingPreference) {
       return res.status(400).json({ message: "Preference for this student already exists" });
     }
 
-    // Create preference (preferenceId will auto-generate)
-    const preference = await Preference.create({ studentId, vehicleCategory, vehicleType, schedulePref });
+    // Create preference
+    const preference = await Preference.create({
+      studentId,
+      vehicleCategory,
+      vehicleType,
+      schedulePref
+    });
+
+    // Create StudentCourse entries using save() to trigger pre-save hook
+    for (const type of vehicleType) {
+      const studentCourse = new StudentCourse({
+        student_id: studentId,
+        course_id: courseIdMap[type],
+        status: "Active"
+      });
+      await studentCourse.save(); // triggers auto-increment
+    }
 
     res.status(201).json({
-      message: "Preference added successfully",
+      message: "Preference and StudentCourse records added successfully",
       preference
     });
   } catch (err) {
@@ -69,7 +93,19 @@ export const updatePreference = async (req, res) => {
 
     if (!preference) return res.status(404).json({ message: "Preference not found" });
 
-    res.status(200).json({ message: "Preference updated successfully", preference });
+    // Sync StudentCourse table: delete old and create new entries
+    await StudentCourse.deleteMany({ student_id: req.params.studentId });
+
+    for (const type of vehicleType) {
+      const studentCourse = new StudentCourse({
+        student_id: req.params.studentId,
+        course_id: courseIdMap[type],
+        status: "Active"
+      });
+      await studentCourse.save(); // triggers auto-increment
+    }
+
+    res.status(200).json({ message: "Preference & StudentCourses updated successfully", preference });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error while updating preference" });
@@ -82,7 +118,10 @@ export const deletePreference = async (req, res) => {
     const preference = await Preference.findOneAndDelete({ studentId: req.params.studentId });
     if (!preference) return res.status(404).json({ message: "Preference not found" });
 
-    res.status(200).json({ message: "Preference deleted successfully", preference });
+    // Remove related StudentCourse records
+    await StudentCourse.deleteMany({ student_id: req.params.studentId });
+
+    res.status(200).json({ message: "Preference & StudentCourses deleted successfully", preference });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error while deleting preference" });
