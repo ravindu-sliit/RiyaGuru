@@ -20,7 +20,7 @@ import otpRoutes from "./route/OtpRoute.js";
 
 import paymentRoutes from "./route/paymentRoutes.js";
 import installmentRoutes from "./route/installmentRoutes.js";
-import authRoutes from "./route/authRoutes.js";
+
 import receiptRoutes from "./route/receiptRoutes.js";
 
 
@@ -50,7 +50,7 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("/api/auth", authRoutes);
+
 app.use("/api/instructors", instructorRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/bookings", bookingRoutes);
