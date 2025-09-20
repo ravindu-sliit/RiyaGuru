@@ -16,7 +16,7 @@ import studentRoutes from "./route/StudentRoute.js";
 import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
 import userRoutes from "./route/UserRoute.js";
 import preferenceRoutes from "./route/PreferenceRoute.js";
-
+import courseRoutes from "./route/courseRoutes.js";
 
 
 dotenv.config();
@@ -45,7 +45,7 @@ app.use("/api/students", studentRoutes);
 app.use("/api/progress-tracking", progressTrackingRoutes);
 app.use("/api/users", userRoutes); 
 app.use("/api/preferences", preferenceRoutes);
- 
+app.use("/api/courses", courseRoutes);
 
 
 
