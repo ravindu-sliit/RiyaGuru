@@ -2,13 +2,17 @@
 import ProgressTracking from "../models/ProgressTracking.js";
 import { updateProgress } from "../helpers/progressHelper.js";
 
-// ✅ Get progress for a student course
+// ✅ Get progress for a student + course
 export const getProgress = async (req, res) => {
   try {
+    const { studentId, courseName } = req.params;
+
     const progress = await ProgressTracking.findOne({
-      student_course_id: req.params.studentCourseId,
+      student_id: studentId,
+      course_name: courseName,
     });
-    res.json(progress);
+
+    res.json(progress || { message: "No progress found" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -17,7 +21,10 @@ export const getProgress = async (req, res) => {
 // ✅ Manual update progress
 export const manualUpdateProgress = async (req, res) => {
   try {
-    const progress = await updateProgress(req.params.studentCourseId);
+    const { studentId, courseName } = req.params;
+
+    const progress = await updateProgress(studentId, courseName);
+
     res.json({ message: "Progress updated manually", data: progress });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -27,9 +34,11 @@ export const manualUpdateProgress = async (req, res) => {
 // ✅ Issue certificate
 export const issueCertificate = async (req, res) => {
   try {
-    const { studentCourseId } = req.params;
+    const { studentId, courseName } = req.params;
+
     const tracking = await ProgressTracking.findOne({
-      student_course_id: studentCourseId,
+      student_id: studentId,
+      course_name: courseName,
     });
 
     if (!tracking || tracking.certificate_status !== "Eligible") {
