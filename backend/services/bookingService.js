@@ -6,23 +6,18 @@ import Vehicle from "../models/Vehicle.js";
 export const createBooking = async (data) => {
   const { date, time, instructor, vehicle } = data;
 
-  // Check conflicts
+  // Only check conflicts by date & time
   const conflict = await Booking.findOne({
     date,
     time,
     $or: [{ instructor }, { vehicle }],
-    status: "scheduled",
+    status: "booked",
   });
 
   if (conflict) throw new Error("Instructor or vehicle already booked at this time.");
 
   const booking = new Booking(data);
   await booking.save();
-
-  // Update statuses
-  await Instructor.findByIdAndUpdate(instructor, { status: "unavailable" });
-  await Vehicle.findByIdAndUpdate(vehicle, { status: "unavailable" });
-
   return booking;
 };
 
@@ -30,31 +25,28 @@ export const createBooking = async (data) => {
 export const getBookings = async () => {
   return await Booking.find()
     .populate("instructor", "name email phone")
-    .populate("vehicle", "regNo model type status");
+    .populate("vehicle", "regNo model type")
+    .populate("course", "name");
 };
 
 // Get booking by ID
 export const getBookingById = async (id) => {
   return await Booking.findById(id)
     .populate("instructor", "name email phone")
-    .populate("vehicle", "regNo model type status");
+    .populate("vehicle", "regNo model type")
+    .populate("course", "name");
 };
 
-// Update booking (reschedule/change resources)
+// Update booking
 export const updateBooking = async (id, data) => {
   const booking = await Booking.findById(id);
   if (!booking) throw new Error("Booking not found");
 
-  // Free old resources
-  await Instructor.findByIdAndUpdate(booking.instructor, { status: "available" });
-  await Vehicle.findByIdAndUpdate(booking.vehicle, { status: "available" });
-
-  // Check conflicts
   const conflict = await Booking.findOne({
     date: data.date,
     time: data.time,
     $or: [{ instructor: data.instructor }, { vehicle: data.vehicle }],
-    status: "scheduled",
+    status: "booked",
     _id: { $ne: id },
   });
 
@@ -62,11 +54,6 @@ export const updateBooking = async (id, data) => {
 
   Object.assign(booking, data);
   await booking.save();
-
-  // Update new statuses
-  await Instructor.findByIdAndUpdate(data.instructor, { status: "unavailable" });
-  await Vehicle.findByIdAndUpdate(data.vehicle, { status: "unavailable" });
-
   return booking;
 };
 
@@ -75,29 +62,23 @@ export const cancelBooking = async (id) => {
   const booking = await Booking.findById(id);
   if (!booking) throw new Error("Booking not found");
 
-  // Free resources
-  await Instructor.findByIdAndUpdate(booking.instructor, { status: "available" });
-  await Vehicle.findByIdAndUpdate(booking.vehicle, { status: "available" });
-
-  booking.status = "canceled";
+  booking.status = "cancelled";
   await booking.save();
 };
 
-// Check availability
+// Check availability (ignore status)
 export const checkAvailability = async (date, time) => {
-  const booked = await Booking.find({ date, time, status: "scheduled" });
+  const booked = await Booking.find({ date, time, status: "booked" });
 
   const bookedInstructors = booked.map((b) => b.instructor.toString());
   const bookedVehicles = booked.map((b) => b.vehicle.toString());
 
   const freeInstructors = await Instructor.find({
     _id: { $nin: bookedInstructors },
-    status: "available",
   });
 
   const freeVehicles = await Vehicle.find({
     _id: { $nin: bookedVehicles },
-    status: "available",
   });
 
   return { freeInstructors, freeVehicles };

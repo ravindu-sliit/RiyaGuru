@@ -42,8 +42,8 @@ export const getAvailableInstructors = async (date, time) => {
 
 // Filter instructors only by status (new feature)
 export const filterInstructorsByStatus = async (status) => {
-  if (!["available", "unavailable"].includes(status)) {
-    throw new Error("Invalid status. Use 'available' or 'unavailable'.");
+  if (!["Not-Active", "Active"].includes(status)) {
+    throw new Error("Invalid status. Use 'Not-Active' or 'Active'.");
   }
   const instructors = await Instructor.find({ status });
   return instructors.map((inst) => formatInstructor(inst));

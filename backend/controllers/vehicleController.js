@@ -3,7 +3,15 @@ import * as vehicleService from "../services/vehicleService.js";
 // ✅ Create vehicle
 export const createVehicle = async (req, res) => {
   try {
-    const vehicle = await vehicleService.createVehicle(req.body);
+    // Handle uploaded image
+    const image = req.file ? `/uploads/vehicles/${req.file.filename}` : null;
+
+    const vehicleData = {
+      ...req.body,
+      image,
+    };
+
+    const vehicle = await vehicleService.createVehicle(vehicleData);
     res.status(201).json(vehicle);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -34,7 +42,14 @@ export const getVehicleById = async (req, res) => {
 // ✅ Update vehicle
 export const updateVehicle = async (req, res) => {
   try {
-    const updated = await vehicleService.updateVehicle(req.params.id, req.body);
+    const image = req.file ? `/uploads/vehicles/${req.file.filename}` : undefined;
+
+    const updateData = {
+      ...req.body,
+      ...(image && { image }), // only update if new image is uploaded
+    };
+
+    const updated = await vehicleService.updateVehicle(req.params.id, updateData);
     if (!updated) return res.status(404).json({ message: "Vehicle not found" });
     res.json({ message: "Vehicle updated successfully", updated });
   } catch (error) {
@@ -64,11 +79,11 @@ export const getAvailableVehicles = async (req, res) => {
   }
 };
 
-// ✅ Get vehicles by status (available/unavailable/maintenance)
+// ✅ Get vehicles by status
 export const getVehiclesByStatus = async (req, res) => {
   try {
     const { status } = req.params;
-    const validStatuses = ["available", "unavailable", "maintenance"];
+    const validStatuses = ["Active", "Not-Active", "Maintenance"];
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
