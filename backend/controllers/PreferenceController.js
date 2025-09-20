@@ -4,6 +4,7 @@ import StudentCourse from "../models/StudentCourse.js";
 
 // Map vehicleType to courseId
 const courseIdMap = {
+  Car: "Car",
   Van: "Van",
   Motorcycle: "Motorcycle",
   ThreeWheeler: "ThreeWheeler",

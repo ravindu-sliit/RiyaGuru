@@ -19,7 +19,7 @@ const preferenceSchema = new mongoose.Schema({
   },
   vehicleType: {
   type: [String],
-  enum: ["Van", "Motorcycle", "ThreeWheeler", "Heavy"],
+  enum: ["Car", "Motorcycle", "ThreeWheeler", "Heavy", "Van"],
   required: true
 },
   schedulePref: {
