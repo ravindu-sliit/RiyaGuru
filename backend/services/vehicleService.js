@@ -29,27 +29,28 @@ export const deleteVehicle = async (id) => {
   return await Vehicle.findByIdAndDelete(id);
 };
 
-// ✅ Get available vehicles (ignore status, only check date & time slots)
+// ✅ Get available vehicles (return Active + Not-Active, exclude Maintenance)
 export const getAvailableVehicles = async (date, time) => {
   if (!date || !time) {
-    // If no date/time → return all vehicles
-    return await Vehicle.find();
+    // If no date/time → return all vehicles except maintenance
+    return await Vehicle.find({ status: { $ne: "Maintenance" } });
   }
 
-  // Find vehicles already booked at this date & time
+  // 1. Find vehicles already booked at this date & time
   const booked = await Booking.find({ date, time }).select("vehicle");
   const bookedIds = booked.map((b) => b.vehicle.toString());
 
-  // Return vehicles that are NOT booked
+  // 2. Return vehicles that are NOT booked AND not under maintenance
   return await Vehicle.find({
-    _id: { $nin: bookedIds }
+    _id: { $nin: bookedIds },
+    status: { $ne: "Maintenance" } // Exclude only maintenance
   });
 };
 
 // ✅ Get vehicles only by status
 export const getVehiclesByStatus = async (status) => {
-  if (!["available", "unavailable", "maintenance"].includes(status)) {
-    throw new Error("Invalid status. Use available, unavailable, or maintenance.");
+  if (!["Active", "Not-Active", "Maintenance"].includes(status)) {
+    throw new Error("Invalid status. Use Active, Not-Active, or Maintenance.");
   }
   return await Vehicle.find({ status });
 };
