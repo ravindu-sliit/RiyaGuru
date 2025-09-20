@@ -12,7 +12,7 @@ const instructorSchema = new mongoose.Schema(
 
     specialization: {
       type: String,
-      enum: ["Car", "Bike", "Van", "Bus", "Lorry", "All"],
+      enum: ["Car", "Motorcycle","Threewheeler","HeavyVehicle" ,"All"],
       default: "All",
     },
 
