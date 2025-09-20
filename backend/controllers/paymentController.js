@@ -25,32 +25,38 @@ export const getAllPayments = async (req, res) => {
 
 // POST /api/payments
 export const addPayment = async (req, res) => {
-  const { studentId, courseId, courseName, amount, paymentType, paymentMethod, slipURL, cardDetails } = req.body;
-
   try {
-    // ✅ Always approve Card payments
+    // ⬇️ Student ID always comes from the token (authMiddleware attached it)
+    const studentId = req.user.userId;
+
+    const { courseId, courseName, amount, paymentType, paymentMethod, slipURL, cardDetails } = req.body;
+
+    // Default values
     let status = "Pending";
     let paidDate = null;
     let transactionId = null;
 
+    // 🔹 Handle Card payments
     if (paymentMethod === "Card") {
-      // Basic validation
+      // Very basic validation
       if (
         !cardDetails?.cardNumber ||
         cardDetails.cardNumber.length !== 16 ||
         !cardDetails?.cvv ||
         (cardDetails.cvv.length !== 3 && cardDetails.cvv.length !== 4) ||
-        !cardDetails?.expiryDate
+        !cardDetails?.expiryDate ||
+        !cardDetails?.cardHolder
       ) {
         return res.status(400).json({ message: "Invalid card details" });
       }
 
-      // ✅ Always success for demo/viva
+      // ✅ For demo/viva → always success
       status = "Approved";
       paidDate = new Date();
       transactionId = "TXN-" + Date.now();
     }
 
+    // 🔹 Create payment record
     const payment = await Payment.create({
       studentId,
       courseId,
@@ -65,19 +71,20 @@ export const addPayment = async (req, res) => {
       cardDetails,
     });
 
-    // 📌 Generate receipt immediately for Card payments
-if (paymentMethod === "Card" && status === "Approved") {
-  const filePath = generateReceipt(payment);
-  payment.receiptURL = filePath;
-  await payment.save();
-}
+    // 🔹 Auto-generate receipt for Approved Card payments
+    if (paymentMethod === "Card" && status === "Approved") {
+      const filePath = generateReceipt(payment); // from utils/pdf.js
+      payment.receiptURL = filePath;
+      await payment.save();
+    }
 
     return res.status(201).json({ payment });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in addPayment:", err);
     return res.status(500).json({ message: "Unable to add payment" });
   }
 };
+
 
 
 // GET /api/payments/:id
