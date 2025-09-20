@@ -7,7 +7,7 @@ const vehicleSchema = new mongoose.Schema(
     brand: { type: String, required: true },                 // e.g. Honda
     type: { 
       type: String, 
-      enum: ["Car", "Van", "ThreeWheeler","Lorry","Bus"], 
+      enum: ["Car", "ThreeWheeler", "Motorcycle" ,"HeavyVehicle"], 
       required: true 
     },
     year: { type: Number, required: true },

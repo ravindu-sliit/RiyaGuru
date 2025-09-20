@@ -1,20 +1,19 @@
 import mongoose from "mongoose";
-import "./Course.js";  
 
 const bookingSchema = new mongoose.Schema(
   {
-    bookingId: { type: String, unique: true, required: true },
-    userId: { type: String, required: true }, // StudentId (e.g., S003)
+    bookingId: { type: String, unique: true, required: true }, // e.g. B001
+    userId: { type: String, required: true },                  // StudentId (e.g., S003)
 
     student: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
     instructor: { type: mongoose.Schema.Types.ObjectId, ref: "Instructor", required: true },
     instructorId: { type: String, required: true },
     vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "Vehicle", required: true },
     regNo: { type: String, required: true },
-    course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+    course: { type: String, required: true }, // 🔹 store course name (Car, Motorcycle, Threewheeler,HeavyVehicle)
 
-    date: { type: String, required: true },
-    time: { type: String, required: true },
+    date: { type: String, required: true }, // "2025-09-25"
+    time: { type: String, required: true }, // "10:00-11:00"
     status: {
       type: String,
       enum: ["booked", "completed", "cancelled"],
