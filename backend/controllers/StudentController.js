@@ -44,7 +44,6 @@ export const addStudent = async (req, res) => {
       name: full_name,
       role: "Student",
       email,
-      password: hashedPassword
       password: hashedPassword,
       
     });

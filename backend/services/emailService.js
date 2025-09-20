@@ -3,7 +3,6 @@ import nodemailer from "nodemailer";
 export const sendEmail = async (to, subject, text) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
       host: "smtp.gmail.com",
       port: 465,
       secure: true, // use SSL
@@ -14,7 +13,6 @@ export const sendEmail = async (to, subject, text) => {
     });
 
     await transporter.sendMail({
-      from: `"RiyaGuru App" <${process.env.EMAIL_USER}>`,
       from: `"RiyaGuru Team" <${process.env.EMAIL_USER}>`,
       to,
       subject,

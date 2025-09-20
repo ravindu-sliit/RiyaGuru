@@ -33,7 +33,6 @@ const userSchema = new mongoose.Schema(
       type: String, 
       enum: ["Student", "Instructor", "Admin"], 
       default: "Student"  // sensible default
-    }
     },
   },
 
