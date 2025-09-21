@@ -8,7 +8,7 @@ function Home() {
 
         <Nav/>
       <h1 style={{ color: "red", fontSize: "48px" }}>HELLO FROM HOME
-        I am Sanda
+       
       </h1>
     </div>
   );
