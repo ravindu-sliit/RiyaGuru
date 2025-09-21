@@ -5,7 +5,7 @@ import {
   getInstructorPerformance,
   getStudentSummary,
   getAllStudentsSummary,
-} from "../controllers/reportController.js";
+} from "../controllers/progressReportController.js";
 
 const router = express.Router();
 

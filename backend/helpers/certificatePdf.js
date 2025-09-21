@@ -80,11 +80,11 @@ export async function renderCertificatePDF({
 
   // Signatures
   doc.fontSize(12).fillColor("black");
-  doc.text("____________________", 100, 500, { align: "center" });
-  doc.text("Instructor Signature", 100, 520, { align: "center" });
+  doc.text("____________________", 100, 500, { align: "left" });
+  doc.text("Instructor Signature", 100, 520, { align: "left" });
 
-  doc.text("____________________", 400, 500, { align: "center" });
-  doc.text("School Seal", 400, 520, { align: "center" });
+  doc.text("____________________", 400, 500, { align: "left" });
+  doc.text("School Seal", 400, 520, { align: "left" });
 
   doc.end();
   await new Promise((resolve) => stream.on("finish", resolve));
