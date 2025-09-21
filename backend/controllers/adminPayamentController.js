@@ -8,7 +8,7 @@ export const approvePayment = async (req, res) => {
   const { adminComment } = req.body;
   try {
     let payment = await Payment.findById(req.params.id);
-    if (!payment) return res.status(404).json({ message: "Unable to approve payment" });
+    if (!payment) return res.status(404).json({ message: "Unable to approve payment" }); 
 
     payment.status = "Approved";
     payment.paidDate = new Date();
@@ -39,5 +39,7 @@ export const rejectPayment = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(400).json({ message: "Invalid ID" });
+    
   }
 };
+//helloooo test this
