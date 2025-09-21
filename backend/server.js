@@ -20,7 +20,7 @@ import paymentRoutes from "./route/paymentRoutes.js";
 import installmentRoutes from "./route/installmentRoutes.js";
 import receiptRoutes from "./route/receiptRoutes.js";
 import certificateRoutes from "./route/certificateRoutes.js";
-
+import progressReportRoutes from "./route/progressReportRoutes.js";
 
 
 
@@ -73,11 +73,11 @@ app.use("/api/progress-tracking", progressTrackingRoutes);
 app.use("/api/users", userRoutes); 
 app.use("/api/preferences", preferenceRoutes);
 app.use("/api/certificates", certificateRoutes);
-
 app.use("/api/courses", courseRoutes);
 app.use("/api/studentcourses", studentCourseRoutes);
 app.use("/api/otp", otpRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/progress-reports", progressReportRoutes);
 
 
 
