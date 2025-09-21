@@ -27,25 +27,15 @@ import receiptRoutes from "./route/receiptRoutes.js";
 import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
 
-// This one exists on your local branch:
-//import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
-
-// -----------------------------
-// Route imports (main branch)
-// -----------------------------
-// NOTE: These live under ./routes (plural) in the main repo.
-import inquiryRoutes from "./routes/inquiryroutes.js";
-import maintenanceRoutes from "./routes/maintenanceroutes.js";
-import publicReportRoutes from "./routes/reportroutes.js"; // aliased to distinguish
+import inquiryRoutes from "./route/inquiryroutes.js";
+import maintenanceRoutes from "./route/maintenanceroutes.js";
+import publicReportRoutes from "./route/reportroutes.js"; // aliased to distinguish
 import progressReportRoutes from "./route/progressReportRoutes.js"; // from main sample
 
 dotenv.config();
 
 const app = express();
 
-// ---------------------------------------------------------
-// Resolve __dirname (ESM) and set up uploads folder
-// ---------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -54,9 +44,8 @@ const uploadsDir = path.join(__dirname, "uploads");
 const studentDocsDir = path.join(uploadsDir, "studentDocs");
 fs.mkdirSync(studentDocsDir, { recursive: true });
 
-// ---------------------------------------------------------
 // Core middleware
-// ---------------------------------------------------------
+
 app.use(express.json());
 
 // Static: expose everything in backend/uploads at /uploads
@@ -69,17 +58,12 @@ app.get("/", (req, res) => {
   res.send("✅ API is running...");
 });
 
-// ---------------------------------------------------------
-// API routes (deduped & namespaced to avoid conflicts)
-// ---------------------------------------------------------
 
 // From main branch
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/reports", publicReportRoutes); // main branch's reports route
 app.use("/api/progress-reports", progressReportRoutes);
-
-// From your local branch
 app.use("/api/instructors", instructorRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/bookings", bookingRoutes);
@@ -97,11 +81,6 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
-
-// ⚠️ There are TWO different report routers in your codebase:
-// - main branch's  ./routes/reportroutes.js   (now mounted at /api/reports)
-// - local branch's ./route/reportRoutes.js    (we mount at /api/admin/reports to avoid collision)
-//app.use("/api/admin/reports", legacyReportRoutes);
 
 // ---------------------------------------------------------
 // Global error handler
@@ -122,7 +101,7 @@ if (!MONGO_URI) {
 }
 
 mongoose
-  .connect(MONGO_URI) // modern Mongoose no longer needs useNewUrlParser/useUnifiedTopology
+  .connect(MONGO_URI)
   .then(() => {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
