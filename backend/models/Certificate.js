@@ -18,7 +18,7 @@ const certificateSchema = new mongoose.Schema({
   file_url: { type: String },
 
   // sha256(payload) for quick public verification
-  verification_hash: { type: String, required: true },
+  verification_hash: { type: String, required: false },
 
   // track re-issues if you support them later
   reissue_of: { type: String },
