@@ -1,0 +1,55 @@
+/* Reset some basic styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f9f9f9;
+}
+
+/* Navbar container */
+.Home-ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Nav items */
+.home-ll {
+  margin: 0 20px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.home-ll h1 {
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+  text-transform: capitalize;
+  letter-spacing: 1px;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+/* Hover effects */
+.home-ll:hover {
+  transform: translateY(-3px);
+}
+
+.home-ll h1:hover {
+  color: #ffda79;
+  border-bottom: 2px solid #ffda79;
+}
+
+/* Active state (optional, for when you want to mark a page active) */
+.home-ll.active h1 {
+  color: #ffd32a;
+  border-bottom: 2px solid #ffd32a;
+}
