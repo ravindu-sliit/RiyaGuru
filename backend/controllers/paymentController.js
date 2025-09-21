@@ -1,13 +1,14 @@
-// backend/controllers/paymentController.js
 import Payment from "../models/Payment.js";
-import { processCardPayment } from "../utils/gateway.js"; // 👈 add this import
+import StudentCourse from "../models/StudentCourse.js";
+import { processCardPayment } from "../utils/gateway.js";
 
-// GET /api/payments  (supports ?studentId=&status=&from=&to=)
+// GET /api/payments
 export const getAllPayments = async (req, res) => {
   try {
-    const { studentId, status, from, to } = req.query;
-    const filter = {};
-    if (studentId) filter.studentId = studentId;
+    const { studentCourseId, status, from, to } = req.query;
+    const filter = { studentId: req.user.userId };
+
+    if (studentCourseId) filter.studentCourseId = studentCourseId;
     if (status) filter.status = status;
     if (from || to) {
       filter.createdAt = {
@@ -15,6 +16,7 @@ export const getAllPayments = async (req, res) => {
         ...(to ? { $lte: new Date(to) } : {}),
       };
     }
+
     const payments = await Payment.find(filter).sort({ createdAt: -1 });
     return res.status(200).json({ payments });
   } catch (err) {
@@ -26,58 +28,35 @@ export const getAllPayments = async (req, res) => {
 // POST /api/payments
 export const addPayment = async (req, res) => {
   try {
-    // ⬇️ Student ID always comes from the token (authMiddleware attached it)
     const studentId = req.user.userId;
+    const { studentCourseId, amount, paymentType, paymentMethod, slipURL, cardDetails } = req.body;
 
-    const { courseId, courseName, amount, paymentType, paymentMethod, slipURL, cardDetails } = req.body;
+    // 🔹 Check enrollment first
+    const enrollment = await StudentCourse.findById(studentCourseId);
+    if (!enrollment) return res.status(404).json({ message: "Enrollment not found" });
 
-    // Default values
-    let status = "Pending";
-    let paidDate = null;
-    let transactionId = null;
-
-    // 🔹 Handle Card payments
-    if (paymentMethod === "Card") {
-      // Very basic validation
-      if (
-        !cardDetails?.cardNumber ||
-        cardDetails.cardNumber.length !== 16 ||
-        !cardDetails?.cvv ||
-        (cardDetails.cvv.length !== 3 && cardDetails.cvv.length !== 4) ||
-        !cardDetails?.expiryDate ||
-        !cardDetails?.cardHolder
-      ) {
-        return res.status(400).json({ message: "Invalid card details" });
-      }
-
-      // ✅ For demo/viva → always success
-      status = "Approved";
-      paidDate = new Date();
-      transactionId = "TXN-" + Date.now();
-    }
-
-    // 🔹 Create payment record
-    const payment = await Payment.create({
+    // Always create with Pending status
+    let paymentData = {
       studentId,
-      courseId,
-      courseName,
+      studentCourseId,
       amount,
       paymentType,
       paymentMethod,
       slipURL,
-      status,
-      paidDate,
-      transactionId,
-      cardDetails,
-    });
+      status: "Pending",
+    };
 
-    // 🔹 Auto-generate receipt for Approved Card payments
-    if (paymentMethod === "Card" && status === "Approved") {
-      const filePath = generateReceipt(payment); // from utils/pdf.js
-      payment.receiptURL = filePath;
-      await payment.save();
+    // If Card, run dummy gateway just to simulate transactionId
+    if (paymentMethod === "Card" && cardDetails) {
+      const result = await processCardPayment(cardDetails, amount);
+      if (!result.success) {
+        return res.status(400).json({ message: result.message });
+      }
+      paymentData.transactionId = result.transactionId;
+      paymentData.cardDetails = cardDetails;
     }
 
+    const payment = await Payment.create(paymentData);
     return res.status(201).json({ payment });
   } catch (err) {
     console.error("❌ Error in addPayment:", err);
@@ -85,13 +64,14 @@ export const addPayment = async (req, res) => {
   }
 };
 
-
-
 // GET /api/payments/:id
 export const getPaymentById = async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id);
     if (!payment) return res.status(404).json({ message: "Payment not found" });
+    if (payment.studentId !== req.user.userId && req.user.role !== "Admin") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
     return res.status(200).json({ payment });
   } catch (err) {
     console.error(err);
@@ -101,12 +81,10 @@ export const getPaymentById = async (req, res) => {
 
 // PUT /api/payments/:id
 export const updatePayment = async (req, res) => {
-  const { amount, paymentType, paymentMethod, slipURL, adminComment, courseName, courseId, cardDetails } = req.body;
-
   try {
-    const updateData = { amount, paymentType, paymentMethod, slipURL, adminComment, courseName, courseId };
+    const { amount, paymentType, paymentMethod, slipURL, adminComment, cardDetails } = req.body;
+    let updateData = { amount, paymentType, paymentMethod, slipURL, adminComment };
 
-    // If updating card details
     if (paymentMethod === "Card" && cardDetails) {
       const result = await processCardPayment(cardDetails, amount);
       if (!result.success) {
@@ -114,11 +92,13 @@ export const updatePayment = async (req, res) => {
       }
       updateData.cardDetails = cardDetails;
       updateData.transactionId = result.transactionId;
-      updateData.status = "Approved";
-      updateData.paidDate = new Date();
     }
 
-    const payment = await Payment.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
+    const payment = await Payment.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
     if (!payment) return res.status(404).json({ message: "Unable to update payment" });
     return res.status(200).json({ payment });
   } catch (err) {
