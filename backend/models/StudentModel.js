@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import Preference from "./PreferenceModel.js";
+import StudentCourse from "./StudentCourse.js";
 
 const studentSchema = new mongoose.Schema({
 
@@ -40,6 +42,18 @@ const studentSchema = new mongoose.Schema({
     type: String,
     
   },
+});
+
+// 🔹 Cascade delete middleware
+studentSchema.post("findOneAndDelete", async function (doc) {
+  if (!doc) return;
+  const sid = doc.studentId;
+
+  // Delete preferences linked to this student
+  await Preference.deleteMany({ studentId: sid });
+
+  // Delete student courses linked to this student
+  await StudentCourse.deleteMany({ student_id: sid });
 });
 
 const Student = mongoose.model("Student", studentSchema);
