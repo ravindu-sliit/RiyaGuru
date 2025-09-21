@@ -20,7 +20,7 @@ import paymentRoutes from "./route/paymentRoutes.js";
 import installmentRoutes from "./route/installmentRoutes.js";
 import receiptRoutes from "./route/receiptRoutes.js";
 import certificateRoutes from "./route/certificateRoutes.js";
-import reportRoutes from "./route/reportRoutes.js";
+
 
 
 
@@ -29,7 +29,7 @@ import reportRoutes from "./route/reportRoutes.js";
 import inquiryRoutes from "./routes/inquiryroutes.js";
 import maintenanceRoutes from "./routes/maintenanceroutes.js";
 import reportRoutes from "./routes/reportroutes.js";
-import authRoutes from "./routes/authRoutes.js";   // this is fine
+
 
 dotenv.config();
 const app = express();
