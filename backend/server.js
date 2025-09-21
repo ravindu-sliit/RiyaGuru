@@ -25,11 +25,24 @@ import reportRoutes from "./route/progressReportRoutes.js";
 
 
 
+// Import routes
+import inquiryRoutes from "./routes/inquiryroutes.js";
+import maintenanceRoutes from "./routes/maintenanceroutes.js";
+
+
+
 dotenv.config();
 const app = express();
 
 // Middleware
 app.use(express.json());
+
+
+// Routes
+app.use("/api/inquiries", inquiryRoutes);
+app.use("/api/maintenance", maintenanceRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/auth", authRoutes);
 
 
 app.use("/api/payments", paymentRoutes); 
@@ -41,6 +54,7 @@ app.use("/api/receipts", receiptRoutes);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 
 // Test route
@@ -74,7 +88,8 @@ app.use((err, req, res, next) => {
 });
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () =>
@@ -85,5 +100,4 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 
-//senith 7.460000000000000
 
