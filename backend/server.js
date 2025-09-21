@@ -1,13 +1,18 @@
+// backend/server.js
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
+// -----------------------------
+// Route imports (local branch)
+// -----------------------------
 import instructorRoutes from "./route/instructorRoutes.js";
 import vehicleRoutes from "./route/vehicleRoutes.js";
 import bookingRoutes from "./route/bookingRoutes.js";
-import lessonProgressRoutes from "./route/lessonProgressRoutes.js"; 
+import lessonProgressRoutes from "./route/lessonProgressRoutes.js";
 import authRoutes from "./route/authRoutes.js";
 import studentRoutes from "./route/StudentRoute.js";
 import progressTrackingRoutes from "./route/progressTrackingRoutes.js";
@@ -20,85 +25,113 @@ import paymentRoutes from "./route/paymentRoutes.js";
 import installmentRoutes from "./route/installmentRoutes.js";
 import receiptRoutes from "./route/receiptRoutes.js";
 import certificateRoutes from "./route/certificateRoutes.js";
-import progressReportRoutes from "./route/progressReportRoutes.js";
+import docRoutes from "./route/DocRoute.js";
 
+// This one exists on your local branch:
+import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
 
-
-
-// Import routes
+// -----------------------------
+// Route imports (main branch)
+// -----------------------------
+// NOTE: These live under ./routes (plural) in the main repo.
 import inquiryRoutes from "./routes/inquiryroutes.js";
 import maintenanceRoutes from "./routes/maintenanceroutes.js";
-import reportRoutes from "./routes/reportroutes.js";
-
+import publicReportRoutes from "./routes/reportroutes.js"; // aliased to distinguish
+import progressReportRoutes from "./route/progressReportRoutes.js"; // from main sample
 
 dotenv.config();
+
 const app = express();
 
-// Middleware
-app.use(express.json());
-
-
-// Routes
-app.use("/api/inquiries", inquiryRoutes);
-app.use("/api/maintenance", maintenanceRoutes);
-app.use("/api/reports", reportRoutes);
-app.use("/api/auth", authRoutes);
-
-
-app.use("/api/payments", paymentRoutes); 
-app.use("/api/installments", installmentRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/receipts", receiptRoutes);
-
-// ✅ Allow Express to serve uploaded files (instructors, etc.)
+// ---------------------------------------------------------
+// Resolve __dirname (ESM) and set up uploads folder
+// ---------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Ensure uploads/studentDocs exists at startup
+const uploadsDir = path.join(__dirname, "uploads");
+const studentDocsDir = path.join(uploadsDir, "studentDocs");
+fs.mkdirSync(studentDocsDir, { recursive: true });
 
+// ---------------------------------------------------------
+// Core middleware
+// ---------------------------------------------------------
+app.use(express.json());
 
-// Test route
+// Static: expose everything in backend/uploads at /uploads
+app.use("/uploads", express.static(uploadsDir));
+
+// ---------------------------------------------------------
+// Health route
+// ---------------------------------------------------------
 app.get("/", (req, res) => {
   res.send("✅ API is running...");
 });
 
-// Routes
+// ---------------------------------------------------------
+// API routes (deduped & namespaced to avoid conflicts)
+// ---------------------------------------------------------
 
+// From main branch
+app.use("/api/inquiries", inquiryRoutes);
+app.use("/api/maintenance", maintenanceRoutes);
+app.use("/api/reports", publicReportRoutes); // main branch's reports route
+app.use("/api/progress-reports", progressReportRoutes);
+
+// From your local branch
 app.use("/api/instructors", instructorRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/lesson-progress", lessonProgressRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/progress-tracking", progressTrackingRoutes);
-app.use("/api/users", userRoutes); 
+app.use("/api/users", userRoutes);
 app.use("/api/preferences", preferenceRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/studentcourses", studentCourseRoutes);
 app.use("/api/otp", otpRoutes);
-app.use("/api/reports", reportRoutes);
-app.use("/api/progress-reports", progressReportRoutes);
+app.use("/api/docs", docRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/installments", installmentRoutes);
+app.use("/api/receipts", receiptRoutes);
+app.use("/api/auth", authRoutes);
 
+// ⚠️ There are TWO different report routers in your codebase:
+// - main branch's  ./routes/reportroutes.js   (now mounted at /api/reports)
+// - local branch's ./route/reportRoutes.js    (we mount at /api/admin/reports to avoid collision)
+app.use("/api/admin/reports", legacyReportRoutes);
 
-
-// ✅ Global error handler (handles Multer/file upload errors too)
+// ---------------------------------------------------------
+// Global error handler
+// ---------------------------------------------------------
 app.use((err, req, res, next) => {
-  console.error("Error:", err.stack);
-  res.status(500).json({ message: err.message });
+  console.error("Error:", err.stack || err);
+  const msg = err?.message || "Internal Server Error";
+  res.status(500).json({ message: msg });
 });
 
-// MongoDB connection
+// ---------------------------------------------------------
+// Mongo connection + server start
+// ---------------------------------------------------------
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error("❌ Missing MONGO_URI in environment.");
+  process.exit(1);
+}
+
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(MONGO_URI) // modern Mongoose no longer needs useNewUrlParser/useUnifiedTopology
   .then(() => {
     const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () =>
-      console.log(`🚀 Server running on port ${PORT} and connected to MongoDB`)
-    );
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT} and connected to MongoDB`);
+      console.log(`📁 Serving uploads from: ${uploadsDir}`);
+      console.log(`🌐 Try: http://localhost:${PORT}/uploads/studentDocs/<your-file>.jpg`);
+    });
   })
-
-  .catch((err) => console.error("MongoDB connection error:", err));
-
-
-
-
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  });
