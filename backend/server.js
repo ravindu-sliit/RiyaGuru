@@ -30,6 +30,11 @@ import inquiryRoutes from "./routes/inquiryroutes.js";
 import maintenanceRoutes from "./routes/maintenanceroutes.js";
 
 
+// Import routes
+import inquiryRoutes from "./routes/inquiryroutes.js";
+import maintenanceRoutes from "./routes/maintenanceroutes.js";
+import reportRoutes from "./routes/reportroutes.js";
+
 
 dotenv.config();
 const app = express();
@@ -59,7 +64,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("API is running...");
+  res.send("✅ API is running...");
 });
 
 // Routes
@@ -96,6 +101,7 @@ mongoose
       console.log(`🚀 Server running on port ${PORT} and connected to MongoDB`)
     );
   })
+
   .catch((err) => console.error("MongoDB connection error:", err));
 
 
