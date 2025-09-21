@@ -8,7 +8,7 @@ function App() {
     <div>
       <React.Fragment>
         <Routes>
-              <Route path="/Payment" element={<Payment />} /> {/* ✅ Payment route */}
+              <Route path="/Payment" element={<Payment />} /> 
         </Routes>
       </React.Fragment>
     </div>
