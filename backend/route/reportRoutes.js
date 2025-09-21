@@ -4,6 +4,7 @@ import {
   getAverageCompletionTimes,
   getInstructorPerformance,
   getStudentSummary,
+  getAllStudentsSummary,
 } from "../controllers/reportController.js";
 
 const router = express.Router();
@@ -13,5 +14,6 @@ router.get("/completion-rates", getCompletionRates);
 router.get("/average-completion-times", getAverageCompletionTimes);
 router.get("/instructor-performance", getInstructorPerformance);
 router.get("/student/:studentId", getStudentSummary);
+router.get("/students", getAllStudentsSummary);
 
 export default router;

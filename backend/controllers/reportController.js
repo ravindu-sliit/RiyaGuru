@@ -3,6 +3,7 @@ import ProgressTracking from "../models/ProgressTracking.js";
 import Certificate from "../models/Certificate.js";
 import LessonProgress from "../models/LessonProgress.js";
 import StudentCourse from "../models/StudentCourse.js";
+import Student from "../models/StudentModel.js";
 
 // ✅ Completion rate by course
 export const getCompletionRates = async (req, res) => {
@@ -164,5 +165,78 @@ export const getStudentSummary = async (req, res) => {
   } catch (err) {
     console.error("Error fetching student summary:", err);
     res.status(500).json({ message: "Error fetching student summary", error: err.message });
+  }
+};
+
+// ✅ All students summary (for admin/instructor dashboards)
+export const getAllStudentsSummary = async (req, res) => {
+  try {
+    // 1️⃣ Fetch all students
+    const students = await Student.find();
+
+    if (!students || students.length === 0) {
+      return res.status(404).json({ message: "No students found" });
+    }
+
+    // 2️⃣ Build summary for each student
+    const summaries = await Promise.all(
+      students.map(async (student) => {
+        const enrollments = await StudentCourse.find({
+          student_id: student.studentId,
+          status: "Active",
+        });
+
+        const courses = await Promise.all(
+          enrollments.map(async (enrollment) => {
+            const courseName = enrollment.course_id;
+
+            const progress = await ProgressTracking.findOne({
+              student_id: student.studentId,
+              course_name: courseName,
+            });
+
+            const cert = await Certificate.findOne({
+              student_id: student.studentId,
+              course_name: courseName,
+              status: "Active",
+            });
+
+            const lastLesson = await LessonProgress.findOne({
+              student_id: student.studentId,
+              vehicle_type: courseName,
+            }).sort({ date: -1 });
+
+            return {
+              course_name: courseName,
+              total_lessons: progress ? progress.total_lessons : null,
+              completed_lessons: progress ? progress.completed_lessons : 0,
+              progress_percent: progress ? progress.progress_percent : 0,
+              certificate_status: progress ? progress.certificate_status : "NotEligible",
+              certificateId: cert ? cert.certificateId : null,
+              certificate_file: cert ? cert.file_url : null,
+              last_lesson: lastLesson
+                ? {
+                    lesson_number: lastLesson.lesson_number,
+                    date: lastLesson.date,
+                    feedback: lastLesson.feedback,
+                  }
+                : null,
+            };
+          })
+        );
+
+        return {
+          student_id: student.studentId,
+          full_name: student.full_name,
+          email: student.email,
+          courses,
+        };
+      })
+    );
+
+    res.json({ students: summaries });
+  } catch (err) {
+    console.error("Error fetching all students summary:", err);
+    res.status(500).json({ message: "Error fetching all students summary", error: err.message });
   }
 };
