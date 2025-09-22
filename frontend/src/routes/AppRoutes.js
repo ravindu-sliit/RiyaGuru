@@ -6,6 +6,7 @@ import StudentProgressPage from "../pages/Student/StudentProgressPage.jsx";
 import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import InstructorRoutes from "./instructorRoutes";
+<<<<<<< Updated upstream
 import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
 // Import Payment Pages
 import MyEnrollments from '../pages/Payments/MyEnrollments/MyEnrollments';
@@ -14,6 +15,31 @@ import InstallmentPlan from '../pages/Payments/InstallmentPlan/InstallmentPlan';
 import PaymentHistory from '../pages/Payments/PaymentHistory/PaymentHistory';
 import AdminPayments from '../pages/Payments/AdminPayments/AdminPayments';
 import InstallmentManagement from '../pages/Payments/InstallmentManagement/InstallmentManagement';
+=======
+
+
+// ✅ Vehicle pages
+import VehicleList from "../pages/Vehicle/VehicleList";
+import AddVehicle from "../pages/Vehicle/AddVehicle";
+import EditVehicle from "../pages/Vehicle/EditVehicle";
+import VehicleDetails from "../pages/Vehicle/VehicleDetails";
+import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
+
+import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
+import ProgressTrackingDashboard from "../pages/ProgressTracking/ProgressTrackingDashboard";
+import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
+import StudentLessons from "../pages/LessonProgress/StudentLessons";
+import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
+
+
+
+
+
+
+
+
+
+>>>>>>> Stashed changes
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -44,6 +70,19 @@ export default function AppRoutes() {
       {/* Default redirect */}
       <Route path="/" element={<Navigate to="/payments/enrollments" replace />} />
 
+        
+
+        {/* Vehicles */}
+        <Route path="/vehicles" element={<VehicleList />} />
+        <Route path="/vehicles/add" element={<AddVehicle />} />
+        <Route path="/vehicles/:id" element={<VehicleDetails />} />
+        <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
+        <Route path="/dashboard" element={<VehicleDashboard />} />
+
+
+  
+
+>>>>>>> Stashed changes
        
       </Routes>
     </BrowserRouter>
