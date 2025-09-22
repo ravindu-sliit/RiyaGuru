@@ -102,37 +102,39 @@ export const getInstructorPerformance = async (req, res) => {
   }
 };
 
-// ✅ Student progress summary (all courses + certificates)
 export const getStudentSummary = async (req, res) => {
   try {
     const { studentId } = req.params;
 
-    // 1️⃣ Get all active enrollments
+    // 1️⃣ Get student details
+    const student = await Student.findOne({ studentId });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // 2️⃣ Get all active enrollments
     const enrollments = await StudentCourse.find({ student_id: studentId, status: "Active" });
 
     if (!enrollments || enrollments.length === 0) {
       return res.status(404).json({ message: "No active enrollments found for this student" });
     }
 
-    // 2️⃣ Build course summary
+    // 3️⃣ Build course summary
     const courses = await Promise.all(
       enrollments.map(async (enrollment) => {
         const courseName = enrollment.course_id;
 
-        // Progress record if available
         const progress = await ProgressTracking.findOne({
           student_id: studentId,
           course_name: courseName,
         });
 
-        // Certificate if available
         const cert = await Certificate.findOne({
           student_id: studentId,
           course_name: courseName,
           status: "Active",
         });
 
-        // Last lesson if available
         const lastLesson = await LessonProgress.findOne({
           student_id: studentId,
           vehicle_type: courseName,
@@ -157,9 +159,12 @@ export const getStudentSummary = async (req, res) => {
       })
     );
 
-    // 3️⃣ Return student summary
+    // 4️⃣ Return student summary
     res.json({
-      student_id: studentId,
+      student_id: student.studentId,
+      full_name: student.full_name,
+      email: student.email,
+      phone: student.phone, // optional
       courses,
     });
   } catch (err) {
@@ -167,6 +172,7 @@ export const getStudentSummary = async (req, res) => {
     res.status(500).json({ message: "Error fetching student summary", error: err.message });
   }
 };
+
 
 // ✅ All students summary (for admin/instructor dashboards)
 export const getAllStudentsSummary = async (req, res) => {

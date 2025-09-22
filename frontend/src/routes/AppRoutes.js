@@ -6,6 +6,7 @@ import StudentProgressPage from "../pages/Student/StudentProgressPage.jsx";
 import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import InstructorRoutes from "./instructorRoutes";
+import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
 import PaymentDashboard from '../pages/Payments/PaymentDashboard';
 import PaymentForm from '../pages/Payments/PaymentForm';
 import PaymentHistory from '../pages/Payments/PaymentHistory';
@@ -25,6 +26,8 @@ export default function AppRoutes() {
           
            {/* Instructors */}
         <Route path="/*" element={<InstructorRoutes />} />
+        <Route path="/instructor/lesson-entry" element={<InstructorLessonEntryPage />} />
+
 
          {/* Default route redirects to payment dashboard */}
         <Route path="/" element={<Navigate to="/payments" replace />} />
