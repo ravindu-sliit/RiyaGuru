@@ -36,9 +36,9 @@ import docRoutes from "./route/DocRoute.js";
 // Route imports (main branch)
 // -----------------------------
 // NOTE: These live under ./routes (plural) in the main repo.
-import inquiryRoutes from "./routes/inquiryroutes.js";
-import maintenanceRoutes from "./routes/maintenanceroutes.js";
-import publicReportRoutes from "./routes/reportroutes.js"; // aliased to distinguish
+import inquiryRoutes from "./route/inquiryroutes.js";
+import maintenanceRoutes from "./route/maintenanceroutes.js";
+import publicReportRoutes from "./route/reportroutes.js"; // aliased to distinguish
 import progressReportRoutes from "./route/progressReportRoutes.js"; // from main sample
 
 dotenv.config();
