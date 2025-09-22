@@ -1,3 +1,4 @@
+// backend/services/instructorService.js
 import Instructor from "../models/Instructor.js";
 import Booking from "../models/Booking.js";
 
@@ -21,26 +22,24 @@ export const deleteInstructor = async (id) => {
   return await Instructor.findByIdAndDelete(id);
 };
 
-// ✅ Get available instructors (ignore status, only check date & time)
+// ✅ Get available instructors (exclude booked ones)
 export const getAvailableInstructors = async (date, time) => {
   if (!date || !time) {
-    // No date & time → return all instructors
     const allInstructors = await Instructor.find();
     return allInstructors.map((inst) => formatInstructor(inst));
   }
 
-  // Date & time provided → exclude instructors already booked
   const booked = await Booking.find({ date, time }).select("instructor");
   const bookedIds = booked.map((b) => b.instructor.toString());
 
   const availableInstructors = await Instructor.find({
-    _id: { $nin: bookedIds }
+    _id: { $nin: bookedIds },
   });
 
   return availableInstructors.map((inst) => formatInstructor(inst));
 };
 
-// Filter instructors only by status (new feature)
+// ✅ Filter instructors only by status
 export const filterInstructorsByStatus = async (status) => {
   if (!["Not-Active", "Active"].includes(status)) {
     throw new Error("Invalid status. Use 'Not-Active' or 'Active'.");
@@ -49,12 +48,7 @@ export const filterInstructorsByStatus = async (status) => {
   return instructors.map((inst) => formatInstructor(inst));
 };
 
-// Update instructor status
-export const updateStatus = async (id, status) => {
-  return await Instructor.findByIdAndUpdate(id, { status }, { new: true });
-};
-
-// 🔹 Helper function to format instructor response
+// 🔹 Helper: clean instructor object
 const formatInstructor = (inst) => ({
   instructorId: inst.instructorId,
   name: inst.name,
@@ -66,18 +60,7 @@ const formatInstructor = (inst) => ({
   specialization: inst.specialization,
   rating: inst.rating,
   status: inst.status,
+  image: inst.image,
   availability: inst.availability,
-  joinedDate: inst.joinedDate
+  joinedDate: inst.joinedDate,
 });
-
-// ✅ Get instructors by status
-export const getInstructorsByStatus = async (req, res) => {
-  try {
-    const { status } = req.params;
-    const instructors = await instructorService.getInstructorsByStatus(status);
-    res.json(instructors);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-

@@ -5,9 +5,10 @@ import mongoose from "mongoose";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import cors from "cors";
 
 // -----------------------------
-// Route imports (local branch)
+// Route imports
 // -----------------------------
 import instructorRoutes from "./route/instructorRoutes.js";
 import vehicleRoutes from "./route/vehicleRoutes.js";
@@ -29,40 +30,52 @@ import docRoutes from "./route/DocRoute.js";
 
 import inquiryRoutes from "./route/inquiryroutes.js";
 import maintenanceRoutes from "./route/maintenanceroutes.js";
-import publicReportRoutes from "./route/reportroutes.js"; // aliased to distinguish
-import progressReportRoutes from "./route/progressReportRoutes.js"; // from main sample
+import publicReportRoutes from "./route/reportroutes.js";
+import progressReportRoutes from "./route/progressReportRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
+// __dirname setup for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure uploads/studentDocs exists at startup
+// -----------------------------
+// Ensure uploads folders exist
+// -----------------------------
 const uploadsDir = path.join(__dirname, "uploads");
 const studentDocsDir = path.join(uploadsDir, "studentDocs");
+const instructorDir = path.join(uploadsDir, "instructors");
+
 fs.mkdirSync(studentDocsDir, { recursive: true });
+fs.mkdirSync(instructorDir, { recursive: true });
 
+// -----------------------------
 // Core middleware
-
+// -----------------------------
 app.use(express.json());
+app.use(cors({
+  origin: "http://localhost:3000", // frontend
+  credentials: true,
+}));
 
-// Static: expose everything in backend/uploads at /uploads
-app.use("/uploads", express.static(uploadsDir));
+// Serve static uploads
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-// ---------------------------------------------------------
+// -----------------------------
 // Health route
-// ---------------------------------------------------------
+// -----------------------------
 app.get("/", (req, res) => {
   res.send("✅ API is running...");
 });
 
-
-// From main branch
+// -----------------------------
+// API Routes
+// -----------------------------
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
-app.use("/api/reports", publicReportRoutes); // main branch's reports route
+app.use("/api/reports", publicReportRoutes);
 app.use("/api/progress-reports", progressReportRoutes);
 app.use("/api/instructors", instructorRoutes);
 app.use("/api/vehicles", vehicleRoutes);
@@ -82,18 +95,18 @@ app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
 
-// ---------------------------------------------------------
+// -----------------------------
 // Global error handler
-// ---------------------------------------------------------
+// -----------------------------
 app.use((err, req, res, next) => {
   console.error("Error:", err.stack || err);
   const msg = err?.message || "Internal Server Error";
   res.status(500).json({ message: msg });
 });
 
-// ---------------------------------------------------------
+// -----------------------------
 // Mongo connection + server start
-// ---------------------------------------------------------
+// -----------------------------
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
   console.error("❌ Missing MONGO_URI in environment.");
@@ -107,7 +120,7 @@ mongoose
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT} and connected to MongoDB`);
       console.log(`📁 Serving uploads from: ${uploadsDir}`);
-      console.log(`🌐 Try: http://localhost:${PORT}/uploads/studentDocs/<your-file>.jpg`);
+      console.log(`🌐 Example: http://localhost:${PORT}/uploads/instructors/<your-file>.jpg`);
     });
   })
   .catch((err) => {
