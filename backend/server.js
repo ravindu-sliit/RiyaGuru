@@ -28,6 +28,14 @@ import receiptRoutes from "./route/receiptRoutes.js";
 import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
 
+
+// This one exists on your local branch:
+//import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
+
+// -----------------------------
+// Route imports (main branch)
+// -----------------------------
+// NOTE: These live under ./routes (plural) in the main repo.
 import inquiryRoutes from "./route/inquiryroutes.js";
 import maintenanceRoutes from "./route/maintenanceroutes.js";
 import publicReportRoutes from "./route/reportroutes.js";
@@ -37,7 +45,6 @@ dotenv.config();
 
 const app = express();
 
-// __dirname setup for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -55,10 +62,12 @@ fs.mkdirSync(instructorDir, { recursive: true });
 // Core middleware
 // -----------------------------
 app.use(express.json());
+
 app.use(cors({
   origin: "http://localhost:3000", // frontend
   credentials: true,
 }));
+
 
 // Serve static uploads
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
@@ -95,7 +104,7 @@ app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
 
-// -----------------------------
+
 // Global error handler
 // -----------------------------
 app.use((err, req, res, next) => {
