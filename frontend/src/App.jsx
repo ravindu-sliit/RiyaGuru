@@ -1,19 +1,12 @@
 import React from "react";
-import { Route, Routes } from "react-router";
-import "./App.css";
-import Payment from "./Components/Payment/Payment"; 
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
-  return ( 
-    <div>
-      <React.Fragment>
-        <Routes>
-              <Route path="/Payment" element={<Payment />} /> {/* ✅ Payment route */}
-        </Routes>
-      </React.Fragment>
+  return (
+    <div className="App">
+      <AppRoutes />
     </div>
   );
 }
-
 
 export default App;
