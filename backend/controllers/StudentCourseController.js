@@ -35,9 +35,8 @@ export const addStudentCourse = async (req, res) => {
 export const getAllStudentCourses = async (req, res) => {
   try {
     const courses = await StudentCourse.find();
-    res.status(200).json({ courses });
+    res.status(200).json(courses); // ✅ return array directly
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Server error while fetching courses" });
   }
 };
@@ -45,14 +44,28 @@ export const getAllStudentCourses = async (req, res) => {
 // Get courses by student_id
 export const getCoursesByStudentId = async (req, res) => {
   try {
-    const courses = await StudentCourse.find({ student_id: req.params.student_id });
-    if (!courses.length) return res.status(404).json({ message: "No courses found for this student" });
-    res.status(200).json({ courses });
+    const courses = await StudentCourse.find({ 
+      student_id: req.params.student_id, 
+      status: "Active" 
+    });
+
+    if (!courses.length) {
+      return res.status(404).json({ message: "No courses found for this student" });
+    }
+
+    // Add course_name (alias for course_id)
+    const formatted = courses.map(c => ({
+      ...c.toObject(),
+      course_name: c.course_id   // 👈 course_id doubles as course_name
+    }));
+
+    res.status(200).json(formatted); // return array directly
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error while fetching student courses" });
   }
 };
+
 
 // Update student course
 export const updateStudentCourse = async (req, res) => {
