@@ -23,6 +23,8 @@ export default function AppRoutes() {
         <Route path="/student/progress" element={<StudentProgressPage />} />
         <Route path="/instructor/*" element={<InstructorDashboard />} />
         <Route path="/admin/*" element={<AdminDashboard />} />
+        <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
+        <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
           
            {/* Instructors */}
         <Route path="/*" element={<InstructorRoutes />} />
