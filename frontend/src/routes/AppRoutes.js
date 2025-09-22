@@ -6,6 +6,7 @@ import StudentProgressPage from "../pages/Student/StudentProgressPage.jsx";
 import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import InstructorRoutes from "./instructorRoutes";
+import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
 
 export default function AppRoutes() {
   return (
@@ -22,6 +23,8 @@ export default function AppRoutes() {
           
            {/* Instructors */}
         <Route path="/*" element={<InstructorRoutes />} />
+        <Route path="/instructor/lesson-entry" element={<InstructorLessonEntryPage />} />
+
 
       </Routes>
     </BrowserRouter>
