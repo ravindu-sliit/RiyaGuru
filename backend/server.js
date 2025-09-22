@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import cors from "cors";
 
 // -----------------------------
 // Route imports (local branch)
@@ -36,6 +37,7 @@ dotenv.config();
 
 const app = express();
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -47,6 +49,7 @@ fs.mkdirSync(studentDocsDir, { recursive: true });
 // Core middleware
 
 app.use(express.json());
+app.use(cors());
 
 // Static: expose everything in backend/uploads at /uploads
 app.use("/uploads", express.static(uploadsDir));
