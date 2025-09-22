@@ -28,9 +28,17 @@ import receiptRoutes from "./route/receiptRoutes.js";
 import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
 
-import inquiryRoutes from "./route/inquiryroutes.js";
-import maintenanceRoutes from "./route/maintenanceroutes.js";
-import publicReportRoutes from "./route/reportroutes.js"; // aliased to distinguish
+
+// This one exists on your local branch:
+//import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
+
+// -----------------------------
+// Route imports (main branch)
+// -----------------------------
+// NOTE: These live under ./routes (plural) in the main repo.
+import inquiryRoutes from "./routes/inquiryroutes.js";
+import maintenanceRoutes from "./routes/maintenanceroutes.js";
+import publicReportRoutes from "./routes/reportroutes.js"; // aliased to distinguish
 import progressReportRoutes from "./route/progressReportRoutes.js"; // from main sample
 
 dotenv.config();
@@ -84,6 +92,8 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
+
+
 
 // ---------------------------------------------------------
 // Global error handler
