@@ -1,3 +1,4 @@
+// backend/models/Instructor.js
 import mongoose from "mongoose";
 
 const instructorSchema = new mongoose.Schema(
@@ -12,7 +13,7 @@ const instructorSchema = new mongoose.Schema(
 
     specialization: {
       type: String,
-      enum: ["Car", "Motorcycle","Threewheeler","HeavyVehicle" ,"All"],
+      enum: ["Car", "Motorcycle", "Threewheeler", "HeavyVehicle", "All"],
       default: "All",
     },
 
@@ -35,7 +36,7 @@ const instructorSchema = new mongoose.Schema(
 
     joinedDate: { type: Date, default: Date.now },
 
-    // 🔗 Linked to User table (userId = same as instructorId e.g. "I001")
+    // 🔗 Linked to User table
     userId: { type: String, required: true },
   },
   { timestamps: true }
