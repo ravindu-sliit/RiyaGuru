@@ -8,6 +8,7 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.12.2",
+    "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-clock": "^6.0.0",
     "react-datepicker": "^8.7.0",
@@ -15,6 +16,7 @@
     "react-router-dom": "^7.9.1",
     "react-scripts": "5.0.1",
     "react-time-picker": "^8.0.2",
+    "react-toastify": "^11.0.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

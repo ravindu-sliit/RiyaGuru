@@ -66,3 +66,30 @@ export const getLessonsByStudent = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// ✅ Get all lesson progress records
+export const getAllLessonProgress = async (req, res) => {
+  try {
+    const lessons = await LessonProgress.find();
+    res.json(lessons);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ✅ Delete a lesson progress entry
+export const deleteLessonProgress = async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+
+    const deleted = await LessonProgress.findByIdAndDelete(lessonId);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Lesson not found" });
+    }
+
+    res.json({ message: "Lesson deleted successfully", deleted });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
