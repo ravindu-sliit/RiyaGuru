@@ -52,7 +52,11 @@ const __dirname = path.dirname(__filename);
 // Ensure uploads/studentDocs exists at startup
 const uploadsDir = path.join(__dirname, "uploads");
 const studentDocsDir = path.join(uploadsDir, "studentDocs");
+const studentProfPicsDir = path.join(uploadsDir, "studentProfPics"); //Student Prof Picture
 fs.mkdirSync(studentDocsDir, { recursive: true });
+
+
+
 
 // Core middleware
 
@@ -61,6 +65,8 @@ app.use(cors());
 
 // Static: expose everything in backend/uploads at /uploads
 app.use("/uploads", express.static(uploadsDir));
+
+app.use("/uploads", express.static(uploadsDir)); //Student Prof Picture
 
 // ---------------------------------------------------------
 // Health route
@@ -92,6 +98,8 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
+
+
 
 
 
