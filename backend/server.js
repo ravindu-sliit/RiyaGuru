@@ -28,7 +28,7 @@ import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
 
 // This one exists on your local branch:
-import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
+//import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
 
 // -----------------------------
 // Route imports (main branch)
@@ -101,7 +101,7 @@ app.use("/api/auth", authRoutes);
 // ⚠️ There are TWO different report routers in your codebase:
 // - main branch's  ./routes/reportroutes.js   (now mounted at /api/reports)
 // - local branch's ./route/reportRoutes.js    (we mount at /api/admin/reports to avoid collision)
-app.use("/api/admin/reports", legacyReportRoutes);
+//app.use("/api/admin/reports", legacyReportRoutes);
 
 // ---------------------------------------------------------
 // Global error handler
