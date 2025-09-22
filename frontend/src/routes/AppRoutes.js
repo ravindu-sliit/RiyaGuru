@@ -7,10 +7,13 @@ import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import InstructorRoutes from "./instructorRoutes";
 import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
-import PaymentDashboard from '../pages/Payments/PaymentDashboard';
-import PaymentForm from '../pages/Payments/PaymentForm';
-import PaymentHistory from '../pages/Payments/PaymentHistory';
-
+// Import Payment Pages
+import MyEnrollments from '../pages/Payments/MyEnrollments/MyEnrollments';
+import PaymentForm from '../pages/Payments/PaymentForm/PaymentForm';
+import InstallmentPlan from '../pages/Payments/InstallmentPlan/InstallmentPlan';
+import PaymentHistory from '../pages/Payments/PaymentHistory/PaymentHistory';
+import AdminPayments from '../pages/Payments/AdminPayments/AdminPayments';
+import InstallmentManagement from '../pages/Payments/InstallmentManagement/InstallmentManagement';
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -27,19 +30,21 @@ export default function AppRoutes() {
            {/* Instructors */}
         <Route path="/*" element={<InstructorRoutes />} />
         <Route path="/instructor/lesson-entry" element={<InstructorLessonEntryPage />} />
+ 
+          {/* Student Payment Routes */}
+      <Route path="/payments/enrollments" element={<MyEnrollments />} />
+      <Route path="/payments/form/:enrollmentId" element={<PaymentForm />} />
+      <Route path="/payments/installment/:enrollmentId" element={<InstallmentPlan />} />
+      <Route path="/payments/history" element={<PaymentHistory />} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin/payments" element={<AdminPayments />} />
+      <Route path="/admin/installments" element={<InstallmentManagement />} />
+      
+      {/* Default redirect */}
+      <Route path="/" element={<Navigate to="/payments/enrollments" replace />} />
 
-
-         {/* Default route redirects to payment dashboard */}
-        <Route path="/" element={<Navigate to="/payments" replace />} />
-        
-        {/* Payment Routes */}
-        <Route path="/payments" element={<PaymentDashboard />} />
-        <Route path="/payments/form" element={<PaymentForm />} />
-        <Route path="/payments/history" element={<PaymentHistory />} />
-        
-        {/* Catch all route - redirect to payments */}
-        <Route path="*" element={<Navigate to="/payments" replace />} />
-
+       
       </Routes>
     </BrowserRouter>
 
