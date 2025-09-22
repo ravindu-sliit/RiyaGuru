@@ -1,5 +1,5 @@
 // src/routes/AppRoutes.js
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route,Navigate } from "react-router-dom";
 import LoginPage from "../pages/Auth/LoginPage";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import StudentProgressPage from "../pages/Student/StudentProgressPage.jsx";
