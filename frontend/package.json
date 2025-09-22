@@ -9,9 +9,12 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.12.2",
     "react": "^19.1.1",
+    "react-clock": "^6.0.0",
+    "react-datepicker": "^8.7.0",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.1",
     "react-scripts": "5.0.1",
+    "react-time-picker": "^8.0.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

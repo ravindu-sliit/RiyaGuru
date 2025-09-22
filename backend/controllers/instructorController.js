@@ -1,8 +1,11 @@
+// backend/controllers/instructorController.js
 import Instructor from "../models/Instructor.js";
 import User from "../models/UserModel.js";
 import Counter from "../models/Counter.js";
 import bcrypt from "bcryptjs";
 import * as instructorService from "../services/instructorService.js";
+import fs from "fs";
+import path from "path";
 
 // 🔹 Generate next InstructorID (I001, I002…)
 const getNextInstructorId = async () => {
@@ -16,10 +19,10 @@ const getNextInstructorId = async () => {
   return `I${seqNum}`;
 };
 
-// ✅ Create Instructor (also creates linked User)
+// ✅ Create Instructor (with linked User and photo upload)
 export const createInstructor = async (req, res) => {
   try {
-    const {
+    let {
       name,
       email,
       phone,
@@ -28,10 +31,19 @@ export const createInstructor = async (req, res) => {
       experienceYears,
       specialization,
       password,
-      availability
+      availability,
     } = req.body;
 
-    // ✅ Handle uploaded image
+    // 🔹 Parse availability if frontend sent JSON string
+    if (availability && typeof availability === "string") {
+      try {
+        availability = JSON.parse(availability);
+      } catch (err) {
+        availability = [];
+      }
+    }
+
+    // ✅ Handle uploaded image (always store relative URL)
     const image = req.file ? `/uploads/instructors/${req.file.filename}` : null;
 
     // ✅ Generate unique instructorId
@@ -45,7 +57,7 @@ export const createInstructor = async (req, res) => {
       userId: instructorId,
       email,
       password: hashedPassword,
-      role: "Instructor" // ⚡ keep lowercase for consistency
+      role: "Instructor",
     });
     await user.save();
 
@@ -59,9 +71,9 @@ export const createInstructor = async (req, res) => {
       licenseNumber,
       experienceYears,
       specialization,
-      availability,
-      image,          // ⚡ now saving image path properly
-      userId: user._id
+      availability: availability || [],
+      image,
+      userId: user._id,
     });
     await instructor.save();
 
@@ -72,7 +84,7 @@ export const createInstructor = async (req, res) => {
     res.status(201).json({
       message: "Instructor created successfully",
       instructor,
-      user
+      user,
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -100,11 +112,35 @@ export const getInstructorById = async (req, res) => {
   }
 };
 
-// ✅ Update instructor
+// ✅ Update instructor (supports updating photo & availability)
 export const updateInstructor = async (req, res) => {
   try {
-    const updated = await instructorService.updateInstructor(req.params.id, req.body);
+    let data = req.body;
+
+    // Parse availability if sent as JSON string
+    if (data.availability && typeof data.availability === "string") {
+      try {
+        data.availability = JSON.parse(data.availability);
+      } catch {
+        data.availability = [];
+      }
+    }
+
+    // ✅ Update photo if new file uploaded (delete old image if exists)
+    if (req.file) {
+      const instructor = await Instructor.findById(req.params.id);
+      if (instructor && instructor.image && instructor.image.startsWith("/uploads/")) {
+        const oldPath = path.join(process.cwd(), instructor.image);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+      data.image = `/uploads/instructors/${req.file.filename}`;
+    }
+
+    const updated = await instructorService.updateInstructor(req.params.id, data);
     if (!updated) return res.status(404).json({ message: "Instructor not found" });
+
     res.json({ message: "Instructor updated successfully", updated });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -124,7 +160,7 @@ export const deleteInstructor = async (req, res) => {
   }
 };
 
-// ✅ Get available instructors by date/time (ignores status)
+// ✅ Get available instructors by date/time
 export const getAvailableInstructors = async (req, res) => {
   try {
     const { date, time } = req.query;
@@ -135,16 +171,14 @@ export const getAvailableInstructors = async (req, res) => {
   }
 };
 
-// ✅ Get instructors only by status
+// ✅ Get instructors by status
 export const getInstructorsByStatus = async (req, res) => {
   try {
     const { status } = req.params;
     const validStatuses = ["Not-Active", "Active"];
-
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
-
     const instructors = await instructorService.filterInstructorsByStatus(status);
     res.json(instructors);
   } catch (error) {
