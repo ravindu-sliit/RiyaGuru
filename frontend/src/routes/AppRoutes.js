@@ -16,6 +16,16 @@ import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntry
 import PaymentDashboard from '../pages/Payments/PaymentDashboard';
 import PaymentForm from '../pages/Payments/PaymentForm';
 import PaymentHistory from '../pages/Payments/PaymentHistory';
+import ProgressTrackingDashboard from "../pages/ProgressTracking/ProgressTrackingDashboard";
+import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
+import StudentLessons from "../pages/LessonProgress/StudentLessons";
+import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
+
+
+
+
+
+
 
 
 export default function AppRoutes() {
@@ -38,10 +48,13 @@ export default function AppRoutes() {
 
 
         <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
-        <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
+        <Route path="/progress-tracking" element={<ProgressTrackingDashboard />} />
+        <Route path="/lesson-progress/all" element={<LessonProgressList />} />
+        <Route path="/lesson-progress/students" element={<StudentLessons />} />
+        <Route path="/lesson-progress" element={<LessonProgressDashboard />} />
+        <Route path="/lesson-progress/students/:studentId" element={<StudentLessons />} />
           
            {/* Instructors */}
-        <Route path="/*" element={<InstructorRoutes />} />
         <Route path="/instructor/lesson-entry" element={<InstructorLessonEntryPage />} />
 
 
