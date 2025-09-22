@@ -1,15 +1,12 @@
 import React from "react";
-import { Routes } from "react-router";
-import "./App.css";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
-  return ( 
-    <div>
-      <React.Fragment>
-        <Routes>
-        </Routes>
-      </React.Fragment>
+  return (
+    <div className="App">
+      <AppRoutes />
     </div>
   );
 }
+
 export default App;
