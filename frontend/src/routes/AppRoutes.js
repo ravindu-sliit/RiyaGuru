@@ -14,6 +14,7 @@ import InstructorRoutes from "./instructorRoutes";
 
 //import PaymentDashboard from "../pages/Payments/PaymentDashboard";
 //import PaymentForm from "../pages/Payments/PaymentForm";
+
 //import PaymentHistory from "../pages/Payments/PaymentHistory";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 
@@ -67,9 +68,7 @@ export default function AppRoutes() {
       <Route path="/lesson-progress/student/:studentId" element={<StudentLessons />} />
 
       {/* Payments */}
-      <Route path="/payments" element={<PaymentDashboard />} />
-      <Route path="/payments/form" element={<PaymentForm />} />
-      <Route path="/payments/history" element={<PaymentHistory />} />
+     
 
       {/* Vehicles */}
       <Route path="/vehicles" element={<VehicleList />} />
