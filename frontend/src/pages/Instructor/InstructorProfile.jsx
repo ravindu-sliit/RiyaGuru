@@ -1,20 +1,26 @@
 // src/pages/Instructor/InstructorDetailsPage.jsx
-//profile
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { StarIcon } from "@heroicons/react/24/solid";
-import InstructorAPI from "../../api/instructorApi";
+import axios from "axios";
 
 export default function InstructorDetailsPage() {
-  const { id } = useParams();
   const [rec, setRec] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
     try {
-      const { data } = await InstructorAPI.getById(id);
-      setRec(data);
+      const token = localStorage.getItem("rg_token");
+      const { data } = await axios.get(
+        "http://localhost:5000/api/instructors/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setRec(data.instructor);
+    } catch (err) {
+      console.error("Error loading profile:", err);
     } finally {
       setLoading(false);
     }
@@ -22,20 +28,19 @@ export default function InstructorDetailsPage() {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line
-  }, [id]);
+  }, []);
 
   const printProfile = () => window.print();
 
   const getSpecializationIcon = (spec) => {
     const icons = {
-      Car: "",
-      Motorcycle: "",
-      Threewheeler: "",
-      HeavyVehicle: "",
-      All: "",
+      Car: "🚗",
+      Motorcycle: "🏍️",
+      Threewheeler: "🛺",
+      HeavyVehicle: "🚚",
+      All: "🎯",
     };
-    return icons[spec] || "";
+    return icons[spec] || "📘";
   };
 
   const getSpecializationBg = (spec) => {
@@ -60,10 +65,7 @@ export default function InstructorDetailsPage() {
         {Array(fullStars)
           .fill()
           .map((_, i) => (
-            <StarIcon
-              key={`full-${i}`}
-              className="h-5 w-5 text-yellow-400"
-            />
+            <StarIcon key={`full-${i}`} className="h-5 w-5 text-yellow-400" />
           ))}
         {hasHalfStar && (
           <StarIcon className="h-5 w-5 text-yellow-300 opacity-70" />
@@ -71,10 +73,7 @@ export default function InstructorDetailsPage() {
         {Array(emptyStars)
           .fill()
           .map((_, i) => (
-            <StarIcon
-              key={`empty-${i}`}
-              className="h-5 w-5 text-gray-300"
-            />
+            <StarIcon key={`empty-${i}`} className="h-5 w-5 text-gray-300" />
           ))}
         <span className="ml-2 text-sm text-slate-600 font-medium">
           {numRating.toFixed(1)}
@@ -97,19 +96,18 @@ export default function InstructorDetailsPage() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16 text-center max-w-md">
-          <div className="text-6xl mb-4"></div>
+          <div className="text-6xl mb-4">❌</div>
           <h2 className="text-2xl font-bold text-slate-800 mb-2">
             Instructor Not Found
           </h2>
           <p className="text-slate-600 mb-6">
-            The instructor you're looking for doesn't exist or has been
-            removed.
+            Could not load your profile. Please log in again.
           </p>
           <Link
-            to="/instructors"
+            to="/login"
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
           >
-            ← Back to Instructors
+            ← Back to Login
           </Link>
         </div>
       </div>
@@ -120,7 +118,7 @@ export default function InstructorDetailsPage() {
     ? rec.image.startsWith("http")
       ? rec.image
       : `${API_URL}${rec.image}`
-    : "/avatar.png";
+    : "../avatar.png";
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -128,26 +126,14 @@ export default function InstructorDetailsPage() {
       <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
           <span className="text-orange-500 text-2xl"></span>
-          Instructor Management
+          Instructor Profile
         </div>
         <div className="flex items-center gap-6">
           <Link
-            to="/dashboard"
+            to=""
             className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
           >
-             Vehicles Management
-          </Link>
-          <Link
-            to="/instructors"
-            className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
-          >
-             Instructors Management
-          </Link>
-          <Link
-            to="/students"
-            className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            Students
+            Back To Home
           </Link>
         </div>
       </nav>
@@ -157,7 +143,7 @@ export default function InstructorDetailsPage() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Instructor Profile
+              My Profile
             </h1>
             <p className="text-slate-600 text-lg">
               Complete instructor information and performance details
@@ -165,16 +151,16 @@ export default function InstructorDetailsPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              to={`/instructors/${id}/edit`}
+              to={`/instructors/${rec.instructorId}/edit`}
               className="bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
             >
-               Edit Profile
+              Edit Profile
             </Link>
             <button
               onClick={printProfile}
               className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
             >
-               Print / Save PDF
+              Print / Save PDF
             </button>
           </div>
         </div>
@@ -238,7 +224,7 @@ export default function InstructorDetailsPage() {
               {/* Contact */}
               <div>
                 <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                   Contact Information
+                  Contact Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-slate-50 p-4 rounded-lg border">
@@ -323,7 +309,7 @@ export default function InstructorDetailsPage() {
                           className="flex flex-col sm:flex-row sm:justify-between p-4 bg-white rounded-lg border shadow-sm"
                         >
                           <div className="font-medium text-slate-800 mb-2 sm:mb-0">
-                             {a.date}
+                            {a.date}
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {(a.timeSlots || []).map((slot, i) => (
@@ -331,7 +317,7 @@ export default function InstructorDetailsPage() {
                                 key={i}
                                 className="px-3 py-1 bg-orange-100 text-orange-700 text-sm font-medium rounded-full border border-orange-200"
                               >
-                                 {slot}
+                                {slot}
                               </span>
                             ))}
                           </div>
@@ -358,26 +344,26 @@ export default function InstructorDetailsPage() {
         {/* Quick Actions */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            ⚡ Quick Actions
+             Quick Actions
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
-              to={`/instructors/${id}/schedule`}
+              to={``}
               className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
             >
               Manage Schedule
             </Link>
             <Link
-              to={`/instructors/${id}/performance`}
+              to={``}
               className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
             >
               View Performance
             </Link>
             <Link
-              to="/instructors"
+              to=""
               className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
             >
-              ← Back to List
+              ← Back to Dashboard
             </Link>
           </div>
         </div>

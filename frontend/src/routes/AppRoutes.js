@@ -30,6 +30,12 @@ import InstructorRoutes from "./instructorRoutes";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
 import InstructorLessonProgressHome from "../pages/Instructor/InstructorLessonProgressHome";
+import InstructorBookings from "../pages/Instructor/InstructorBookings";
+
+
+
+
+import Instructorprofile from "../pages/Instructor/InstructorProfile";
 
 // Vehicles
 import VehicleList from "../pages/Vehicle/VehicleList";
@@ -134,6 +140,9 @@ export default function AppRoutes() {
       <Route path="/instructor/lesson-entry" element={<InstructorLessonEntryPage />} />
       <Route path="/instructor/lesson-progress" element={<InstructorLessonProgressHome />} />
 
+       {/* ✅ Logged-in Instructor Profile (always “/instructor/profile”) */}
+      <Route path="/instructor/profile" element={<Instructorprofile />} />
+
       {/* Progress tracking */}
       <Route path="/progress-tracking" element={<ProgressTrackingDashboard />} />
 
@@ -157,9 +166,9 @@ export default function AppRoutes() {
         <Route path="/bookings/:id" element={<BookingDetails />} />
         <Route path="/bookings/:id/edit" element={<BookingEditPage />} />
 
-        
+        <Route path="/instructor/bookings" element={<InstructorBookings />} />
 
-   
+      
       
       <Route path="/bookings/:id" element={<BookingDetails />} />
 

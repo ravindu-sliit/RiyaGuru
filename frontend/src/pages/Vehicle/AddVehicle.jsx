@@ -26,6 +26,37 @@ const AddVehicle = () => {
 
   const [errors, setErrors] = useState({});
 
+  // field-level validation
+  const validateField = (name, value) => {
+    switch (name) {
+      case "regNo":
+        if (!value.trim()) return "Registration number is required";
+        break;
+      case "brand":
+        if (!value.trim()) return "Brand is required";
+        break;
+      case "model":
+        if (!value.trim()) return "Model is required";
+        break;
+      case "type":
+        if (!value) return "Vehicle type is required";
+        break;
+      case "fuelType":
+        if (!value) return "Fuel type is required";
+        break;
+      case "year":
+        if (value < 1990 || value > new Date().getFullYear() + 1)
+          return "Please enter a valid year";
+        break;
+      case "mileage":
+        if (value < 0) return "Mileage cannot be negative";
+        break;
+      default:
+        return "";
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -33,12 +64,11 @@ const AddVehicle = () => {
       [name]: value,
     }));
 
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
+    // live validation
+    setErrors((prev) => ({
+      ...prev,
+      [name]: validateField(name, value),
+    }));
   };
 
   const handleImageChange = (e) => {
@@ -70,17 +100,10 @@ const AddVehicle = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.regNo.trim())
-      newErrors.regNo = "Registration number is required";
-    if (!formData.model.trim()) newErrors.model = "Model is required";
-    if (!formData.brand.trim()) newErrors.brand = "Brand is required";
-    if (!formData.type) newErrors.type = "Vehicle type is required";
-    if (!formData.fuelType) newErrors.fuelType = "Fuel type is required";
-    if (formData.year < 1990 || formData.year > new Date().getFullYear() + 1) {
-      newErrors.year = "Please enter a valid year";
-    }
-    if (formData.mileage < 0) newErrors.mileage = "Mileage cannot be negative";
-
+    Object.entries(formData).forEach(([key, value]) => {
+      const msg = validateField(key, value);
+      if (msg) newErrors[key] = msg;
+    });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -291,9 +314,7 @@ const AddVehicle = () => {
                     <option value="Electric">Electric</option>
                   </select>
                   {errors.fuelType && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.fuelType}
-                    </p>
+                    <p className="text-xs text-red-500 mt-1">{errors.fuelType}</p>
                   )}
                 </div>
 
@@ -314,9 +335,7 @@ const AddVehicle = () => {
                     } focus:ring-2 focus:ring-orange-400`}
                   />
                   {errors.mileage && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.mileage}
-                    </p>
+                    <p className="text-xs text-red-500 mt-1">{errors.mileage}</p>
                   )}
                 </div>
 
@@ -408,7 +427,9 @@ const AddVehicle = () => {
                       </span>{" "}
                       or drag and drop
                     </p>
-                    <p className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-xs text-gray-400">
+                      PNG, JPG, GIF up to 10MB
+                    </p>
                   </div>
                 )}
                 <input
