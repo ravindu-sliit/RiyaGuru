@@ -49,6 +49,7 @@ import StudentList from "../pages/LessonProgress/StudentList";
 import BookingDashboard from "../pages/Booking/BookingDashboard";
 import AddBookingPage from "../pages/Booking/AddBookingPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
+import BookingEditPage from "../pages/Booking/BookingEditPage";
 
 // 🔒 Simple guard for Student-only routes
 function RequireStudent({ children }) {
@@ -149,13 +150,22 @@ export default function AppRoutes() {
       <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
       <Route path="/dashboard" element={<VehicleDashboard />} />
 
-      {/* Booking */}
-      <Route path="/bookings" element={<BookingDashboard />} />
-      <Route path="/bookings/add" element={<AddBookingPage />} />
+
+           {/* Booking Routes */}
+        <Route path="/bookings" element={<BookingDashboard />} />
+        <Route path="/bookings/add" element={<AddBookingPage />} />
+        <Route path="/bookings/:id" element={<BookingDetails />} />
+        <Route path="/bookings/:id/edit" element={<BookingEditPage />} />
+
+        
+
+   
+      
       <Route path="/bookings/:id" element={<BookingDetails />} />
 
       {/* Maintenance */}
       <Route path="/maintenance" element={<MaintenanceDashboard />} />
+
 
       {/* Default redirect */}
       <Route path="/" element={<DriveManagerLanding />} />

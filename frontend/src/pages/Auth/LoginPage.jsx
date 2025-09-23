@@ -44,6 +44,7 @@ export default function LoginPage() {
       if (data.userId) localStorage.setItem("rg_userId", data.userId);
       if (data.role) localStorage.setItem("rg_role", data.role); // "Student" | "Instructor" | "Admin"
 
+
       // ✅ Redirect based on role
       if (data.role === "Student") {
         navigate("/home/student", { replace: true });
@@ -55,6 +56,7 @@ export default function LoginPage() {
         // fallback if no role provided
         navigate("/landing", { replace: true });
       }
+
     } catch (err) {
       setError(err.message || "Invalid credentials");
     } finally {
