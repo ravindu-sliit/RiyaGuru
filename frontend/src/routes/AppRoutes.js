@@ -1,5 +1,5 @@
 // src/routes/AppRoutes.js
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {  Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/Auth/LoginPage";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import StudentProgressPage from "../pages/Student/StudentProgressPage.jsx";
@@ -11,10 +11,6 @@ import RegisterStudent from "../pages/Registration/RegisterStudent";
 import OtpRequest from "../pages/Registration/OtpRequest";
 
 import InstructorRoutes from "./instructorRoutes";
-
-//import PaymentDashboard from "../pages/Payments/PaymentDashboard";
-//import PaymentForm from "../pages/Payments/PaymentForm";
-//import PaymentHistory from "../pages/Payments/PaymentHistory";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 
 // ✅ Vehicle pages
@@ -67,9 +63,7 @@ export default function AppRoutes() {
       <Route path="/lesson-progress/student/:studentId" element={<StudentLessons />} />
 
       {/* Payments */}
-      <Route path="/payments" element={<PaymentDashboard />} />
-      <Route path="/payments/form" element={<PaymentForm />} />
-      <Route path="/payments/history" element={<PaymentHistory />} />
+     
 
       {/* Vehicles */}
       <Route path="/vehicles" element={<VehicleList />} />
