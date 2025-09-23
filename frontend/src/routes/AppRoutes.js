@@ -1,35 +1,52 @@
-import {  Routes, Route, Navigate } from "react-router-dom";
+// src/routes/AppRoutes.js
+import { Routes, Route, Navigate } from "react-router-dom";
+
+// Core pages
 import DriveManagerLanding from "../pages/DriveManagerLanding";
 import LoginPage from "../pages/Auth/LoginPage";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
+import Home from "../pages/Home/Home";
 
 // Maintenance
 import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
+
+// Student
 import StudentDocUpload from "../pages/Student/StudentDocUpload";
-import Home from "../pages/Home/Home";
 import RegisterStudent from "../pages/Registration/RegisterStudent";
 import OtpRequest from "../pages/Registration/OtpRequest";
+import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
+import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
+import StudentPreferences from "../pages/Student/StudentPreferences";
+import StudentProgressPage from "../pages/Student/StudentProgressPage";
+
+// Instructor
 import InstructorRoutes from "./instructorRoutes";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
+import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
+import InstructorLessonProgressHome from "../pages/Instructor/InstructorLessonProgressHome";
 
-// ✅ Vehicle pages
+// Vehicles
 import VehicleList from "../pages/Vehicle/VehicleList";
 import AddVehicle from "../pages/Vehicle/AddVehicle";
 import EditVehicle from "../pages/Vehicle/EditVehicle";
 import VehicleDetails from "../pages/Vehicle/VehicleDetails";
 import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
 
-import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
-import PaymentDashboard from "../pages/Payments/PaymentDashboard";
-import PaymentForm from "../pages/Payments/PaymentForm";
-import PaymentHistory from "../pages/Payments/PaymentHistory";
-import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
-import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
-import StudentPreferences from "../pages/Student/StudentPreferences";
+// Lesson Progress
+import ProgressTrackingDashboard from "../pages/ProgressTracking/ProgressTrackingDashboard";
+import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
+import StudentLessons from "../pages/LessonProgress/StudentLessons";
+import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
+import StudentList from "../pages/LessonProgress/StudentList";
 
-// Simple guard for Student-only routes
+// Booking
+import BookingDashboard from "../pages/Booking/BookingDashboard";
+import AddBookingPage from "../pages/Booking/AddBookingPage";
+import BookingDetails from "../pages/Booking/BookingDetails";
+
+// 🔒 Simple guard for Student-only routes
 function RequireStudent({ children }) {
   const role = localStorage.getItem("rg_role");
   const token = localStorage.getItem("rg_token");
@@ -37,18 +54,6 @@ function RequireStudent({ children }) {
   if (role !== "Student") return <Navigate to="/home" replace />;
   return children;
 }
-
-import ProgressTrackingDashboard from "../pages/ProgressTracking/ProgressTrackingDashboard";
-import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
-import StudentLessons from "../pages/LessonProgress/StudentLessons";
-import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
-import InstructorLessonProgressHome from "../pages/Instructor/InstructorLessonProgressHome";
-import StudentList from "../pages/LessonProgress/StudentList";
-
-// Booking
-import BookingDashboard from "../pages/Booking/BookingDashboard";
-import AddBookingPage from "../pages/Booking/AddBookingPage";
-import BookingDetails from "../pages/Booking/BookingDetails";
 
 export default function AppRoutes() {
   return (
@@ -98,6 +103,7 @@ export default function AppRoutes() {
         }
       />
 
+      {/* Student Preferences */}
       <Route
         path="/student/:id/preferences"
         element={
@@ -130,11 +136,6 @@ export default function AppRoutes() {
       <Route path="/lesson-progress/students" element={<StudentList />} />
       <Route path="/lesson-progress/student/:studentId" element={<StudentLessons />} />
 
-      {/* Payments */}
-      <Route path="/payments" element={<PaymentDashboard />} />
-      <Route path="/payments/form" element={<PaymentForm />} />
-      <Route path="/payments/history" element={<PaymentHistory />} />
-
       {/* Vehicles */}
       <Route path="/vehicles" element={<VehicleList />} />
       <Route path="/vehicles/add" element={<AddVehicle />} />
@@ -142,7 +143,7 @@ export default function AppRoutes() {
       <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
       <Route path="/dashboard" element={<VehicleDashboard />} />
 
-      {/* Booking Routes */}
+      {/* Booking */}
       <Route path="/bookings" element={<BookingDashboard />} />
       <Route path="/bookings/add" element={<AddBookingPage />} />
       <Route path="/bookings/:id" element={<BookingDetails />} />
