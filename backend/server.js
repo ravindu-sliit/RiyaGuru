@@ -1,4 +1,3 @@
-// backend/server.js
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -6,9 +5,6 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import cors from "cors";
-import cron from "node-cron";
-import { sendReminders } from "./utils/reminder.js";
-
 
 // -----------------------------
 // Route imports
@@ -30,19 +26,15 @@ import installmentRoutes from "./route/installmentRoutes.js";
 import receiptRoutes from "./route/receiptRoutes.js";
 import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
-import adminPaymentRoutes from "./route/adminPaymentRoutes.js";
-
-// This one exists on your local branch:
-//import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
 
 // -----------------------------
-// Route imports (main branch)
+// Routes (plural folder)
 // -----------------------------
-// NOTE: These live under ./routes (plural) in the main repo.
 import inquiryRoutes from "./route/inquiryroutes.js";
 import maintenanceRoutes from "./route/maintenanceroutes.js";
 import publicReportRoutes from "./route/reportroutes.js";
 import progressReportRoutes from "./route/progressReportRoutes.js";
+
 
 dotenv.config();
 
@@ -56,36 +48,27 @@ const __dirname = path.dirname(__filename);
 // -----------------------------
 const uploadsDir = path.join(__dirname, "uploads");
 const studentDocsDir = path.join(uploadsDir, "studentDocs");
-
-const studentProfPicsDir = path.join(uploadsDir, "studentProfPics"); //Student Prof Picture
-
 const instructorDir = path.join(uploadsDir, "instructors");
 
 fs.mkdirSync(studentDocsDir, { recursive: true });
 fs.mkdirSync(instructorDir, { recursive: true });
-
 
 // -----------------------------
 // Core middleware
 // -----------------------------
 app.use(express.json());
 
-app.use(cors({
-  origin: "http://localhost:3000", // frontend
-  credentials: true,
-}));
-
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  })
+);
 
 // Serve static uploads
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-
-app.use("/uploads", express.static(uploadsDir)); //Student Prof Picture
-
-// ---------------------------------------------------------
-
 // -----------------------------
-
 // Health route
 // -----------------------------
 app.get("/", (req, res) => {
@@ -117,31 +100,15 @@ app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
 
-app.use("/api/admin/payments", adminPaymentRoutes);
+// (Email test endpoint removed)
 
-app.use("/api/students", studentRoutes);
-
-
-
-
-
-
-
-// ---------------------------------------------------------
-
-
+// -----------------------------
 // Global error handler
 // -----------------------------
 app.use((err, req, res, next) => {
   console.error("Error:", err.stack || err);
   const msg = err?.message || "Internal Server Error";
   res.status(500).json({ message: msg });
-});
-
-// Run every day at 9 AM
-cron.schedule("0 9 * * *", () => {
-  console.log("⏰ Running reminder job...");
-  sendReminders();
 });
 
 // -----------------------------
@@ -160,7 +127,9 @@ mongoose
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT} and connected to MongoDB`);
       console.log(`📁 Serving uploads from: ${uploadsDir}`);
-      console.log(`🌐 Example: http://localhost:${PORT}/uploads/instructors/<your-file>.jpg`);
+      console.log(
+        `🌐 Example: http://localhost:${PORT}/uploads/instructors/<your-file>.jpg`
+      );
     });
   })
   .catch((err) => {
