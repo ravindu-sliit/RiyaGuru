@@ -6,13 +6,20 @@ import {
   updateStudent,
   deleteStudent,
 } from "../controllers/StudentController.js";
+import StudentProfilePicUpload from "../middleware/StudentProfilePicUpload.js"; // <-- NEW
 
 const router = express.Router();
 
 router.get("/", getAllStudents);
-router.post("/", addStudent);
+
+// profile pic optional on create
+router.post("/", StudentProfilePicUpload.single("profilePic"), addStudent);
+
 router.get("/:id", getStudentById);
-router.put("/:id", updateStudent);
+
+// profile pic optional on update (replaces old file if provided)
+router.put("/:id", StudentProfilePicUpload.single("profilePic"), updateStudent);
+
 router.delete("/:id", deleteStudent);
 
 export default router;
