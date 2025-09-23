@@ -1,80 +1,49 @@
-// src/services/bookingService.js
-import axios from "axios";
-import authService from "./authService";
+import Booking from "../models/Booking.js";
 
-// 🔹 Base API URL (use .env for flexibility)
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/bookings";
+// ✅ Create booking
+export const createBooking = async (data) => {
+  const booking = new Booking(data);
+  const saved = await booking.save();
 
-// Helper to get auth headers
-const authHeader = () => {
-  const token = authService.getToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  // Example: generate receipt path
+  const pdfPath = `receipts/${saved.bookingId}.pdf`;
+  return { booking: saved, pdfPath };
 };
 
-const bookingService = {
-  // Get all bookings
-  async getBookings() {
-    const res = await axios.get(`${API_URL}`, {
-      headers: authHeader(),
-      withCredentials: true,
-    });
-    return res.data;
-  },
-
-  // Get single booking by ID
-  async getBookingById(id) {
-    const res = await axios.get(`${API_URL}/${id}`, {
-      headers: authHeader(),
-      withCredentials: true,
-    });
-    return res.data;
-  },
-
-  // Create a new booking
-  async createBooking(data) {
-    const res = await axios.post(`${API_URL}`, data, {
-      headers: authHeader(),
-      withCredentials: true,
-    });
-    return res.data;
-  },
-
-  // Update an existing booking
-  async updateBooking(id, data) {
-    const res = await axios.put(`${API_URL}/${id}`, data, {
-      headers: authHeader(),
-      withCredentials: true,
-    });
-    return res.data;
-  },
-
-  // Delete booking
-  async deleteBooking(id) {
-    const res = await axios.delete(`${API_URL}/${id}`, {
-      headers: authHeader(),
-      withCredentials: true,
-    });
-    return res.data;
-  },
-
-  // Check availability (for logged-in student’s allowed courses)
-  async checkAvailability(date, time) {
-    const res = await axios.get(`${API_URL}/availability/check`, {
-      params: { date, time },
-      headers: authHeader(),
-      withCredentials: true,
-    });
-    return res.data;
-  },
-
-  // Get logged-in student’s courses
-  async getMyCourses() {
-    const res = await axios.get(`${API_URL}/my-courses`, {
-      headers: authHeader(),
-      withCredentials: true,
-    });
-    return res.data;
-  },
+// ✅ Get all bookings
+export const getBookings = async () => {
+  return await Booking.find().sort({ createdAt: -1 });
 };
 
-export default bookingService;
+// ✅ Get booking by bookingId
+export const getBookingById = async (bookingId) => {
+  return await Booking.findOne({ bookingId });
+};
+
+// ✅ Get bookings by studentId
+export const getBookingsByStudent = async (studentId) => {
+  return await Booking.find({ studentId }).sort({ createdAt: -1 });
+};
+
+// ✅ Update booking status by bookingId
+export const updateBookingStatus = async (bookingId, status) => {
+  return await Booking.findOneAndUpdate(
+    { bookingId },
+    { status },
+    { new: true }
+  );
+};
+
+// ✅ Delete booking by bookingId
+export const deleteBooking = async (bookingId) => {
+  return await Booking.findOneAndDelete({ bookingId });
+};
+
+// ✅ Update booking by bookingId
+export const updateBooking = async (bookingId, data) => {
+  return await Booking.findOneAndUpdate(
+    { bookingId },
+    data,
+    { new: true }
+  );
+};

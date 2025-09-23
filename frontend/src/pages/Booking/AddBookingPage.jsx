@@ -1,141 +1,116 @@
-// src/pages/Booking/AddBookingPage.jsx
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import bookingService from "../../services/bookingService";
-import { toast } from "react-toastify";
+import React, { useState } from "react";
+import axios from "axios";
 
 export default function AddBookingPage() {
-  const nav = useNavigate();
-  const [courses, setCourses] = useState([]);
-  const [instructors, setInstructors] = useState([]);
-  const [vehicles, setVehicles] = useState([]);
-  const [form, setForm] = useState({ course: "", date: "", time: "", instructorId: "", regNo: "" });
+  const [courseName, setCourseName] = useState("");
+  const [instructorName, setInstructorName] = useState("");
+  const [vehicleRegNo, setVehicleRegNo] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [msg, setMsg] = useState("");
 
-  useEffect(() => {
-    fetchMyCourses();
-  }, []);
-
-  const fetchMyCourses = async () => {
-    try {
-      const data = await bookingService.getMyCourses();
-      setCourses(data);
-    } catch (err) {
-      toast.error("Failed to load courses");
-    }
-  };
-
-  const checkAvailability = async () => {
-    if (!form.date || !form.time || !form.course) return;
-    try {
-      const data = await bookingService.checkAvailability(form.date, form.time);
-      setInstructors(data.availableInstructors);
-      setVehicles(data.availableVehicles);
-    } catch (err) {
-      toast.error("Failed to check availability");
-    }
-  };
-
-  const submit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await bookingService.createBooking(form);
-      toast.success("Booking created!");
-      nav("/bookings");
+      const token = localStorage.getItem("rg_token");
+      const studentId = localStorage.getItem("rg_userId");
+
+      if (!token || !studentId) {
+        setMsg("❌ You must be logged in to create a booking.");
+        return;
+      }
+
+      await axios.post(
+        "/api/bookings",
+        { studentId, courseName, instructorName, vehicleRegNo, date, time },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setMsg("✅ Booking created successfully!");
+      setCourseName("");
+      setInstructorName("");
+      setVehicleRegNo("");
+      setDate("");
+      setTime("");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to create booking");
+      setMsg(err.response?.data?.message || "❌ Failed to create booking");
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-lg font-bold mb-4">New Booking</h1>
-      <form onSubmit={submit} className="space-y-4 bg-white border rounded-md shadow-sm p-4">
-        {/* Course */}
-        <div>
-          <label className="block text-sm mb-1">Select Course</label>
-          <select
-            value={form.course}
-            onChange={(e) => setForm({ ...form, course: e.target.value })}
-            className="w-full border rounded-md p-2 text-sm"
+    <div className="min-h-screen bg-[#F5F6FA] flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow p-6 w-full max-w-md">
+        <h2 className="text-lg font-semibold text-[#0A1A2F] mb-4">Add Booking</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Course Name */}
+          <input
+            type="text"
+            placeholder="Course Name"
+            value={courseName}
+            onChange={(e) => setCourseName(e.target.value)}
+            className="border p-2 rounded w-full"
             required
-          >
-            <option value="">-- Select --</option>
-            {courses.map((c, i) => (
-              <option key={i} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
+          />
 
-        {/* Date & Time */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm mb-1">Date</label>
-            <input
-              type="date"
-              value={form.date}
-              onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="w-full border rounded-md p-2 text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Time</label>
-            <input
-              type="time"
-              value={form.time}
-              onChange={(e) => setForm({ ...form, time: e.target.value })}
-              className="w-full border rounded-md p-2 text-sm"
-              required
-              onBlur={checkAvailability}
-            />
-          </div>
-        </div>
-
-        {/* Instructor */}
-        <div>
-          <label className="block text-sm mb-1">Instructor</label>
-          <select
-            value={form.instructorId}
-            onChange={(e) => setForm({ ...form, instructorId: e.target.value })}
-            className="w-full border rounded-md p-2 text-sm"
+          {/* Instructor Name */}
+          <input
+            type="text"
+            placeholder="Instructor Name"
+            value={instructorName}
+            onChange={(e) => setInstructorName(e.target.value)}
+            className="border p-2 rounded w-full"
             required
-          >
-            <option value="">-- Select --</option>
-            {instructors.map((ins) => (
-              <option key={ins._id} value={ins.instructorId}>
-                {ins.name}
-              </option>
-            ))}
-          </select>
-        </div>
+          />
 
-        {/* Vehicle */}
-        <div>
-          <label className="block text-sm mb-1">Vehicle</label>
-          <select
-            value={form.regNo}
-            onChange={(e) => setForm({ ...form, regNo: e.target.value })}
-            className="w-full border rounded-md p-2 text-sm"
+          {/* Vehicle Reg No */}
+          <input
+            type="text"
+            placeholder="Vehicle Reg No"
+            value={vehicleRegNo}
+            onChange={(e) => setVehicleRegNo(e.target.value)}
+            className="border p-2 rounded w-full"
             required
-          >
-            <option value="">-- Select --</option>
-            {vehicles.map((v) => (
-              <option key={v._id} value={v.regNo}>
-                {v.regNo} - {v.model}
-              </option>
-            ))}
-          </select>
-        </div>
+          />
 
-        <button
-          type="submit"
-          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium"
-        >
-          Confirm Booking
-        </button>
-      </form>
+          {/* Date */}
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="border p-2 rounded w-full"
+            required
+          />
+
+          {/* Time */}
+          <input
+            type="text"
+            placeholder="Time (e.g. 10:00 AM)"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="border p-2 rounded w-full"
+            required
+          />
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full bg-[#F47C20] text-white py-2 rounded hover:opacity-90 transition"
+          >
+            Submit
+          </button>
+        </form>
+
+        {/* Message */}
+        {msg && (
+          <p
+            className={`mt-4 text-sm text-center ${
+              msg.startsWith("✅") ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {msg}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
