@@ -1,6 +1,5 @@
 import {  Routes, Route, Navigate } from "react-router-dom";
 import DriveManagerLanding from "../pages/DriveManagerLanding";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/Auth/LoginPage";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
