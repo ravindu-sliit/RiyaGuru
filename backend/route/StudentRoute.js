@@ -5,21 +5,21 @@ import {
   getStudentById,
   updateStudent,
   deleteStudent,
+  getMe,   // <-- add this
 } from "../controllers/StudentController.js";
-import StudentProfilePicUpload from "../middleware/StudentProfilePicUpload.js"; // <-- NEW
+import { protect } from "../middleware/authMiddleware.js"; // <-- use JWT middleware
+import StudentProfilePicUpload from "../middleware/StudentProfilePicUpload.js";
 
 const router = express.Router();
 
 router.get("/", getAllStudents);
 
-// profile pic optional on create
+// ✅ Logged-in student fetches their own profile
+router.get("/me/profile", protect, getMe);
+
 router.post("/", StudentProfilePicUpload.single("profilePic"), addStudent);
-
 router.get("/:id", getStudentById);
-
-// profile pic optional on update (replaces old file if provided)
 router.put("/:id", StudentProfilePicUpload.single("profilePic"), updateStudent);
-
 router.delete("/:id", deleteStudent);
 
 export default router;

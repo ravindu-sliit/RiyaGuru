@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { BookOpen, CheckCircle, Award, TrendingUp } from "lucide-react";
 
 export default function StudentProgressPage() {
-  const STUDENT_ID = "S037"; // replace with logged-in student
+  const [studentId, setStudentId] = useState(null); // ✅ store logged-in studentId
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -10,10 +11,32 @@ export default function StudentProgressPage() {
     async function load() {
       try {
         setLoading(true);
+
+        // ✅ Step 1: fetch logged-in student profile
+        const profileRes = await fetch(
+          "http://localhost:5000/api/students/me/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("rg_token")}`,
+            },
+          }
+        );
+        if (!profileRes.ok) throw new Error("Failed to fetch student profile");
+
+        const { student } = await profileRes.json();
+        setStudentId(student.studentId);
+
+        // ✅ Step 2: fetch progress reports using studentId
         const res = await fetch(
-          `http://localhost:5000/api/progress-reports/student/${STUDENT_ID}`
+          `http://localhost:5000/api/progress-reports/student/${student.studentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("rg_token")}`,
+            },
+          }
         );
         if (!res.ok) throw new Error("Failed to fetch progress");
+
         setData(await res.json());
       } catch (err) {
         setError(err.message);
@@ -21,147 +44,243 @@ export default function StudentProgressPage() {
         setLoading(false);
       }
     }
+
     load();
   }, []);
 
-  if (loading) return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-        <div className="animate-spin w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full mx-auto mb-4"></div>
-        <div className="text-lg text-gray-600">Loading progress…</div>
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-600">
+        <div className="animate-spin h-10 w-10 border-4 border-blue-300 border-t-blue-600 rounded-full"></div>
+        <p className="ml-3">Loading progress…</p>
       </div>
-    </div>
-  );
+    );
 
-  if (error) return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md">
-        <div className="text-red-600 text-xl font-semibold">Error: {error}</div>
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-white shadow-lg rounded-xl p-6 text-red-600">
+          Error: {error}
+        </div>
       </div>
-    </div>
-  );
+    );
 
-  if (!data) return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-gray-600">No data.</div>
+  if (!data)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-white shadow-lg rounded-xl p-6 text-gray-500">
+          No data available.
+        </div>
       </div>
-    </div>
-  );
+    );
 
   const { student_id, full_name, courses = [] } = data;
 
+  // ✅ Calculate stats
+  const totalCourses = courses.length;
+  const lessonsCompleted = courses.reduce(
+    (sum, c) => sum + (c.completed_lessons || 0),
+    0
+  );
+  const certificatesIssued = courses.filter(
+    (c) => c.certificate_status === "Issued"
+  ).length;
+  const avgProgress =
+    totalCourses > 0
+      ? Math.round(
+          courses.reduce((sum, c) => sum + (c.progress_percent || 0), 0) /
+            totalCourses
+        )
+      : 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-white rounded-3xl shadow-xl p-8 mb-8">
-  <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-    Student Progress
-  </h2>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-5xl mx-auto p-6">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow p-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Student Dashboard
+          </h2>
+          <p className="text-gray-600">
+            {full_name} (ID: {student_id})
+          </p>
+        </div>
 
-  <div className="space-y-1 text-gray-700">
-    <p className="text-lg font-semibold">{full_name}</p>
-    <p>ID: <span className="font-medium">{student_id}</span></p>
-  </div>
-</div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Courses Enrolled"
+            value={totalCourses}
+            icon={<BookOpen size={20} />}
+            color="bg-blue-100 text-blue-600"
+          />
+          <StatCard
+            title="Lessons Completed"
+            value={lessonsCompleted}
+            icon={<CheckCircle size={20} />}
+            color="bg-green-100 text-green-600"
+          />
+          <StatCard
+            title="Certificates Issued"
+            value={certificatesIssued}
+            icon={<Award size={20} />}
+            color="bg-yellow-100 text-yellow-600"
+          />
+          <StatCard
+            title="Average Progress"
+            value={`${avgProgress}%`}
+            icon={<TrendingUp size={20} />}
+            color="bg-purple-100 text-purple-600"
+          />
+        </div>
 
-
-        {courses.length === 0 && (
-          <div className="bg-white rounded-3xl shadow-xl p-12 text-center">
-            <div className="text-gray-500 text-lg">No active courses found.</div>
+        {/* Course Cards */}
+        {courses.length === 0 ? (
+          <div className="bg-white rounded-xl shadow p-12 text-center text-gray-500">
+            No active courses found.
           </div>
-        )}
+        ) : (
+          courses.map((c) => {
+            const pct = Number(c?.progress_percent || 0);
 
-        {courses.map((c) => {
-          const pct = Number(c?.progress_percent || 0);
-
-          // Generate certificate link if exists
-          let certificateHref = "";
-          if (c?.certificate_file) {
-            const idx = String(c.certificate_file).lastIndexOf("uploads");
-            if (idx !== -1) {
-              certificateHref = `http://localhost:5000/${c.certificate_file
-                .slice(idx)
-                .replaceAll("\\", "/")}`;
+            // Generate certificate link if exists
+            let certificateHref = "";
+            if (c?.certificate_file) {
+              const idx = String(c.certificate_file).lastIndexOf("uploads");
+              if (idx !== -1) {
+                certificateHref = `http://localhost:5000/${c.certificate_file
+                  .slice(idx)
+                  .replaceAll("\\", "/")}`;
+              }
             }
-          }
 
-          return (
-            <div
-              key={c.course_name}
-              className="bg-white shadow-xl border border-white/20 rounded-3xl p-8 mb-8 hover:shadow-2xl transition-all duration-300"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                  {c.course_name}
-                </h3>
-                <span className="bg-gradient-to-r from-slate-100 to-slate-200 px-4 py-2 rounded-xl text-gray-700 font-medium shadow-inner">
-                  {c.completed_lessons}/{c.total_lessons} lessons
-                </span>
-              </div>
-
-              {/* Progress bar */}
-              <div className="mb-6">
-                <div className="h-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full overflow-hidden shadow-inner">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-1000 ease-out shadow-lg rounded-full"
-                    style={{ width: `${pct}%` }}
-                  />
+            return (
+              <div
+                key={c.course_name}
+                className="bg-white rounded-xl shadow p-6 mb-6"
+              >
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {c.course_name}
+                  </h3>
+                  <span className="text-sm bg-gray-100 px-3 py-1 rounded-lg text-gray-700">
+                    {c.completed_lessons}/{c.total_lessons} lessons
+                  </span>
                 </div>
-                <p className="text-lg font-semibold text-gray-700 mt-3">{pct}% completed</p>
-              </div>
 
-              {/* Last lesson */}
-              {c.last_lesson ? (
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-6 border border-blue-100">
-                  <div className="text-gray-700 space-y-2">
-                    <p className="font-semibold">
-                      Last lesson: <span className="text-blue-600">#{c.last_lesson.lesson_number}</span>
-                    </p>
-                    <p className="font-medium">
-                      Date: <span className="text-gray-600">{new Date(c.last_lesson.date).toLocaleDateString()}</span>
-                    </p>
-                    <div className="mt-4 p-4 bg-white/70 rounded-xl border border-blue-200">
-                      <p className="font-semibold text-blue-800">Feedback:</p>
-                      <p className="text-blue-700 italic mt-1">{c.last_lesson.feedback || "-"}</p>
-                    </div>
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <div className="h-3 bg-gray-200 rounded-full">
+                    <div
+                      className="h-3 bg-blue-500 rounded-full"
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
+                  <p className="text-sm text-gray-600 mt-2">{pct}% completed</p>
                 </div>
-              ) : (
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6 mb-6 text-center">
-                  <p className="text-gray-500 text-lg">No lessons recorded yet.</p>
-                </div>
-              )}
 
-              {/* Certificate */}
-              <div className="flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl p-6">
-                <div>
-                  <p className="font-semibold text-gray-800 mb-1">Certificate Status</p>
-                  {c.certificate_status === "Issued" && certificateHref ? (
-                    <span className="text-green-600 font-medium">🎓 Certificate Available</span>
-                  ) : c.certificate_status === "Eligible" ? (
-                    <span className="text-green-600 font-medium">✅ Eligible — waiting for issuance</span>
-                  ) : (
-                    <span className="text-gray-500">Not eligible yet</span>
+                {/* Last Lesson */}
+                {c.last_lesson ? (
+                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-gray-700">
+                      Last Lesson:{" "}
+                      <span className="font-semibold">
+                        #{c.last_lesson.lesson_number}
+                      </span>{" "}
+                      on {new Date(c.last_lesson.date).toLocaleDateString()} –{" "}
+                      <em>{c.last_lesson.feedback || "No feedback"}</em>
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 mb-4">
+                    No lessons recorded yet.
+                  </p>
+                )}
+
+                {/* Certificate */}
+                <div className="flex justify-between items-center bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm font-medium text-gray-700">
+                    Certificate Status:{" "}
+                    {c.certificate_status === "Issued" && certificateHref ? (
+                      <span className="text-green-600">🎓 Available</span>
+                    ) : c.certificate_status === "Eligible" ? (
+                      <span className="text-green-600">
+                        ✅ Eligible (waiting for issuance)
+                      </span>
+                    ) : (
+                      <span className="text-gray-500">Not eligible yet</span>
+                    )}
+                  </p>
+
+                  {/* Download button if already issued */}
+                  {c.certificate_status === "Issued" && certificateHref && (
+                    <a
+                      href={certificateHref}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                    >
+                      Download
+                    </a>
+                  )}
+
+                  {/* Generate button if eligible */}
+                  {c.certificate_status === "Eligible" && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const res = await fetch(
+                            `http://localhost:5000/api/certificates/issue/${studentId}/${c.course_name}`,
+                            { method: "POST" }
+                          );
+                          const json = await res.json();
+                          if (!res.ok)
+                            throw new Error(json.message || "Failed to issue");
+                          alert("✅ Certificate generated!");
+
+                          // update only this course in state (no full reload)
+                          setData((prev) => ({
+                            ...prev,
+                            courses: prev.courses.map((course) =>
+                              course.course_name === c.course_name
+                                ? {
+                                    ...course,
+                                    certificate_status: "Issued",
+                                    certificate_file:
+                                      json.certificate?.file_url || "",
+                                  }
+                                : course
+                            ),
+                          }));
+                        } catch (err) {
+                          alert(err.message);
+                        }
+                      }}
+                      className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    >
+                      Generate Certificate
+                    </button>
                   )}
                 </div>
-                
-                {c.certificate_status === "Issued" && certificateHref && (
-                  <a
-                    href={certificateHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 font-semibold"
-                  >
-                    🎓 Download Certificate ({c.certificateId})
-                  </a>
-                )}
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
+    </div>
+  );
+}
+
+/* Reusable Stat Card */
+function StatCard({ title, value, icon, color }) {
+  return (
+    <div className="bg-white rounded-xl shadow p-4">
+      <div className="flex justify-between items-center mb-3">
+        <span className="text-sm font-medium text-gray-500">{title}</span>
+        <div className={`p-2 rounded-lg ${color}`}>{icon}</div>
+      </div>
+      <div className="text-2xl font-bold text-gray-800">{value}</div>
     </div>
   );
 }

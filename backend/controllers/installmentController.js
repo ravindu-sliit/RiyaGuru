@@ -1,22 +1,25 @@
-// backend/controllers/installmentController.js
 import InstallmentPlan from "../models/InstallmentPlan.js";
+import { installmentSchema } from "../validators/installmentValidation.js"; // <-- import validation
 
 // POST /api/installments
 export const createPlan = async (req, res) => {
   try {
-    const { studentId, courseId, totalAmount, downPayment, totalInstallments, startDate } = req.body;
-
-    if (!studentId || !totalAmount || !downPayment || !totalInstallments || !startDate) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // 🔍 Validate input
+    const { error } = installmentSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
     }
 
-    // Remaining balance
-    const remainingAmount = totalAmount - downPayment;
+    const { studentId, courseId, totalAmount, downPayment, totalInstallments, startDate } = req.body;
 
-    // Installment amount
+    const remainingAmount = totalAmount - downPayment;
+    if (remainingAmount < 0) {
+      return res.status(400).json({ message: "Down payment cannot exceed total amount" });
+    }
+
     const installmentAmount = remainingAmount / totalInstallments;
 
-    // Auto-generate schedule
+    // Generate schedule
     const schedule = [];
     const start = new Date(startDate);
 
@@ -45,13 +48,12 @@ export const createPlan = async (req, res) => {
 
     return res.status(201).json({ plan });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in createPlan:", err);
     return res.status(500).json({ message: "Unable to create plan" });
   }
 };
 
-
-// GET /api/installments  -> List plans (optional filters later)
+// GET /api/installments
 export const getAllPlans = async (req, res) => {
   try {
     const { studentId } = req.query;
@@ -61,44 +63,58 @@ export const getAllPlans = async (req, res) => {
     const plans = await InstallmentPlan.find(filter).sort({ createdAt: -1 });
     return res.status(200).json({ plans });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in getAllPlans:", err);
     return res.status(500).json({ message: "Unable to fetch plans" });
   }
 };
 
-// GET /api/installments/:id -> Single plan
+// GET /api/installments/:id
 export const getPlanById = async (req, res) => {
   try {
     const plan = await InstallmentPlan.findById(req.params.id);
     if (!plan) return res.status(404).json({ message: "Plan not found" });
     return res.status(200).json({ plan });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in getPlanById:", err);
     return res.status(400).json({ message: "Invalid plan ID" });
   }
 };
 
-// PUT /api/installments/:id -> Update plan totals/basic fields
+// PUT /api/installments/:id
 export const updatePlan = async (req, res) => {
   try {
     const { totalAmount, downPayment, remainingAmount, totalInstallments, startDate } = req.body;
+
+    // 🔍 Validation
+    if (totalAmount <= 0) return res.status(400).json({ message: "Total amount must be positive" });
+    if (downPayment < 0) return res.status(400).json({ message: "Down payment cannot be negative" });
+    if (totalInstallments < 1 || totalInstallments > 12) {
+      return res.status(400).json({ message: "Installments must be between 1 and 12" });
+    }
+
     const plan = await InstallmentPlan.findByIdAndUpdate(
       req.params.id,
       { totalAmount, downPayment, remainingAmount, totalInstallments, startDate },
       { new: true, runValidators: true }
     );
+
     if (!plan) return res.status(404).json({ message: "Unable to update plan" });
     return res.status(200).json({ plan });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in updatePlan:", err);
     return res.status(400).json({ message: "Invalid data or ID" });
   }
 };
 
-// PATCH /api/installments/:id/pay -> Mark one installment as paid
+// PATCH /api/installments/:id/pay
 export const payInstallment = async (req, res) => {
   try {
     const { installmentNumber, paymentMethod, slipURL } = req.body;
+
+    if (!installmentNumber || installmentNumber < 1) {
+      return res.status(400).json({ message: "Installment number is required and must be valid" });
+    }
+
     const plan = await InstallmentPlan.findById(req.params.id);
     if (!plan) return res.status(404).json({ message: "Plan not found" });
 
@@ -109,20 +125,18 @@ export const payInstallment = async (req, res) => {
       return res.status(400).json({ message: "This installment is already paid" });
     }
 
-    // mark paid
     item.status = "Approved";
     item.paidDate = new Date();
     if (paymentMethod) item.paymentMethod = paymentMethod;
     if (slipURL) item.slipURL = slipURL;
 
-    // reduce remaining
     plan.remainingAmount = Number(plan.remainingAmount) - Number(item.amount);
     if (plan.remainingAmount < 0) plan.remainingAmount = 0;
 
     await plan.save();
     return res.status(200).json({ plan });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in payInstallment:", err);
     return res.status(400).json({ message: "Unable to mark installment as paid" });
   }
 };

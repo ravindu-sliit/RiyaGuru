@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { protect } from "../middleware/authMiddleware.js";
 import {
   getAllPayments,
   addPayment,
@@ -10,10 +9,11 @@ import {
 
 const router = Router();
 
-router.get("/", protect, getAllPayments);
-router.post("/", protect, addPayment);
-router.get("/:id", protect, getPaymentById);
-router.put("/:id", protect, updatePayment);
-router.delete("/:id", protect, deletePayment);
+// No authentication middleware (independent module)
+router.get("/", getAllPayments);
+router.post("/", addPayment);
+router.get("/:id", getPaymentById);
+router.put("/:id", updatePayment);
+router.delete("/:id", deletePayment);
 
 export default router;
