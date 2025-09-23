@@ -1,4 +1,3 @@
-// backend/route/installmentRoutes.js
 import { Router } from "express";
 import {
   createPlan,
@@ -10,10 +9,11 @@ import {
 
 const router = Router();
 
-router.post("/", createPlan);                  // create plan
-router.get("/", getAllPlans);                  // list plans (optional ?studentId=114)
-router.get("/:id", getPlanById);               // one plan
-router.put("/:id", updatePlan);                // update base fields
-router.patch("/:id/pay", payInstallment);      // pay one installment
+// 🔓 No authentication
+router.post("/", createPlan);
+router.get("/", getAllPlans);
+router.get("/:id", getPlanById);
+router.put("/:id", updatePlan);
+router.patch("/:id/pay", payInstallment);
 
 export default router;
