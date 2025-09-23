@@ -89,6 +89,24 @@ export const issueCertificate = async (req, res) => {
     tracking.certificate_status = "Issued";
     await tracking.save({ session });
 
+
+    // 8️⃣ Send certificate email (non-blocking for transaction)
+if (student?.email) {
+  try {
+    await sendCertificateEmail(
+      student.email,
+      student.fullName || student.name || studentId,
+      courseName,
+      filePath,
+      verificationHash,
+      certificate.certificateId
+    );
+  } catch (mailErr) {
+    console.error("Failed to send certificate email:", mailErr.message);
+    // don't abort the transaction just because email failed
+  }
+}
+
     await session.commitTransaction();
     res.json({ message: "Certificate issued", certificate });
   } catch (err) {
@@ -145,4 +163,6 @@ export const revokeCertificate = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Error revoking certificate", error: err.message });
   }
+
+
 };
