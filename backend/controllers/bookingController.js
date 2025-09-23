@@ -58,14 +58,22 @@ export const getBookingById = async (req, res) => {
   }
 };
 
-// ✅ Get logged-in student's bookings
+// ✅ Get logged-in instructor's bookings
 export const getMyBookings = async (req, res) => {
   try {
-    const bookings = await bookingService.getBookingsByStudent(req.user.userId);
-    res.json({ bookings: bookings.map(formatBooking) });
-  } catch (error) {
-    console.error("Error in getMyBookings:", error);
-    res.status(500).json({ message: error.message });
+    // 1. Find instructor by their userId
+    const instructor = await Instructor.findOne({ instructorId: req.user.userId });
+    if (!instructor) {
+      return res.status(404).json({ message: "Instructor not found" });
+    }
+
+    // 2. Find bookings by instructor name (since booking table uses name)
+    const bookings = await Booking.find({ instructorName: instructor.name });
+
+    res.json({ bookings });
+  } catch (err) {
+    console.error("Error fetching instructor bookings:", err);
+    res.status(500).json({ message: "Error fetching instructor bookings" });
   }
 };
 
@@ -115,3 +123,4 @@ export const updateBooking = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+

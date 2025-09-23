@@ -23,10 +23,41 @@ export default function AddInstructorPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // field-level errors
+  const [errors, setErrors] = useState({});
+
   // availability state
   const [date, setDate] = useState(new Date());
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("10:00");
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case "name":
+        if (!value.trim()) return "Full name is required.";
+        break;
+      case "email":
+        if (!value.trim()) return "Email is required.";
+        if (!/^\S+@\S+\.\S+$/.test(value)) return "Invalid email format.";
+        break;
+      case "licenseNumber":
+        if (!value.trim()) return "License Number is required.";
+        break;
+      case "password":
+        if (!value.trim()) return "Password is required.";
+        if (value.length < 6) return "Password must be at least 6 characters.";
+        break;
+      case "phone":
+        if (value && !/^\d{10,15}$/.test(value)) return "Phone must be 10–15 digits.";
+        break;
+      case "experienceYears":
+        if (value < 0) return "Experience cannot be negative.";
+        break;
+      default:
+        return "";
+    }
+    return "";
+  };
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +65,12 @@ export default function AddInstructorPage() {
       ...f,
       [name]: name === "experienceYears" ? Number(value) : value,
     }));
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
+  };
+
+  const onBlur = (e) => {
+    const { name, value } = e.target;
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const onImage = (e) => {
@@ -63,7 +100,6 @@ export default function AddInstructorPage() {
       return { ...f, availability: [...f.availability, { date: d, timeSlots: [range] }] };
     });
 
-    // reset
     setStartTime("09:00");
     setEndTime("10:00");
     setError("");
@@ -82,22 +118,20 @@ export default function AddInstructorPage() {
     });
   };
 
-  const validate = () => {
-    if (!form.name || !form.email || !form.licenseNumber || !form.password)
-      return "Name, Email, License Number and Password are required.";
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Invalid email format.";
-    if (form.password.length < 6)
-      return "Password must be at least 6 characters.";
-    return "";
-  };
-
   const submit = async (e) => {
     e.preventDefault();
-    const v = validate();
-    if (v) {
-      setError(v);
+
+    const newErrors = {};
+    Object.entries(form).forEach(([k, v]) => {
+      const msg = validateField(k, v);
+      if (msg) newErrors[k] = msg;
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+
     setSaving(true);
     setError("");
 
@@ -149,13 +183,15 @@ export default function AddInstructorPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block mb-1">Full Name *</label>
-                <input type="text" name="name" value={form.name} onChange={onChange} required
+                <input type="text" name="name" value={form.name} onChange={onChange} onBlur={onBlur}
                   className="w-full px-4 py-2 border rounded-lg"/>
+                {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
               </div>
               <div>
                 <label className="block mb-1">Email *</label>
-                <input type="email" name="email" value={form.email} onChange={onChange} required
+                <input type="email" name="email" value={form.email} onChange={onChange} onBlur={onBlur}
                   className="w-full px-4 py-2 border rounded-lg"/>
+                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
             </div>
 
@@ -163,13 +199,15 @@ export default function AddInstructorPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block mb-1">Phone</label>
-                <input type="text" name="phone" value={form.phone} onChange={onChange}
+                <input type="text" name="phone" value={form.phone} onChange={onChange} onBlur={onBlur}
                   className="w-full px-4 py-2 border rounded-lg"/>
+                {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
               </div>
               <div>
                 <label className="block mb-1">License Number *</label>
-                <input type="text" name="licenseNumber" value={form.licenseNumber} onChange={onChange} required
+                <input type="text" name="licenseNumber" value={form.licenseNumber} onChange={onChange} onBlur={onBlur}
                   className="w-full px-4 py-2 border rounded-lg"/>
+                {errors.licenseNumber && <p className="text-red-500 text-sm">{errors.licenseNumber}</p>}
               </div>
             </div>
 
@@ -177,13 +215,15 @@ export default function AddInstructorPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block mb-1">Password *</label>
-                <input type="password" name="password" value={form.password} onChange={onChange} required
+                <input type="password" name="password" value={form.password} onChange={onChange} onBlur={onBlur}
                   className="w-full px-4 py-2 border rounded-lg"/>
+                {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
               </div>
               <div>
                 <label className="block mb-1">Experience (Years)</label>
-                <input type="number" name="experienceYears" min="0" value={form.experienceYears} onChange={onChange}
+                <input type="number" name="experienceYears" min="0" value={form.experienceYears} onChange={onChange} onBlur={onBlur}
                   className="w-full px-4 py-2 border rounded-lg"/>
+                {errors.experienceYears && <p className="text-red-500 text-sm">{errors.experienceYears}</p>}
               </div>
             </div>
 
