@@ -45,7 +45,7 @@ export default function LoginPage() {
       if (data.role) localStorage.setItem("rg_role", data.role);
 
       // Redirect to Home on success
-      navigate("/home", { replace: true });
+      navigate("/bookings", { replace: true });
     } catch (err) {
       setError(err.message || "Invalid credentials");
     } finally {

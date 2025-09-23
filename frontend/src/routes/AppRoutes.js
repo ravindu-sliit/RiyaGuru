@@ -32,6 +32,7 @@ import StudentList from "../pages/LessonProgress/StudentList";
 import BookingDashboard from "../pages/Booking/BookingDashboard";
 import AddBookingPage from "../pages/Booking/AddBookingPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
+import BookingEditPage from "../pages/Booking/BookingEditPage";
 
 
 
@@ -83,6 +84,9 @@ export default function AppRoutes() {
         <Route path="/bookings" element={<BookingDashboard />} />
         <Route path="/bookings/add" element={<AddBookingPage />} />
         <Route path="/bookings/:id" element={<BookingDetails />} />
+        <Route path="/bookings/:id/edit" element={<BookingEditPage />} />
+
+        
 
       {/* Default redirect */}
       <Route path="/" element={<Navigate to="/payments" replace />} />
