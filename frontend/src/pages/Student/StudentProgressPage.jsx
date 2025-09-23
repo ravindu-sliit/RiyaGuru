@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, CheckCircle, Award, TrendingUp } from "lucide-react";
 
 export default function StudentProgressPage() {
-  const STUDENT_ID = "S037"; // replace with logged-in student
+  const STUDENT_ID = "S063"; // replace with logged-in student
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
