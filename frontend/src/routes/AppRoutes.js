@@ -12,9 +12,9 @@ import OtpRequest from "../pages/Registration/OtpRequest";
 
 import InstructorRoutes from "./instructorRoutes";
 
-import PaymentDashboard from "../pages/Payments/PaymentDashboard";
-import PaymentForm from "../pages/Payments/PaymentForm";
-import PaymentHistory from "../pages/Payments/PaymentHistory";
+//import PaymentDashboard from "../pages/Payments/PaymentDashboard";
+//import PaymentForm from "../pages/Payments/PaymentForm";
+//import PaymentHistory from "../pages/Payments/PaymentHistory";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 
 // ✅ Vehicle pages
@@ -34,6 +34,7 @@ import StudentList from "../pages/LessonProgress/StudentList";
 
 export default function AppRoutes() {
   return (
+
     <Routes>
       {/* Public */}
       <Route path="/login" element={<LoginPage />} />
@@ -81,5 +82,6 @@ export default function AppRoutes() {
       <Route path="/" element={<Navigate to="/payments" replace />} />
       <Route path="*" element={<Navigate to="/payments" replace />} />
     </Routes>
+
   );
 }
