@@ -1,161 +1,286 @@
 import { useEffect, useState } from "react";
+import { BookOpen, CheckCircle, Award, TrendingUp } from "lucide-react";
 
-/**
- * Minimal Student Progress page:
- * - fetches the student's progress summary
- * - shows each enrolled course, progress %, lessons, and (if present) a certificate link
- *
- * For now we hardcode the studentId. We'll plug in auth later.
- */
 export default function StudentProgressPage() {
-  // TODO: replace with the logged-in student's ID (from JWT/user context)
-  const STUDENT_ID = "S014";
-
-  const [data, setData] = useState(null);     // server response
+  const [studentId, setStudentId] = useState(null); // ✅ store logged-in studentId
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const controller = new AbortController();
-
     async function load() {
       try {
         setLoading(true);
-        setError("");
 
-        const res = await fetch(
-          `http://localhost:5000/api/progress-reports/student/${STUDENT_ID}`,
-          { signal: controller.signal }
+        // ✅ Step 1: fetch logged-in student profile
+        const profileRes = await fetch(
+          "http://localhost:5000/api/students/me/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("rg_token")}`,
+            },
+          }
         );
+        if (!profileRes.ok) throw new Error("Failed to fetch student profile");
 
-        if (!res.ok) {
-          const errBody = await res.json().catch(() => ({}));
-          throw new Error(errBody.message || `HTTP ${res.status}`);
-        }
+        const { student } = await profileRes.json();
+        setStudentId(student.studentId);
 
-        const json = await res.json();
-        setData(json);
+        // ✅ Step 2: fetch progress reports using studentId
+        const res = await fetch(
+          `http://localhost:5000/api/progress-reports/student/${student.studentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("rg_token")}`,
+            },
+          }
+        );
+        if (!res.ok) throw new Error("Failed to fetch progress");
+
+        setData(await res.json());
       } catch (err) {
-        if (err.name !== "AbortError") {
-          setError(err.message || "Failed to load progress");
-        }
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     }
 
     load();
-    return () => controller.abort();
   }, []);
 
-  if (loading) return <div style={{ padding: 16 }}>Loading progress…</div>;
-  if (error)   return <div style={{ padding: 16, color: "crimson" }}>Error: {error}</div>;
-  if (!data)   return <div style={{ padding: 16 }}>No data.</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-600">
+        <div className="animate-spin h-10 w-10 border-4 border-blue-300 border-t-blue-600 rounded-full"></div>
+        <p className="ml-3">Loading progress…</p>
+      </div>
+    );
 
-  const { student_id, courses = [] } = data;
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-white shadow-lg rounded-xl p-6 text-red-600">
+          Error: {error}
+        </div>
+      </div>
+    );
+
+  if (!data)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-white shadow-lg rounded-xl p-6 text-gray-500">
+          No data available.
+        </div>
+      </div>
+    );
+
+  const { student_id, full_name, courses = [] } = data;
+
+  // ✅ Calculate stats
+  const totalCourses = courses.length;
+  const lessonsCompleted = courses.reduce(
+    (sum, c) => sum + (c.completed_lessons || 0),
+    0
+  );
+  const certificatesIssued = courses.filter(
+    (c) => c.certificate_status === "Issued"
+  ).length;
+  const avgProgress =
+    totalCourses > 0
+      ? Math.round(
+          courses.reduce((sum, c) => sum + (c.progress_percent || 0), 0) /
+            totalCourses
+        )
+      : 0;
 
   return (
-    <div style={{ padding: 24, maxWidth: 920, margin: "0 auto" }}>
-      <h2 style={{ marginBottom: 8 }}>Student Progress</h2>
-      <div style={{ opacity: 0.8, marginBottom: 24 }}>Student ID: <b>{student_id}</b></div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-5xl mx-auto p-6">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow p-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Student Dashboard
+          </h2>
+          <p className="text-gray-600">
+            {full_name} (ID: {student_id})
+          </p>
+        </div>
 
-      {courses.length === 0 && (
-        <div>No active courses found.</div>
-      )}
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Courses Enrolled"
+            value={totalCourses}
+            icon={<BookOpen size={20} />}
+            color="bg-blue-100 text-blue-600"
+          />
+          <StatCard
+            title="Lessons Completed"
+            value={lessonsCompleted}
+            icon={<CheckCircle size={20} />}
+            color="bg-green-100 text-green-600"
+          />
+          <StatCard
+            title="Certificates Issued"
+            value={certificatesIssued}
+            icon={<Award size={20} />}
+            color="bg-yellow-100 text-yellow-600"
+          />
+          <StatCard
+            title="Average Progress"
+            value={`${avgProgress}%`}
+            icon={<TrendingUp size={20} />}
+            color="bg-purple-100 text-purple-600"
+          />
+        </div>
 
-      {courses.map((c) => {
-        const pct = Number(c?.progress_percent || 0);
-        const progressLabel = `${c?.completed_lessons ?? 0} / ${c?.total_lessons ?? 0} lessons`;
-
-        // try to turn absolute file path into a browser URL if it contains "uploads"
-        let certificateHref = "";
-        if (c?.certificate_file) {
-          const idx = String(c.certificate_file).lastIndexOf("uploads");
-          if (idx !== -1) {
-            certificateHref = `http://localhost:5000/${c.certificate_file.slice(idx).replaceAll("\\", "/")}`;
-          }
-        }
-
-        return (
-          <div
-            key={c.course_name}
-            style={{
-              border: "1px solid #e5e7eb",
-              borderRadius: 12,
-              padding: 16,
-              marginBottom: 16,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-              background: "#fff"
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-              <h3 style={{ margin: 0 }}>{c.course_name}</h3>
-              <div style={{ fontSize: 14, color: "#6b7280" }}>{progressLabel}</div>
-            </div>
-
-            {/* progress bar */}
-            <div style={{ marginTop: 12, marginBottom: 12 }}>
-              <div style={{ height: 10, background: "#e5e7eb", borderRadius: 999 }}>
-                <div
-                  style={{
-                    width: `${pct}%`,
-                    height: "100%",
-                    borderRadius: 999,
-                    background: "#3b82f6",
-                    transition: "width .3s ease"
-                  }}
-                />
-              </div>
-              <div style={{ marginTop: 8, fontSize: 13, color: "#374151" }}>
-                {pct}% completed
-              </div>
-            </div>
-
-            {/* last lesson snapshot */}
-            {c.last_lesson ? (
-              <div style={{ fontSize: 14, color: "#4b5563", marginTop: 8 }}>
-                <div>Last lesson: <b>#{c.last_lesson.lesson_number}</b></div>
-                <div>Date: {new Date(c.last_lesson.date).toLocaleString()}</div>
-                <div>Feedback: {c.last_lesson.feedback || "-"}</div>
-              </div>
-            ) : (
-              <div style={{ fontSize: 14, color: "#6b7280", marginTop: 8 }}>
-                No lessons recorded yet.
-              </div>
-            )}
-
-            {/* certificate */}
-            <div style={{ marginTop: 12 }}>
-              {c.certificate_status === "Issued" && certificateHref ? (
-                <a
-                  href={certificateHref}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    display: "inline-block",
-                    padding: "8px 12px",
-                    borderRadius: 8,
-                    border: "1px solid #3b82f6",
-                    textDecoration: "none",
-                    color: "#fff",
-                    background: "#3b82f6"
-                  }}
-                >
-                  🎓 Download Certificate ({c.certificateId})
-                </a>
-              ) : c.certificate_status === "Eligible" ? (
-                <span style={{ fontSize: 14, color: "#10b981" }}>
-                  ✅ Eligible — waiting for issuance
-                </span>
-              ) : (
-                <span style={{ fontSize: 14, color: "#6b7280" }}>
-                  Not eligible yet
-                </span>
-              )}
-            </div>
+        {/* Course Cards */}
+        {courses.length === 0 ? (
+          <div className="bg-white rounded-xl shadow p-12 text-center text-gray-500">
+            No active courses found.
           </div>
-        );
-      })}
+        ) : (
+          courses.map((c) => {
+            const pct = Number(c?.progress_percent || 0);
+
+            // Generate certificate link if exists
+            let certificateHref = "";
+            if (c?.certificate_file) {
+              const idx = String(c.certificate_file).lastIndexOf("uploads");
+              if (idx !== -1) {
+                certificateHref = `http://localhost:5000/${c.certificate_file
+                  .slice(idx)
+                  .replaceAll("\\", "/")}`;
+              }
+            }
+
+            return (
+              <div
+                key={c.course_name}
+                className="bg-white rounded-xl shadow p-6 mb-6"
+              >
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {c.course_name}
+                  </h3>
+                  <span className="text-sm bg-gray-100 px-3 py-1 rounded-lg text-gray-700">
+                    {c.completed_lessons}/{c.total_lessons} lessons
+                  </span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <div className="h-3 bg-gray-200 rounded-full">
+                    <div
+                      className="h-3 bg-blue-500 rounded-full"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">{pct}% completed</p>
+                </div>
+
+                {/* Last Lesson */}
+                {c.last_lesson ? (
+                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-gray-700">
+                      Last Lesson:{" "}
+                      <span className="font-semibold">
+                        #{c.last_lesson.lesson_number}
+                      </span>{" "}
+                      on {new Date(c.last_lesson.date).toLocaleDateString()} –{" "}
+                      <em>{c.last_lesson.feedback || "No feedback"}</em>
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 mb-4">
+                    No lessons recorded yet.
+                  </p>
+                )}
+
+                {/* Certificate */}
+                <div className="flex justify-between items-center bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm font-medium text-gray-700">
+                    Certificate Status:{" "}
+                    {c.certificate_status === "Issued" && certificateHref ? (
+                      <span className="text-green-600">🎓 Available</span>
+                    ) : c.certificate_status === "Eligible" ? (
+                      <span className="text-green-600">
+                        ✅ Eligible (waiting for issuance)
+                      </span>
+                    ) : (
+                      <span className="text-gray-500">Not eligible yet</span>
+                    )}
+                  </p>
+
+                  {/* Download button if already issued */}
+                  {c.certificate_status === "Issued" && certificateHref && (
+                    <a
+                      href={certificateHref}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                    >
+                      Download
+                    </a>
+                  )}
+
+                  {/* Generate button if eligible */}
+                  {c.certificate_status === "Eligible" && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const res = await fetch(
+                            `http://localhost:5000/api/certificates/issue/${studentId}/${c.course_name}`,
+                            { method: "POST" }
+                          );
+                          const json = await res.json();
+                          if (!res.ok)
+                            throw new Error(json.message || "Failed to issue");
+                          alert("✅ Certificate generated!");
+
+                          // update only this course in state (no full reload)
+                          setData((prev) => ({
+                            ...prev,
+                            courses: prev.courses.map((course) =>
+                              course.course_name === c.course_name
+                                ? {
+                                    ...course,
+                                    certificate_status: "Issued",
+                                    certificate_file:
+                                      json.certificate?.file_url || "",
+                                  }
+                                : course
+                            ),
+                          }));
+                        } catch (err) {
+                          alert(err.message);
+                        }
+                      }}
+                      className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    >
+                      Generate Certificate
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* Reusable Stat Card */
+function StatCard({ title, value, icon, color }) {
+  return (
+    <div className="bg-white rounded-xl shadow p-4">
+      <div className="flex justify-between items-center mb-3">
+        <span className="text-sm font-medium text-gray-500">{title}</span>
+        <div className={`p-2 rounded-lg ${color}`}>{icon}</div>
+      </div>
+      <div className="text-2xl font-bold text-gray-800">{value}</div>
     </div>
   );
 }

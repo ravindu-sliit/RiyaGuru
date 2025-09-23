@@ -3,8 +3,12 @@ const { Schema } = mongoose;
 
 const paymentSchema = new Schema(
   {
-    studentId: { type: String, required: true },
-    studentCourseId: { type: String, required: true },  // 🔹 NEW: link to enrollment
+    studentName: { type: String, required: true },
+    courseName: { 
+      type: String, 
+      enum: ["Car", "Van", "Heavy Vehicle", "Light Vehicle", "Motor Bicycle", "Three Wheeler"],
+      required: true 
+    },
     amount: { type: Number, required: true, min: 0 },
     paymentType: { type: String, enum: ["Full", "Installment"], required: true },
     status: { type: String, enum: ["Pending", "Approved", "Rejected"], default: "Pending" },
@@ -23,7 +27,6 @@ const paymentSchema = new Schema(
   },
   { timestamps: true }
 );
-
 
 const Payment = mongoose.model("Payment", paymentSchema);
 export default Payment;
