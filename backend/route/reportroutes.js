@@ -1,3 +1,4 @@
+// routes/reportRoutes.js
 import express from "express";
 import {
   generateReport,
@@ -5,18 +6,23 @@ import {
   getMaintenanceAnalytics,
 } from "../controllers/reportcontroller.js";
 
-import { generateMaintenancePDF } from "../controllers/pdfController.js"; //  import PDF controller
+// ✅ Import the renamed PDF controller
+import { generateMaintenancePDF } from "../controllers/maintenancepdfController.js";
 
 const router = express.Router();
 
-// Reports CRUD
-router.post("/", generateReport);
-router.get("/", getAllReports);
+ //📌 Reports CRUD Routes
+ 
+router.post("/", generateReport);   // Create new report entry
+router.get("/", getAllReports);     // Fetch all reports
 
-// Analytics
-router.get("/analytics/maintenance", getMaintenanceAnalytics);
+ //📊 Analytics Routes
+ 
+router.get("/analytics/maintenance", getMaintenanceAnalytics); // Maintenance analytics by service type
 
-// PDF Report
-router.get("/maintenance/pdf", generateMaintenancePDF); // new route
+
+ //📄 PDF Report Routes
+ 
+router.get("/maintenance/pdf", generateMaintenancePDF); // Generate maintenance PDF
 
 export default router;
