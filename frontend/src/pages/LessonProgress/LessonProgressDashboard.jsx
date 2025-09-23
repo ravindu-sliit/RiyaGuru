@@ -59,155 +59,171 @@ export default function LessonProgressDashboard() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen text-gray-600">
-        <div className="animate-spin h-10 w-10 border-4 border-blue-300 border-t-blue-600 rounded-full mb-4"></div>
-        <p>Loading dashboard...</p>
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+        <div className="relative">
+          <div className="animate-spin h-12 w-12 border-4 border-orange-200 border-t-orange-500 rounded-full"></div>
+          <div className="absolute inset-0 animate-pulse">
+            <div className="h-12 w-12 bg-orange-100 rounded-full opacity-75"></div>
+          </div>
+        </div>
+        <p className="text-gray-600 mt-4 font-medium">Loading dashboard...</p>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Nav Header */}
-      <div className="bg-white shadow flex items-center justify-between px-6 py-4 border-b">
-        <div className="flex items-center gap-2 text-blue-600 font-semibold">
-          <BookOpen className="w-5 h-5" />
-          <span>DriveSchool - Lesson Progress</span>
-        </div>
-        <div className="flex items-center gap-4 text-sm">
-          <Link
-            to="/lesson-progress"
-            className="flex items-center gap-1 text-gray-700 hover:text-blue-600"
-          >
-            <Settings size={16} />
-            Dashboard
-          </Link>
-          <Link
-            to="/lesson-progress/add"
-            className="flex items-center gap-1 text-gray-700 hover:text-blue-600"
-          >
-            <Plus size={16} />
-            Add Lesson
-          </Link>
-          <Link
-            to="/progress-tracking"
-            className="flex items-center gap-1 text-gray-700 hover:text-blue-600"
-          >
-            <TrendingUp size={16} />
-            Progress Tracking
-          </Link>
+      {/* Modern Navigation Header */}
+      <div className="bg-white shadow-sm border-b border-gray-100">
+        <div className="px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2 text-gray-800 font-bold text-lg">
+            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-white" />
+            </div>
+            <span>
+              Drive<span className="text-orange-500">Manager</span> Pro
+            </span>
+          </div>
+          <div className="flex items-center gap-6">
+            <NavItem to="/lesson-progress" icon={<Settings size={18} />} active>
+              Dashboard
+            </NavItem>
+            <NavItem to="/lesson-progress/add" icon={<Plus size={18} />}>
+              Add Lesson
+            </NavItem>
+            <NavItem to="/progress-tracking" icon={<TrendingUp size={18} />}>
+              Progress Tracking
+            </NavItem>
+          </div>
         </div>
       </div>
 
-      {/* Page Header */}
-      <div className="px-6 py-6 flex flex-col md:flex-row justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Lesson Progress Management
-          </h1>
-          <p className="text-gray-600 text-sm">
-            Track and manage student lesson progress
-          </p>
-        </div>
-        <div className="flex gap-3 mt-4 md:mt-0">
-          <button className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg text-sm hover:bg-gray-200">
-            <Filter size={16} />
-            Filter
-          </button>
-          <Link
-            to="/lesson-progress/add"
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
-          >
-            <Plus size={16} />
-            Add Lesson Progress
-          </Link>
+      {/* Hero Header Section */}
+      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-12">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div className="mb-6 md:mb-0">
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">
+              Lesson Progress Management
+            </h1>
+            <p className="text-blue-200 text-lg max-w-2xl">
+              Track and manage student lesson progress with comprehensive analytics and insights
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <button className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-3 rounded-xl hover:bg-white/20 transition-all duration-300">
+              <Filter size={18} />
+              Filter
+            </button>
+            <Link
+              to="/lesson-progress/add"
+              className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:-translate-y-0.5"
+            >
+              <Plus size={18} />
+              Add Lesson Progress
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-6">
-        <StatCard
-          title="Total Lessons"
-          value={stats.total}
-          subtitle="All recorded lessons"
-          icon={<BookOpen size={20} />}
-          color="bg-blue-100 text-blue-600"
-        />
-        <StatCard
-          title="Completed Lessons"
-          value={stats.completed}
-          subtitle="Successfully completed"
-          icon={<CheckCircle size={20} />}
-          color="bg-green-100 text-green-600"
-        />
-        <StatCard
-          title="Pending Lessons"
-          value={stats.pending}
-          subtitle="Awaiting completion"
-          icon={<Clock size={20} />}
-          color="bg-yellow-100 text-yellow-600"
-        />
-        <StatCard
-          title="This Week"
-          value={stats.thisWeek}
-          subtitle="Lessons this week"
-          icon={<Calendar size={20} />}
-          color="bg-purple-100 text-purple-600"
-        />
+      {/* Stats Dashboard */}
+      <div className="px-6 -mt-6 relative z-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            title="Total Lessons"
+            value={stats.total}
+            subtitle="All recorded lessons"
+            icon={<BookOpen size={24} />}
+            gradient="from-blue-500 to-blue-600"
+            bgColor="bg-blue-50"
+            textColor="text-blue-600"
+            change="+12% this month"
+            positive={true}
+          />
+          <StatCard
+            title="Completed Lessons"
+            value={stats.completed}
+            subtitle="Successfully completed"
+            icon={<CheckCircle size={24} />}
+            gradient="from-green-500 to-emerald-600"
+            bgColor="bg-green-50"
+            textColor="text-green-600"
+            change="+8% this week"
+            positive={true}
+          />
+          <StatCard
+            title="Pending Lessons"
+            value={stats.pending}
+            subtitle="Awaiting completion"
+            icon={<Clock size={24} />}
+            gradient="from-yellow-500 to-orange-500"
+            bgColor="bg-yellow-50"
+            textColor="text-yellow-600"
+            change="-3% this week"
+            positive={false}
+          />
+          <StatCard
+            title="This Week"
+            value={stats.thisWeek}
+            subtitle="Lessons this week"
+            icon={<Calendar size={24} />}
+            gradient="from-purple-500 to-indigo-600"
+            bgColor="bg-purple-50"
+            textColor="text-purple-600"
+            change="+15% vs last week"
+            positive={true}
+          />
+        </div>
       </div>
 
       {/* Recent Lessons */}
-      <div className="px-6 py-8">
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <TrendingUp className="text-orange-500" size={20} />
-              Recent Lesson Progress
-            </h2>
-            <Link
-              to="/lesson-progress/all"
-              className="text-sm bg-gray-100 px-3 py-1 rounded-lg hover:bg-gray-200"
-            >
-              View All Lessons
-            </Link>
-          </div>
-
-          {recentLessons.length > 0 ? (
-            <div className="grid md:grid-cols-2 gap-6">
-              {recentLessons.map((lesson) => (
-                <LessonProgressCard key={lesson._id} lesson={lesson} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-gray-500 py-8">
-              <BookOpen className="mx-auto mb-4" size={40} />
-              <p>No lesson progress recorded yet</p>
+      <div className="px-6 py-12 max-w-7xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="text-white" size={20} />
+                </div>
+                Recent Lesson Progress
+              </h2>
               <Link
-                to="/lesson-progress/add"
-                className="inline-flex items-center gap-2 mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                to="/lesson-progress/all"
+                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl text-gray-700"
               >
-                <Plus size={16} />
-                Add First Lesson
+                View All Lessons
               </Link>
             </div>
-          )}
+          </div>
+
+          <div className="p-8">
+            {recentLessons.length > 0 ? (
+              <div className="grid lg:grid-cols-2 gap-6">
+                {recentLessons.map((lesson) => (
+                  <LessonProgressCard key={lesson._id} lesson={lesson} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState />
+            )}
+          </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="px-6 pb-8">
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Quick Actions
-          </h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <QuickAction to="/lesson-progress/add" icon={<Plus size={20} />}>
+      <div className="px-6 pb-12 max-w-7xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b">
+            <h2 className="text-2xl font-bold text-gray-800">Quick Actions</h2>
+            <p className="text-gray-600 mt-1">Commonly used features and shortcuts</p>
+          </div>
+          <div className="p-8 grid md:grid-cols-3 gap-6">
+            <QuickAction to="/lesson-progress/add" icon={<Plus size={20} />} gradient="from-orange-500 to-red-500">
               Add New Lesson
             </QuickAction>
-            <QuickAction to="/lesson-progress/students" icon={<Users size={20} />}>
+            <QuickAction to="/lesson-progress/students" icon={<Users size={20} />} gradient="from-blue-500 to-cyan-500">
               View by Student
             </QuickAction>
-            <QuickAction to="/progress-tracking" icon={<TrendingUp size={20} />}>
+            <QuickAction to="/progress-tracking" icon={<TrendingUp size={20} />} gradient="from-purple-500 to-indigo-500">
               Progress Tracking
             </QuickAction>
           </div>
@@ -217,30 +233,74 @@ export default function LessonProgressDashboard() {
   );
 }
 
-/* Reusable Components */
-function StatCard({ title, value, subtitle, icon, color }) {
+/* --- Styled Subcomponents --- */
+function NavItem({ to, icon, children, active = false }) {
   return (
-    <div className="bg-white rounded-xl shadow p-4">
-      <div className="flex justify-between items-center mb-3">
-        <span className="text-sm font-medium text-gray-500">{title}</span>
-        <div className={`p-2 rounded-lg ${color}`}>{icon}</div>
+    <Link
+      to={to}
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium ${
+        active
+          ? "bg-orange-50 text-orange-600 border border-orange-200"
+          : "text-gray-600 hover:text-orange-600 hover:bg-orange-50"
+      }`}
+    >
+      {icon}
+      <span>{children}</span>
+    </Link>
+  );
+}
+
+function StatCard({ title, value, subtitle, icon, gradient, bgColor, textColor, change, positive }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+      <div className="flex justify-between items-start mb-4">
+        <div className={`p-3 rounded-xl ${bgColor}`}>
+          <div className={`${textColor}`}>{icon}</div>
+        </div>
+        <div
+          className={`text-sm font-semibold px-2 py-1 rounded-lg ${
+            positive ? "text-green-700 bg-green-100" : "text-red-700 bg-red-100"
+          }`}
+        >
+          {change}
+        </div>
       </div>
-      <div className="text-2xl font-bold text-gray-800">{value}</div>
+      <h3 className="text-sm font-semibold text-gray-500 uppercase">{title}</h3>
+      <div className="text-3xl font-bold text-gray-800">{value}</div>
       <p className="text-sm text-gray-500">{subtitle}</p>
     </div>
   );
 }
 
-function QuickAction({ to, icon, children }) {
+function QuickAction({ to, icon, children, gradient }) {
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+      className="group bg-white border border-gray-200 rounded-xl p-6 hover:border-gray-300 hover:shadow-lg transform hover:-translate-y-1 transition-all text-left"
     >
-      <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg">
+      <div className={`w-12 h-12 bg-gradient-to-r ${gradient} rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
-      <span className="font-medium">{children}</span>
+      <h3 className="font-bold text-gray-800 text-lg mb-2">{children}</h3>
     </Link>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="text-center py-16">
+      <div className="w-20 h-20 bg-gradient-to-r from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-6">
+        <BookOpen className="text-gray-500" size={32} />
+      </div>
+      <h3 className="text-xl font-bold text-gray-800 mb-2">No lesson progress recorded yet</h3>
+      <p className="text-gray-600 mb-6">Start tracking lessons by adding a new entry</p>
+      <Link
+        to="/lesson-progress/add"
+        className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+      >
+        <Plus size={18} />
+        Add First Lesson
+      </Link>
+    </div>
   );
 }
