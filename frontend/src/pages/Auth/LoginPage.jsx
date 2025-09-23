@@ -43,8 +43,38 @@ export default function LoginPage() {
       if (data.token) localStorage.setItem("rg_token", data.token);
       if (data.userId) localStorage.setItem("rg_userId", data.userId);
       if (data.role) localStorage.setItem("rg_role", data.role); // "Student" | "Instructor" | "Admin"
+      
+      // ✅ NEW: normalize and save the student id under the exact key your app expects
+    const inferredId =
+      data.studentId ??
+      data.userId ??
+      data.id ??
+      data.user?.id ??
+      data.user?.studentId ??
+      null;
 
-      navigate("/home", { replace: true });
+        if (inferredId) {
+      localStorage.setItem("rg_id", String(inferredId));  // <<--- IMPORTANT
+    } else {
+      // If your API returns the id only in the JWT, you could parse it here as a fallback.
+      // For now, fail loudly so you see it during dev:
+      console.warn("Login success, but couldn't infer student id from response:", data);
+    }
+
+
+
+      // ✅ Redirect based on role
+      if (data.role === "Student") {
+        navigate("/home/student", { replace: true });
+      } else if (data.role === "Instructor") {
+        navigate("/home/instructor", { replace: true });
+      } else if (data.role === "Admin") {
+        navigate("/home/admin", { replace: true });
+      } else {
+        // fallback if no role provided
+        navigate("/landing", { replace: true });
+      }
+
     } catch (err) {
       setError(err.message || "Invalid credentials");
     } finally {
@@ -80,12 +110,20 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #ccc" }}
+            style={{
+              width: "100%",
+              padding: 10,
+              borderRadius: 8,
+              border: "1px solid #ccc",
+            }}
           />
         </div>
 
         <div style={{ marginBottom: 12 }}>
-          <label htmlFor="password" style={{ display: "block", marginBottom: 6 }}>
+          <label
+            htmlFor="password"
+            style={{ display: "block", marginBottom: 6 }}
+          >
             Password
           </label>
           <input
@@ -96,12 +134,25 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #ccc" }}
+            style={{
+              width: "100%",
+              padding: 10,
+              borderRadius: 8,
+              border: "1px solid #ccc",
+            }}
           />
         </div>
 
         {error && (
-          <p style={{ color: "crimson", marginTop: 4, marginBottom: 8 }} role="alert">
+          <p
+            style={{
+              color: "crimson",
+              marginTop: 4,
+              marginBottom: 8,
+              textAlign: "center",
+            }}
+            role="alert"
+          >
             {error}
           </p>
         )}

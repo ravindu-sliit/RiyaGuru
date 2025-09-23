@@ -35,7 +35,6 @@ import maintenanceRoutes from "./route/maintenanceroutes.js";
 import publicReportRoutes from "./route/reportroutes.js";
 import progressReportRoutes from "./route/progressReportRoutes.js";
 
-
 dotenv.config();
 
 const app = express();
@@ -65,8 +64,11 @@ app.use(
   })
 );
 
+// -----------------------------
 // Serve static uploads
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+// -----------------------------
+app.use("/uploads", express.static(uploadsDir));
+app.use("/uploads/receipts", express.static(path.join(uploadsDir, "receipts")));
 
 // -----------------------------
 // Health route
@@ -99,8 +101,6 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
-
-// (Email test endpoint removed)
 
 // -----------------------------
 // Global error handler
