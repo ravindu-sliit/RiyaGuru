@@ -1,11 +1,12 @@
 import OTP from "../models/OtpModel.js";
 import User from "../models/UserModel.js";
-
 import Student from "../models/StudentModel.js";
-
 import { sendEmail } from "../services/emailService.js";
 
-// Generate and send OTP
+// Configure how long an OTP is valid (minutes)
+const TTL_MINUTES = 1; // set to 10 in production if you prefer
+
+// Generate and send OTP (signup/account verification)
 export const generateOtp = async (req, res) => {
   try {
     const { email } = req.body;
@@ -15,31 +16,47 @@ export const generateOtp = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Find the student by the matching ID (User.userId === Student.studentId)
+    // Optional: friendly name
     const student = await Student.findOne({ studentId: user.userId });
+    const firstName = student?.full_name?.split(" ")[0] || "Student";
+
+    // ⛔ If an OTP already exists and has not expired, block re-send
+    const now = new Date();
+    const existing = await OTP.findOne({
+      userId: user.userId,
+      verified: false,
+      expiresAt: { $gt: now },
+    });
+
+    if (existing) {
+      const timeLeftSec = Math.max(
+        1,
+        Math.ceil((existing.expiresAt.getTime() - now.getTime()) / 1000)
+      );
+      // Provide a Retry-After header for clients that honor it
+      res.set("Retry-After", String(timeLeftSec));
+      return res.status(429).json({
+        message: `An OTP has already been sent. Please try again in ${timeLeftSec} seconds.`,
+        expiresAt: existing.expiresAt,
+      });
+    }
 
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Set expiration (e.g., 10 minutes)
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    // Set expiration
+    const expiresAt = new Date(Date.now() + TTL_MINUTES * 60 * 1000);
 
-    // Upsert OTP for user
+    // Upsert OTP for user (overwrites any expired/old record)
     await OTP.findOneAndUpdate(
       { userId: user.userId },
       { otp, expiresAt, verified: false },
       { upsert: true, new: true }
     );
 
-    //Build a friendly name for the email
-    const firstName = student?.full_name?.split(" ")[0] || "Student";
-
-    //${otp}
-
-    // Send OTP via email
+    // Send OTP via email (keep TTL text in sync with TTL_MINUTES)
     await sendEmail(
       user.email,
-
       "RiyaGuru LK – Verify Your Email Address",
       `Hello ${firstName} !,
 
@@ -49,7 +66,7 @@ Your One-Time Password (OTP) is:
 
    ${otp}
 
-This code is valid for 10 minutes. Please do not share it with anyone.
+This code is valid for ${TTL_MINUTES} minute${TTL_MINUTES > 1 ? "s" : ""}. Please do not share it with anyone.
 
 If you did not try to register, you can safely ignore this email.
 
@@ -88,7 +105,7 @@ export const verifyOtp = async (req, res) => {
     if (record.otp !== otp)
       return res.status(400).json({ message: "Invalid OTP" });
 
-     // ✅ Mark as verified (and optionally prevent reuse)
+    // ✅ Mark as verified (and optionally prevent reuse)
     await OTP.updateOne(
       { userId: user.userId },
       {
@@ -102,9 +119,8 @@ export const verifyOtp = async (req, res) => {
       }
     );
 
-
-    // OTP is valid → delete it after verification
-    //await OTP.deleteOne({ userId: user.userId });
+    // Optionally: delete after verification
+    // await OTP.deleteOne({ userId: user.userId });
 
     res.status(200).json({ message: "OTP verified successfully" });
   } catch (err) {

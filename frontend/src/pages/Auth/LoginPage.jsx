@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const API_BASE = "http://localhost:5000";
+  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,12 +39,11 @@ export default function LoginPage() {
         throw new Error(data.message || `Login failed (${res.status})`);
       }
 
-      // Save token & minimal user info (adjust to your needs)
+      // Save token & minimal user info
       if (data.token) localStorage.setItem("rg_token", data.token);
       if (data.userId) localStorage.setItem("rg_userId", data.userId);
-      if (data.role) localStorage.setItem("rg_role", data.role);
+      if (data.role) localStorage.setItem("rg_role", data.role); // "Student" | "Instructor" | "Admin"
 
-      // Redirect to Home on success
       navigate("/home", { replace: true });
     } catch (err) {
       setError(err.message || "Invalid credentials");
@@ -69,7 +68,6 @@ export default function LoginPage() {
       </h2>
 
       <form onSubmit={handleSubmit} noValidate>
-        {/* Email */}
         <div style={{ marginBottom: 12 }}>
           <label htmlFor="email" style={{ display: "block", marginBottom: 6 }}>
             Email
@@ -86,12 +84,8 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Password */}
         <div style={{ marginBottom: 12 }}>
-          <label
-            htmlFor="password"
-            style={{ display: "block", marginBottom: 6 }}
-          >
+          <label htmlFor="password" style={{ display: "block", marginBottom: 6 }}>
             Password
           </label>
           <input
