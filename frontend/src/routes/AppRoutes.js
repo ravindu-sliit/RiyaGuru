@@ -1,5 +1,5 @@
 // src/routes/AppRoutes.js
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {  Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/Auth/LoginPage";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import StudentProgressPage from "../pages/Student/StudentProgressPage.jsx";
@@ -11,11 +11,6 @@ import RegisterStudent from "../pages/Registration/RegisterStudent";
 import OtpRequest from "../pages/Registration/OtpRequest";
 
 import InstructorRoutes from "./instructorRoutes";
-
-//import PaymentDashboard from "../pages/Payments/PaymentDashboard";
-//import PaymentForm from "../pages/Payments/PaymentForm";
-
-//import PaymentHistory from "../pages/Payments/PaymentHistory";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 
 // ✅ Vehicle pages
