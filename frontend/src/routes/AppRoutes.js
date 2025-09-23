@@ -28,6 +28,13 @@ import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashb
 import InstructorLessonProgressHome from "../pages/Instructor/InstructorLessonProgressHome";
 import StudentList from "../pages/LessonProgress/StudentList";
 
+// src/routes/AppRoutes.js
+import BookingDashboard from "../pages/Booking/BookingDashboard";
+import AddBookingPage from "../pages/Booking/AddBookingPage";
+import BookingDetails from "../pages/Booking/BookingDetails";
+
+
+
 export default function AppRoutes() {
   return (
 
@@ -71,6 +78,11 @@ export default function AppRoutes() {
       <Route path="/vehicles/:id" element={<VehicleDetails />} />
       <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
       <Route path="/dashboard" element={<VehicleDashboard />} />
+
+           {/* Booking Routes */}
+        <Route path="/bookings" element={<BookingDashboard />} />
+        <Route path="/bookings/add" element={<AddBookingPage />} />
+        <Route path="/bookings/:id" element={<BookingDetails />} />
 
       {/* Default redirect */}
       <Route path="/" element={<Navigate to="/payments" replace />} />
