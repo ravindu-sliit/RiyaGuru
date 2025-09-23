@@ -113,7 +113,7 @@ export default function InstructorListPage() {
       {/* Navigation */}
       <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
-          <span className="text-orange-500 text-2xl">🎯</span>
+          <span className="text-orange-500 text-2xl"></span>
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
@@ -187,7 +187,7 @@ export default function InstructorListPage() {
             {/* Filter */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span className="text-slate-400 text-lg">🎯</span>
+                <span className="text-slate-400 text-lg"></span>
               </div>
               <select
                 className="pl-12 pr-10 py-3 bg-slate-50 border-2 border-slate-200 rounded-lg text-slate-700 focus:border-orange-400 focus:ring-4 focus:ring-orange-400/20 focus:outline-none transition-all appearance-none cursor-pointer min-w-[200px]"
