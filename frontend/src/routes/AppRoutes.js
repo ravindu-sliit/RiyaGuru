@@ -1,5 +1,6 @@
 // src/routes/AppRoutes.js
 import {  Routes, Route, Navigate } from "react-router-dom";
+import DriveManagerLanding from "../pages/DriveManagerLanding";
 import LoginPage from "../pages/Auth/LoginPage";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import StudentProgressPage from "../pages/Student/StudentProgressPage.jsx";
@@ -42,6 +43,7 @@ export default function AppRoutes() {
       {/* Public */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/landing" element={<DriveManagerLanding />} />
 
       {/* Dashboards */}
       <Route path="/student/*" element={<StudentDashboard />} />
@@ -85,8 +87,8 @@ export default function AppRoutes() {
         <Route path="/bookings/:id" element={<BookingDetails />} />
 
       {/* Default redirect */}
-      <Route path="/" element={<Navigate to="/payments" replace />} />
-      <Route path="*" element={<Navigate to="/payments" replace />} />
+      <Route path="/" element={<DriveManagerLanding />} />
+      <Route path="*" element={<Navigate to="/landing" replace />} />
     </Routes>
 
   );

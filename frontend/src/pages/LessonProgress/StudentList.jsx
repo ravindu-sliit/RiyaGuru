@@ -31,8 +31,9 @@ export default function StudentList() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-gray-600">Loading students…</p>
+      <div className="flex items-center justify-center min-h-screen text-gray-600">
+        <div className="animate-spin h-10 w-10 border-4 border-blue-300 border-t-blue-600 rounded-full"></div>
+        <p className="ml-3">Loading students…</p>
       </div>
     );
   }
@@ -40,43 +41,45 @@ export default function StudentList() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-800">
-          <Users className="w-6 h-6 text-blue-600" />
-          Students
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+          <Users className="w-7 h-7 text-blue-600" />
+          Student Directory
         </h1>
 
         {/* Search bar */}
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow border">
+        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow border w-full md:w-80">
           <Search className="w-4 h-4 text-gray-500" />
           <input
             type="text"
             placeholder="Search students..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="outline-none text-sm"
+            className="w-full outline-none text-sm text-gray-700"
           />
         </div>
       </div>
 
       {/* Student list */}
       {filtered.length > 0 ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((s) => (
             <Link
               key={s.studentId}
               to={`/lesson-progress/student/${s.studentId}`}
-              className="bg-white shadow rounded-xl p-4 hover:shadow-lg transition"
+              className="group bg-white rounded-xl shadow border border-gray-100 p-6 hover:shadow-lg hover:border-blue-200 transition-all duration-300"
             >
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600">
                 {s.full_name}
               </h2>
-              <p className="text-sm text-gray-600">ID: {s.studentId}</p>
+              <p className="text-sm text-gray-500 mt-1">ID: {s.studentId}</p>
             </Link>
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">No students found.</p>
+        <div className="bg-white rounded-xl shadow p-12 text-center text-gray-500">
+          No students found.
+        </div>
       )}
     </div>
   );

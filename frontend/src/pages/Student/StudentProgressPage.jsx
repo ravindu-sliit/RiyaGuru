@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, CheckCircle, Award, TrendingUp } from "lucide-react";
 
 export default function StudentProgressPage() {
-  const [studentId, setStudentId] = useState(null); // ✅ store logged-in studentId
+  const [studentId, setStudentId] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -26,7 +26,7 @@ export default function StudentProgressPage() {
         const { student } = await profileRes.json();
         setStudentId(student.studentId);
 
-        // ✅ Step 2: fetch progress reports using studentId
+        // ✅ Step 2: fetch progress reports
         const res = await fetch(
           `http://localhost:5000/api/progress-reports/student/${student.studentId}`,
           {
@@ -52,14 +52,14 @@ export default function StudentProgressPage() {
     return (
       <div className="flex items-center justify-center min-h-screen text-gray-600">
         <div className="animate-spin h-10 w-10 border-4 border-blue-300 border-t-blue-600 rounded-full"></div>
-        <p className="ml-3">Loading progress…</p>
+        <p className="ml-3 font-medium">Loading progress…</p>
       </div>
     );
 
   if (error)
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="bg-white shadow-lg rounded-xl p-6 text-red-600">
+        <div className="bg-white shadow-xl rounded-2xl p-6 text-red-600 font-semibold">
           Error: {error}
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function StudentProgressPage() {
   if (!data)
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="bg-white shadow-lg rounded-xl p-6 text-gray-500">
+        <div className="bg-white shadow-xl rounded-2xl p-6 text-gray-500">
           No data available.
         </div>
       </div>
@@ -76,7 +76,7 @@ export default function StudentProgressPage() {
 
   const { student_id, full_name, courses = [] } = data;
 
-  // ✅ Calculate stats
+  // ✅ Stats
   const totalCourses = courses.length;
   const lessonsCompleted = courses.reduce(
     (sum, c) => sum + (c.completed_lessons || 0),
@@ -97,53 +97,51 @@ export default function StudentProgressPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto p-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Student Dashboard
-          </h2>
-          <p className="text-gray-600">
-            {full_name} (ID: {student_id})
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl shadow-lg p-8 mb-10">
+          <h2 className="text-3xl font-bold mb-2">Student Dashboard</h2>
+          <p className="text-blue-100 font-medium">
+            {full_name} <span className="text-white/80">(ID: {student_id})</span>
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
           <StatCard
             title="Courses Enrolled"
             value={totalCourses}
-            icon={<BookOpen size={20} />}
-            color="bg-blue-100 text-blue-600"
+            icon={<BookOpen size={22} />}
+            gradient="from-blue-500 to-blue-600"
           />
           <StatCard
             title="Lessons Completed"
             value={lessonsCompleted}
-            icon={<CheckCircle size={20} />}
-            color="bg-green-100 text-green-600"
+            icon={<CheckCircle size={22} />}
+            gradient="from-green-500 to-emerald-600"
           />
           <StatCard
             title="Certificates Issued"
             value={certificatesIssued}
-            icon={<Award size={20} />}
-            color="bg-yellow-100 text-yellow-600"
+            icon={<Award size={22} />}
+            gradient="from-yellow-500 to-orange-500"
           />
           <StatCard
             title="Average Progress"
             value={`${avgProgress}%`}
-            icon={<TrendingUp size={20} />}
-            color="bg-purple-100 text-purple-600"
+            icon={<TrendingUp size={22} />}
+            gradient="from-purple-500 to-indigo-600"
           />
         </div>
 
         {/* Course Cards */}
         {courses.length === 0 ? (
-          <div className="bg-white rounded-xl shadow p-12 text-center text-gray-500">
+          <div className="bg-white rounded-2xl shadow-lg p-12 text-center text-gray-500">
             No active courses found.
           </div>
         ) : (
           courses.map((c) => {
             const pct = Number(c?.progress_percent || 0);
 
-            // Generate certificate link if exists
+            // Certificate file path
             let certificateHref = "";
             if (c?.certificate_file) {
               const idx = String(c.certificate_file).lastIndexOf("uploads");
@@ -157,11 +155,11 @@ export default function StudentProgressPage() {
             return (
               <div
                 key={c.course_name}
-                className="bg-white rounded-xl shadow p-6 mb-6"
+                className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 mb-6 hover:shadow-2xl transition"
               >
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-semibold text-gray-800">
+                  <h3 className="text-xl font-bold text-gray-800">
                     {c.course_name}
                   </h3>
                   <span className="text-sm bg-gray-100 px-3 py-1 rounded-lg text-gray-700">
@@ -171,13 +169,15 @@ export default function StudentProgressPage() {
 
                 {/* Progress Bar */}
                 <div className="mb-4">
-                  <div className="h-3 bg-gray-200 rounded-full">
+                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className="h-3 bg-blue-500 rounded-full"
+                      className="h-3 bg-gradient-to-r from-blue-500 to-blue-700 rounded-full"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">{pct}% completed</p>
+                  <p className="text-sm text-gray-600 mt-2 font-medium">
+                    {pct}% completed
+                  </p>
                 </div>
 
                 {/* Last Lesson */}
@@ -188,7 +188,8 @@ export default function StudentProgressPage() {
                       <span className="font-semibold">
                         #{c.last_lesson.lesson_number}
                       </span>{" "}
-                      on {new Date(c.last_lesson.date).toLocaleDateString()} –{" "}
+                      on{" "}
+                      {new Date(c.last_lesson.date).toLocaleDateString()} –{" "}
                       <em>{c.last_lesson.feedback || "No feedback"}</em>
                     </p>
                   </div>
@@ -198,34 +199,34 @@ export default function StudentProgressPage() {
                   </p>
                 )}
 
-                {/* Certificate */}
+                {/* Certificate Section */}
                 <div className="flex justify-between items-center bg-gray-50 rounded-lg p-4">
                   <p className="text-sm font-medium text-gray-700">
                     Certificate Status:{" "}
                     {c.certificate_status === "Issued" && certificateHref ? (
-                      <span className="text-green-600">🎓 Available</span>
+                      <span className="text-green-600">Available</span>
                     ) : c.certificate_status === "Eligible" ? (
                       <span className="text-green-600">
-                        ✅ Eligible (waiting for issuance)
+                        Eligible (waiting for issuance)
                       </span>
                     ) : (
                       <span className="text-gray-500">Not eligible yet</span>
                     )}
                   </p>
 
-                  {/* Download button if already issued */}
+                  {/* Download button */}
                   {c.certificate_status === "Issued" && certificateHref && (
                     <a
                       href={certificateHref}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
                     >
                       Download
                     </a>
                   )}
 
-                  {/* Generate button if eligible */}
+                  {/* Generate button */}
                   {c.certificate_status === "Eligible" && (
                     <button
                       onClick={async () => {
@@ -237,9 +238,9 @@ export default function StudentProgressPage() {
                           const json = await res.json();
                           if (!res.ok)
                             throw new Error(json.message || "Failed to issue");
-                          alert("✅ Certificate generated!");
+                          alert("Certificate generated!");
 
-                          // update only this course in state (no full reload)
+                          // Update course in state
                           setData((prev) => ({
                             ...prev,
                             courses: prev.courses.map((course) =>
@@ -257,7 +258,7 @@ export default function StudentProgressPage() {
                           alert(err.message);
                         }
                       }}
-                      className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                      className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                     >
                       Generate Certificate
                     </button>
@@ -272,13 +273,17 @@ export default function StudentProgressPage() {
   );
 }
 
-/* Reusable Stat Card */
-function StatCard({ title, value, icon, color }) {
+/* Styled Stat Card */
+function StatCard({ title, value, icon, gradient }) {
   return (
-    <div className="bg-white rounded-xl shadow p-4">
+    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition">
       <div className="flex justify-between items-center mb-3">
         <span className="text-sm font-medium text-gray-500">{title}</span>
-        <div className={`p-2 rounded-lg ${color}`}>{icon}</div>
+        <div
+          className={`p-3 rounded-lg text-white bg-gradient-to-r ${gradient}`}
+        >
+          {icon}
+        </div>
       </div>
       <div className="text-2xl font-bold text-gray-800">{value}</div>
     </div>
