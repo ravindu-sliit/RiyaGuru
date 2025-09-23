@@ -19,15 +19,29 @@ const MaintenanceDashboard = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     loadMaintenanceRecords();
+    // Defer loading vehicles until user opens the form; avoids noisy toast on first load
   }, []);
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
+
+  // Derived list filtered by search
+  const filteredRecords = React.useMemo(() => {
+    const q = (search || "").trim().toLowerCase();
+    if (!q) return maintenanceRecords;
+    return maintenanceRecords.filter((r) => {
+      const id = String(r?.vehicleId?._id || "").toLowerCase();
+      const reg = String(r?.vehicleId?.regNumber || "").toLowerCase();
+      const model = String(r?.vehicleId?.model || "").toLowerCase();
+      return id.includes(q) || reg.includes(q) || model.includes(q);
+    });
+  }, [maintenanceRecords, search]);
 
   const loadMaintenanceRecords = async () => {
     try {
@@ -46,6 +60,7 @@ const MaintenanceDashboard = () => {
       const list = await getVehicles();
       setVehicles(Array.isArray(list) ? list : []);
     } catch (err) {
+      // Fail silently and keep vehicles as empty array; user can still open the form
       console.warn("Failed to load vehicles:", err?.message || err);
       setVehicles([]);
     }
@@ -84,9 +99,7 @@ const MaintenanceDashboard = () => {
       setLoading(true);
       if (selectedRecord) {
         const updated = await updateMaintenance(selectedRecord._id, formData);
-        setMaintenanceRecords((prev) =>
-          prev.map((r) => (r._id === selectedRecord._id ? updated : r))
-        );
+        setMaintenanceRecords((prev) => prev.map((r) => (r._id === selectedRecord._id ? updated : r)));
         showNotification("Maintenance updated");
       } else {
         const created = await createMaintenance(formData);
@@ -101,48 +114,43 @@ const MaintenanceDashboard = () => {
     }
   };
 
-  // ✅ PDF Download Handler
-  const handleDownloadPDF = () => {
-    window.open("http://localhost:5000/api/reports/maintenance/pdf", "_blank");
-  };
-
   return (
     <div className="dashboard">
-      {/* Header */}
       <div className="dashboard-header">
         <div className="header-content">
           <div className="header-info">
             <h1 className="dashboard-title">Vehicle Maintenance</h1>
-            <p className="dashboard-subtitle">
-              Manage vehicle maintenance records
-            </p>
+            <p className="dashboard-subtitle">Manage vehicle maintenance records</p>
           </div>
           {activeView === "list" && (
-            <button onClick={handleCreate} className="btn btn-primary add-btn">
-              <Plus size={20} />
-              Add Maintenance
-            </button>
+            <div className="header-actions">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="form-input header-search"
+                placeholder="Search by Vehicle ID / Reg / Model"
+              />
+              <button onClick={handleCreate} className="btn btn-primary add-btn">
+                <Plus size={20} />
+                Add Maintenance
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Notifications */}
       {notification && (
         <div className={`notification ${notification.type}`}>
-          {notification.type === "success" ? (
-            <CheckCircle size={20} />
-          ) : (
-            <AlertCircle size={20} />
-          )}
+          {notification.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
           {notification.message}
         </div>
       )}
 
-      {/* Content */}
       <div className="dashboard-content">
         {activeView === "list" && (
           <MaintenanceList
-            records={maintenanceRecords}
+            records={filteredRecords}
             loading={loading}
             onEdit={handleEdit}
             onView={handleView}
@@ -168,16 +176,6 @@ const MaintenanceDashboard = () => {
           />
         )}
       </div>
-
-      {/* ✅ Floating Download Button */}
-      {activeView === "list" && (
-        <button
-          onClick={handleDownloadPDF}
-          className="btn btn-secondary floating-btn"
-        >
-          Download Report
-        </button>
-      )}
     </div>
   );
 };
