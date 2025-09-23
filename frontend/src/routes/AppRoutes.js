@@ -21,6 +21,10 @@ import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
 import StudentPreferences from "../pages/Student/StudentPreferences";
 import StudentProgressPage from "../pages/Student/StudentProgressPage";
 
+// Inquiry (⭐ added)
+import InquiryDashboard from "../pages/Inquiry/InquiryDashboard";
+import StudentInquiry from "../pages/Inquiry/StudentInquiry";
+
 // Instructor
 import InstructorRoutes from "./instructorRoutes";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
@@ -119,6 +123,10 @@ export default function AppRoutes() {
 
       <Route path="/register" element={<RegisterStudent />} />
       <Route path="/otp-request" element={<OtpRequest />} />
+
+      {/* Inquiry (⭐ added before catch-all) */}
+      <Route path="/inquiries" element={<InquiryDashboard />} />
+      <Route path="/inquiry" element={<StudentInquiry />} />
 
       {/* Instructors */}
       <Route path="/*" element={<InstructorRoutes />} />
