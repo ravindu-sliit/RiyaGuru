@@ -64,7 +64,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
-      <Route path="/login" element={<LoginPage />} />j
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/landing" element={<DriveManagerLanding />} />
       <Route path="/home/student" element={<StudentHome />} />
       <Route path="/home/instructor" element={<InstructorHome />} />
