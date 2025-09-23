@@ -1,14 +1,14 @@
 import Payment from "../models/Payment.js";
-import StudentCourse from "../models/StudentCourse.js";
 import { processCardPayment } from "../utils/gateway.js";
+import { paymentSchema } from "../validators/paymentValidation.js";
+
 
 // GET /api/payments
 export const getAllPayments = async (req, res) => {
   try {
-    const { studentCourseId, status, from, to } = req.query;
-    const filter = { studentId: req.user.userId };
+    const { status, from, to, studentName, courseName } = req.query;
+    const filter = {};
 
-    if (studentCourseId) filter.studentCourseId = studentCourseId;
     if (status) filter.status = status;
     if (from || to) {
       filter.createdAt = {
@@ -16,6 +16,8 @@ export const getAllPayments = async (req, res) => {
         ...(to ? { $lte: new Date(to) } : {}),
       };
     }
+    if (studentName) filter.studentName = { $regex: studentName, $options: "i" };
+    if (courseName) filter.courseName = { $regex: courseName, $options: "i" };
 
     const payments = await Payment.find(filter).sort({ createdAt: -1 });
     return res.status(200).json({ payments });
@@ -28,17 +30,17 @@ export const getAllPayments = async (req, res) => {
 // POST /api/payments
 export const addPayment = async (req, res) => {
   try {
-    const studentId = req.user.userId;
-    const { studentCourseId, amount, paymentType, paymentMethod, slipURL, cardDetails } = req.body;
+    // 🔍 Validate request body
+    const { error } = paymentSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
 
-    // 🔹 Check enrollment first
-    const enrollment = await StudentCourse.findById(studentCourseId);
-    if (!enrollment) return res.status(404).json({ message: "Enrollment not found" });
+    const { studentName, courseName, amount, paymentType, paymentMethod, slipURL, cardDetails } = req.body;
 
-    // Always create with Pending status
     let paymentData = {
-      studentId,
-      studentCourseId,
+      studentName,
+      courseName,
       amount,
       paymentType,
       paymentMethod,
@@ -46,7 +48,7 @@ export const addPayment = async (req, res) => {
       status: "Pending",
     };
 
-    // If Card, run dummy gateway just to simulate transactionId
+    // If Card → simulate transaction
     if (paymentMethod === "Card" && cardDetails) {
       const result = await processCardPayment(cardDetails, amount);
       if (!result.success) {
@@ -69,9 +71,6 @@ export const getPaymentById = async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id);
     if (!payment) return res.status(404).json({ message: "Payment not found" });
-    if (payment.studentId !== req.user.userId && req.user.role !== "Admin") {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
     return res.status(200).json({ payment });
   } catch (err) {
     console.error(err);
@@ -79,12 +78,21 @@ export const getPaymentById = async (req, res) => {
   }
 };
 
+
 // PUT /api/payments/:id
 export const updatePayment = async (req, res) => {
   try {
-    const { amount, paymentType, paymentMethod, slipURL, adminComment, cardDetails } = req.body;
-    let updateData = { amount, paymentType, paymentMethod, slipURL, adminComment };
+    // 🔍 Validate incoming data with Joi
+    const { error } = paymentSchema.validate(req.body, { allowUnknown: true });
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
 
+    const { amount, paymentType, paymentMethod, slipURL, adminComment, cardDetails, studentName, courseName } = req.body;
+
+    let updateData = { amount, paymentType, paymentMethod, slipURL, adminComment, studentName, courseName };
+
+    // If Card → simulate transaction
     if (paymentMethod === "Card" && cardDetails) {
       const result = await processCardPayment(cardDetails, amount);
       if (!result.success) {
@@ -102,7 +110,7 @@ export const updatePayment = async (req, res) => {
     if (!payment) return res.status(404).json({ message: "Unable to update payment" });
     return res.status(200).json({ payment });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in updatePayment:", err);
     return res.status(400).json({ message: "Invalid data or ID" });
   }
 };
