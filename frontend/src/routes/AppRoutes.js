@@ -7,7 +7,11 @@ import LoginPage from "../pages/Auth/LoginPage";
 import StudentDashboard from "../pages/Student/StudentDashboard";
 import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
-import Home from "../pages/Home/Home";
+//import Home from "../pages/Home/Home";
+import StudentHome from "../pages/Home/StudentHome";
+import InstructorHome from "../pages/Home/InstructorHome";
+import AdminHome from "../pages/Home/AdminHome";
+
 
 // Maintenance
 import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
@@ -59,9 +63,11 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/home" element={<Home />} />
+      <Route path="/login" element={<LoginPage />} />j
       <Route path="/landing" element={<DriveManagerLanding />} />
+      <Route path="/home/student" element={<StudentHome />} />
+      <Route path="/home/instructor" element={<InstructorHome />} />
+      <Route path="/home/admin" element={<AdminHome />} />
 
       {/* Dashboards */}
       <Route
