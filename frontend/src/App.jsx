@@ -2,11 +2,13 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import AppRoutes from './routes/AppRoutes';
+import { AuthProvider } from "./context/AuthContext"; 
 import 'react-toastify/dist/ReactToastify.css';
 import "./styles/App.css";
 
 function App() {
   return (
+    <AuthProvider>
     <Router>
       <div className="App">
         <AppRoutes />
@@ -24,6 +26,8 @@ function App() {
         />
       </div>
     </Router>
+</AuthProvider>   
+
   );
 }
 
