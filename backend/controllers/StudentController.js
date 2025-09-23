@@ -202,3 +202,22 @@ export const deleteStudent = async (req, res) => {
     res.status(500).json({ message: "Server error while deleting student" });
   }
 };
+
+// ✅ Get logged-in student's own details
+export const getMe = async (req, res) => {
+  try {
+    const student = await Student.findOne({ studentId: req.user.userId }); // userId == studentId
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    const profilePicUrl = student.profilePicPath
+      ? `${req.protocol}://${req.get("host")}/uploads/studentProfPics/${student.profilePicPath}`
+      : null;
+
+    res.json({ student: { ...student.toObject(), profilePicUrl } });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching student profile", error: err.message });
+  }
+};

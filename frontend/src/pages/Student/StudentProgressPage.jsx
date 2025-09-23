@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, CheckCircle, Award, TrendingUp } from "lucide-react";
 
 export default function StudentProgressPage() {
-  const STUDENT_ID = "S063"; // replace with logged-in student
+  const [studentId, setStudentId] = useState(null); // ✅ store logged-in studentId
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -11,10 +11,32 @@ export default function StudentProgressPage() {
     async function load() {
       try {
         setLoading(true);
+
+        // ✅ Step 1: fetch logged-in student profile
+        const profileRes = await fetch(
+          "http://localhost:5000/api/students/me/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("rg_token")}`,
+            },
+          }
+        );
+        if (!profileRes.ok) throw new Error("Failed to fetch student profile");
+
+        const { student } = await profileRes.json();
+        setStudentId(student.studentId);
+
+        // ✅ Step 2: fetch progress reports using studentId
         const res = await fetch(
-          `http://localhost:5000/api/progress-reports/student/${STUDENT_ID}`
+          `http://localhost:5000/api/progress-reports/student/${student.studentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("rg_token")}`,
+            },
+          }
         );
         if (!res.ok) throw new Error("Failed to fetch progress");
+
         setData(await res.json());
       } catch (err) {
         setError(err.message);
@@ -22,6 +44,7 @@ export default function StudentProgressPage() {
         setLoading(false);
       }
     }
+
     load();
   }, []);
 
@@ -78,7 +101,9 @@ export default function StudentProgressPage() {
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             Student Dashboard
           </h2>
-          <p className="text-gray-600">{full_name} (ID: {student_id})</p>
+          <p className="text-gray-600">
+            {full_name} (ID: {student_id})
+          </p>
         </div>
 
         {/* Stats Cards */}
@@ -163,8 +188,7 @@ export default function StudentProgressPage() {
                       <span className="font-semibold">
                         #{c.last_lesson.lesson_number}
                       </span>{" "}
-                      on{" "}
-                      {new Date(c.last_lesson.date).toLocaleDateString()} –{" "}
+                      on {new Date(c.last_lesson.date).toLocaleDateString()} –{" "}
                       <em>{c.last_lesson.feedback || "No feedback"}</em>
                     </p>
                   </div>
@@ -173,70 +197,72 @@ export default function StudentProgressPage() {
                     No lessons recorded yet.
                   </p>
                 )}
+
                 {/* Certificate */}
-<div className="flex justify-between items-center bg-gray-50 rounded-lg p-4">
-  <p className="text-sm font-medium text-gray-700">
-    Certificate Status:{" "}
-    {c.certificate_status === "Issued" && certificateHref ? (
-      <span className="text-green-600">🎓 Available</span>
-    ) : c.certificate_status === "Eligible" ? (
-      <span className="text-green-600">
-        ✅ Eligible (waiting for issuance)
-      </span>
-    ) : (
-      <span className="text-gray-500">Not eligible yet</span>
-    )}
-  </p>
+                <div className="flex justify-between items-center bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm font-medium text-gray-700">
+                    Certificate Status:{" "}
+                    {c.certificate_status === "Issued" && certificateHref ? (
+                      <span className="text-green-600">🎓 Available</span>
+                    ) : c.certificate_status === "Eligible" ? (
+                      <span className="text-green-600">
+                        ✅ Eligible (waiting for issuance)
+                      </span>
+                    ) : (
+                      <span className="text-gray-500">Not eligible yet</span>
+                    )}
+                  </p>
 
-  {/* Download button if already issued */}
-  {c.certificate_status === "Issued" && certificateHref && (
-    <a
-      href={certificateHref}
-      target="_blank"
-      rel="noreferrer"
-      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-    >
-      Download
-    </a>
-  )}
+                  {/* Download button if already issued */}
+                  {c.certificate_status === "Issued" && certificateHref && (
+                    <a
+                      href={certificateHref}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                    >
+                      Download
+                    </a>
+                  )}
 
-  {/* Generate button if eligible */}
-  {c.certificate_status === "Eligible" && (
-    <button
-      onClick={async () => {
-        try {
-          const res = await fetch(
-            `http://localhost:5000/api/certificates/issue/${student_id}/${c.course_name}`,
-            { method: "POST" }
-          );
-          const json = await res.json();
-          if (!res.ok) throw new Error(json.message || "Failed to issue");
-          alert("✅ Certificate generated!");
+                  {/* Generate button if eligible */}
+                  {c.certificate_status === "Eligible" && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const res = await fetch(
+                            `http://localhost:5000/api/certificates/issue/${studentId}/${c.course_name}`,
+                            { method: "POST" }
+                          );
+                          const json = await res.json();
+                          if (!res.ok)
+                            throw new Error(json.message || "Failed to issue");
+                          alert("✅ Certificate generated!");
 
-          // update only this course in state (no full reload)
-          setData((prev) => ({
-            ...prev,
-            courses: prev.courses.map((course) =>
-              course.course_name === c.course_name
-                ? {
-                    ...course,
-                    certificate_status: "Issued",
-                    certificate_file: json.certificate?.file_url || "",
-                  }
-                : course
-            ),
-          }));
-        } catch (err) {
-          alert(err.message);
-        }
-      }}
-      className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-    >
-      Generate Certificate
-    </button>
-  )}
-</div>
-
+                          // update only this course in state (no full reload)
+                          setData((prev) => ({
+                            ...prev,
+                            courses: prev.courses.map((course) =>
+                              course.course_name === c.course_name
+                                ? {
+                                    ...course,
+                                    certificate_status: "Issued",
+                                    certificate_file:
+                                      json.certificate?.file_url || "",
+                                  }
+                                : course
+                            ),
+                          }));
+                        } catch (err) {
+                          alert(err.message);
+                        }
+                      }}
+                      className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    >
+                      Generate Certificate
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })
