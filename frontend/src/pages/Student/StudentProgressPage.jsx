@@ -173,33 +173,70 @@ export default function StudentProgressPage() {
                     No lessons recorded yet.
                   </p>
                 )}
-
                 {/* Certificate */}
-                <div className="flex justify-between items-center bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm font-medium text-gray-700">
-                    Certificate Status:{" "}
-                    {c.certificate_status === "Issued" && certificateHref ? (
-                      <span className="text-green-600">🎓 Available</span>
-                    ) : c.certificate_status === "Eligible" ? (
-                      <span className="text-green-600">
-                        ✅ Eligible (waiting for issuance)
-                      </span>
-                    ) : (
-                      <span className="text-gray-500">Not eligible yet</span>
-                    )}
-                  </p>
+<div className="flex justify-between items-center bg-gray-50 rounded-lg p-4">
+  <p className="text-sm font-medium text-gray-700">
+    Certificate Status:{" "}
+    {c.certificate_status === "Issued" && certificateHref ? (
+      <span className="text-green-600">🎓 Available</span>
+    ) : c.certificate_status === "Eligible" ? (
+      <span className="text-green-600">
+        ✅ Eligible (waiting for issuance)
+      </span>
+    ) : (
+      <span className="text-gray-500">Not eligible yet</span>
+    )}
+  </p>
 
-                  {c.certificate_status === "Issued" && certificateHref && (
-                    <a
-                      href={certificateHref}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-                    >
-                      Download
-                    </a>
-                  )}
-                </div>
+  {/* Download button if already issued */}
+  {c.certificate_status === "Issued" && certificateHref && (
+    <a
+      href={certificateHref}
+      target="_blank"
+      rel="noreferrer"
+      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+    >
+      Download
+    </a>
+  )}
+
+  {/* Generate button if eligible */}
+  {c.certificate_status === "Eligible" && (
+    <button
+      onClick={async () => {
+        try {
+          const res = await fetch(
+            `http://localhost:5000/api/certificates/issue/${student_id}/${c.course_name}`,
+            { method: "POST" }
+          );
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.message || "Failed to issue");
+          alert("✅ Certificate generated!");
+
+          // update only this course in state (no full reload)
+          setData((prev) => ({
+            ...prev,
+            courses: prev.courses.map((course) =>
+              course.course_name === c.course_name
+                ? {
+                    ...course,
+                    certificate_status: "Issued",
+                    certificate_file: json.certificate?.file_url || "",
+                  }
+                : course
+            ),
+          }));
+        } catch (err) {
+          alert(err.message);
+        }
+      }}
+      className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+    >
+      Generate Certificate
+    </button>
+  )}
+</div>
+
               </div>
             );
           })
