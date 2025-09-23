@@ -116,7 +116,7 @@ const AddVehicle = () => {
       <div className="flex justify-between items-center bg-white px-6 py-3 border-b shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg text-gray-900">
           <Car className="text-orange-500 w-6 h-6" />
-          <span>DriveSchool</span>
+          <span>RiyaGuru.lk</span>
         </div>
         <div className="flex items-center gap-6 text-sm font-medium text-gray-500">
           <span className="hover:text-orange-500 cursor-pointer">Dashboard</span>

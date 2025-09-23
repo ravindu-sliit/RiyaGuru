@@ -1,5 +1,7 @@
 // src/pages/Instructor/AddInstructorPage.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const initial = {
   name: "",
@@ -14,15 +16,17 @@ const initial = {
 };
 
 export default function AddInstructorPage() {
-  const nav = (path) => console.log("Navigate to:", path);
+  const navigate = useNavigate();
   const [form, setForm] = useState(initial);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // availability state
   const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState("09:00");
+  const [startTime, setStartTime] = useState("09:00");
+  const [endTime, setEndTime] = useState("10:00");
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -39,21 +43,30 @@ export default function AddInstructorPage() {
   };
 
   const addAvailability = () => {
-    if (!date || !time) return;
+    if (!date || !startTime || !endTime) return;
+    if (endTime <= startTime) {
+      setError("End time must be greater than start time");
+      return;
+    }
+
     const d = date.toISOString().split("T")[0];
-    const newSlot = { date: d, timeSlots: [time] };
+    const range = `${startTime}-${endTime}`;
 
     setForm((f) => {
       const exists = f.availability.find((a) => a.date === d);
       if (exists) {
-        if (!exists.timeSlots.includes(time)) {
-          exists.timeSlots = [...exists.timeSlots, time];
+        if (!exists.timeSlots.includes(range)) {
+          exists.timeSlots = [...exists.timeSlots, range];
         }
         return { ...f, availability: [...f.availability] };
       }
-      return { ...f, availability: [...f.availability, newSlot] };
+      return { ...f, availability: [...f.availability, { date: d, timeSlots: [range] }] };
     });
-    setTime("09:00");
+
+    // reset
+    setStartTime("09:00");
+    setEndTime("10:00");
+    setError("");
   };
 
   const removeSlot = (d, t) => {
@@ -99,10 +112,11 @@ export default function AddInstructorPage() {
       });
       if (image) fd.append("image", image);
 
-      // Mock API call
-      console.log("Creating instructor:", form);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      nav("/instructors/list");
+      await axios.post("http://localhost:5000/api/instructors", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      navigate("/instructors/list");
     } catch (err) {
       setError(err?.response?.data?.message || err.message);
     } finally {
@@ -112,252 +126,118 @@ export default function AddInstructorPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Navigation Header */}
-      <div className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold">
-            
-              </div>
-              <h1 className="text-xl font-bold text-slate-900">
-                Instructor Management
-              </h1>
-            </div>
-            <nav className="hidden md:flex space-x-1">
-              <a
-                href="/dashboard"
-                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition"
-              >
-                Vehicle DashBoard
-              </a>
-              <a
-                href="/instructors"
-                className="px-3 py-2 rounded-lg text-sm font-medium text-orange-500 bg-orange-50"
-              >
-                Instructors DashBoard
-              </a>
-              
-               
-            
-            </nav>
-          </div>
+      {/* Header */}
+      <div className="bg-white border-b shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
+          <h1 className="text-xl font-bold">Instructor Management</h1>
+          <nav className="hidden md:flex space-x-2">
+            <a href="/dashboard" className="px-3 py-2 text-slate-600 hover:text-orange-500">Vehicle Dashboard</a>
+            <a href="/instructors" className="px-3 py-2 text-orange-500 bg-orange-50 rounded-lg">Instructors Dashboard</a>
+          </nav>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">
-            Add New Instructor
-          </h1>
-          <p className="text-slate-600 mt-2">
-            Create a new instructor profile with availability schedule
-          </p>
-        </div>
+        <h1 className="text-3xl font-bold mb-2">Add New Instructor</h1>
+        <p className="text-slate-600 mb-8">Create a new instructor profile with availability schedule</p>
 
-        {/* Form Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <form onSubmit={submit} className="p-6 space-y-6">
-            {/* Error Alert */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-                {error}
-              </div>
-            )}
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <form onSubmit={submit} className="space-y-6">
+            {error && <div className="bg-red-50 border border-red-200 p-4 text-red-700 rounded-lg">{error}</div>}
 
             {/* Name + Email */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={form.name}
-                  onChange={onChange}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-slate-200 bg-slate-50 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 outline-none"
-                  required
-                />
+                <label className="block mb-1">Full Name *</label>
+                <input type="text" name="name" value={form.name} onChange={onChange} required
+                  className="w-full px-4 py-2 border rounded-lg"/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={onChange}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-slate-200 bg-slate-50 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 outline-none"
-                  required
-                />
+                <label className="block mb-1">Email *</label>
+                <input type="email" name="email" value={form.email} onChange={onChange} required
+                  className="w-full px-4 py-2 border rounded-lg"/>
               </div>
             </div>
 
             {/* Phone + License */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={form.phone}
-                  onChange={onChange}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-slate-200 bg-slate-50 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 outline-none"
-                />
+                <label className="block mb-1">Phone</label>
+                <input type="text" name="phone" value={form.phone} onChange={onChange}
+                  className="w-full px-4 py-2 border rounded-lg"/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  License Number *
-                </label>
-                <input
-                  type="text"
-                  name="licenseNumber"
-                  value={form.licenseNumber}
-                  onChange={onChange}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-slate-200 bg-slate-50 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 outline-none"
-                  required
-                />
+                <label className="block mb-1">License Number *</label>
+                <input type="text" name="licenseNumber" value={form.licenseNumber} onChange={onChange} required
+                  className="w-full px-4 py-2 border rounded-lg"/>
               </div>
             </div>
 
             {/* Password + Experience */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Password *
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={form.password}
-                  onChange={onChange}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-slate-200 bg-slate-50 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 outline-none"
-                  required
-                />
+                <label className="block mb-1">Password *</label>
+                <input type="password" name="password" value={form.password} onChange={onChange} required
+                  className="w-full px-4 py-2 border rounded-lg"/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Experience (Years)
-                </label>
-                <input
-                  type="number"
-                  name="experienceYears"
-                  min="0"
-                  value={form.experienceYears}
-                  onChange={onChange}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-slate-200 bg-slate-50 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 outline-none"
-                />
+                <label className="block mb-1">Experience (Years)</label>
+                <input type="number" name="experienceYears" min="0" value={form.experienceYears} onChange={onChange}
+                  className="w-full px-4 py-2 border rounded-lg"/>
               </div>
             </div>
 
             {/* Specialization */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Specialization
-              </label>
-              <select
-                name="specialization"
-                value={form.specialization}
-                onChange={onChange}
-                className="w-full px-4 py-2 rounded-lg border-2 border-slate-200 bg-slate-50 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 outline-none"
-              >
-                <option value="All"> All</option>
+              <label className="block mb-1">Specialization</label>
+              <select name="specialization" value={form.specialization} onChange={onChange}
+                className="w-full px-4 py-2 border rounded-lg">
+                <option value="All">All</option>
                 <option value="Car">Car</option>
-                <option value="Motorcycle"> Motorcycle</option>
-                <option value="Threewheeler"> Threewheeler</option>
+                <option value="Motorcycle">Motorcycle</option>
+                <option value="Threewheeler">Threewheeler</option>
                 <option value="HeavyVehicle">Heavy Vehicle</option>
               </select>
             </div>
 
             {/* Address */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Address
-              </label>
-              <textarea
-                name="address"
-                value={form.address}
-                onChange={onChange}
-                className="w-full px-4 py-2 rounded-lg border-2 border-slate-200 bg-slate-50 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 outline-none"
-                rows={3}
-              />
+              <label className="block mb-1">Address</label>
+              <textarea name="address" value={form.address} onChange={onChange} rows={3}
+                className="w-full px-4 py-2 border rounded-lg"/>
             </div>
 
             {/* Profile Image */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Profile Image
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={onImage}
-                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
-              />
-              {preview && (
-                <div className="mt-4">
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-32 h-32 rounded-full object-cover border-2 border-slate-200"
-                  />
-                </div>
-              )}
+              <label className="block mb-1">Profile Image</label>
+              <input type="file" accept="image/*" onChange={onImage}
+                className="block w-full text-sm"/>
+              {preview && <img src={preview} alt="Preview" className="w-32 h-32 mt-4 rounded-full object-cover border"/>}
             </div>
 
             {/* Availability */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Availability
-              </label>
+              <label className="block mb-1">Availability</label>
               <div className="flex gap-2 mb-4">
-                <input
-                  type="date"
-                  value={date.toISOString().split("T")[0]}
+                <input type="date" value={date.toISOString().split("T")[0]}
                   onChange={(e) => setDate(new Date(e.target.value))}
-                  className="px-3 py-2 border-2 border-slate-200 rounded-lg bg-slate-50"
-                />
-                <input
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  className="px-3 py-2 border-2 border-slate-200 rounded-lg bg-slate-50"
-                />
-                <button
-                  type="button"
-                  onClick={addAvailability}
-                  className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-                >
-                  ➕ Add
-                </button>
+                  className="px-3 py-2 border rounded-lg"/>
+                <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)}
+                  className="px-3 py-2 border rounded-lg"/>
+                <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)}
+                  className="px-3 py-2 border rounded-lg"/>
+                <button type="button" onClick={addAvailability}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-lg">➕ Add</button>
               </div>
               {form.availability.length > 0 ? (
                 <ul className="space-y-2">
                   {form.availability.map((a) => (
-                    <li
-                      key={a.date}
-                      className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex flex-wrap items-center gap-2"
-                    >
+                    <li key={a.date} className="p-3 bg-slate-50 border rounded-lg flex flex-wrap items-center gap-2">
                       <span className="font-medium">{a.date}</span>
                       {a.timeSlots.map((t) => (
-                        <span
-                          key={t}
-                          className="flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 rounded-full text-sm"
-                        >
+                        <span key={t} className="flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 rounded-full text-sm">
                           {t}
-                          <button
-                            type="button"
-                            onClick={() => removeSlot(a.date, t)}
-                            className="ml-1 text-red-500 hover:text-red-700"
-                          >
-                            
-                          </button>
+                          <button type="button" onClick={() => removeSlot(a.date, t)} className="ml-1 text-red-500 hover:text-red-700">✖</button>
                         </span>
                       ))}
                     </li>
@@ -368,20 +248,12 @@ export default function AddInstructorPage() {
               )}
             </div>
 
-            {/* Form Actions */}
-            <div className="flex justify-end gap-3 pt-6 border-t border-slate-200">
-              <button
-                type="button"
-                onClick={() => nav("/instructors")}
-                className="px-6 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={saving}
-                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:bg-orange-300 flex items-center gap-2"
-              >
+            {/* Actions */}
+            <div className="flex justify-end gap-3 pt-6 border-t">
+              <button type="button" onClick={() => navigate("/instructors")}
+                className="px-6 py-2 border rounded-lg">Cancel</button>
+              <button type="submit" disabled={saving}
+                className="px-6 py-2 bg-orange-500 text-white rounded-lg disabled:bg-orange-300 flex items-center gap-2">
                 {saving ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

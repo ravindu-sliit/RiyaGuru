@@ -351,32 +351,8 @@ export default function AvailabilityPage() {
           </div>
         )}
 
-        {/* Tips Section */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <div className="flex items-start gap-3">
-            <span className="text-blue-500 text-lg mt-1">💡</span>
-            <div>
-              <h3 className="text-blue-800 font-semibold mb-2">
-                Tips for checking availability:
-              </h3>
-              <ul className="text-blue-700 text-sm space-y-1">
-                <li>• Leave the date empty to see all currently active instructors</li>
-                <li>
-                  • Use time format like "09:00-17:00" or "14:30-16:30" for
-                  specific time ranges
-                </li>
-                <li>
-                  • Results show instructors who are active and have matching
-                  availability
-                </li>
-                <li>
-                  • Contact instructors directly using their phone numbers to
-                  confirm bookings
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+       
+        
       </div>
     </div>
   );

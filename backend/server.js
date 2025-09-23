@@ -116,7 +116,11 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
+
 app.use("/api/admin/payments", adminPaymentRoutes);
+
+app.use("/api/students", studentRoutes);
+
 
 
 

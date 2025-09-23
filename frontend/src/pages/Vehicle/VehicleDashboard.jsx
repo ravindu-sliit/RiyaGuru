@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { vehicleService } from "../../services/vehicleService";
@@ -92,14 +93,14 @@ const VehicleDashboard = () => {
       <div className="flex justify-between items-center bg-white px-6 py-4 border-b shadow sticky top-0 z-50">
         <div className="flex items-center gap-2 font-bold text-lg text-gray-900">
           <Car className="text-orange-500 w-7 h-7" />
-          DriveSchool
+          RiyaGuru.lk
         </div>
         <div className="flex items-center gap-4">
           <Link
             to="/instructors"
             className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-orange-500 bg-orange-50"
           >
-            <Settings size={16} /> Instructors Dashboard
+             Instructors Dashboard
           </Link>
           <Link
             to="/vehicles"

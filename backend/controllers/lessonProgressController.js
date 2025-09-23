@@ -10,30 +10,25 @@ export const addLessonProgress = async (req, res) => {
       student_id,
       student_course_id,
       instructor_id,
-      vehicle_type,
+      vehicle_type,   // this is your course name
       lesson_number,
       status,
       feedback,
     } = req.body;
 
-    // 1️⃣ Get student's progress record
-    const tracking = await ProgressTracking.findOne({ student_id, course_name: vehicle_type });
-    if (!tracking) {
-      return res.status(400).json({ message: "Progress record not found for this student/course" });
-    }
-
-    // 2️⃣ Prevent duplicate lesson numbers
-    const existingLesson = await LessonProgress.findOne({ student_id, vehicle_type, lesson_number });
+    // 1️⃣ Prevent duplicate lesson numbers
+    const existingLesson = await LessonProgress.findOne({
+      student_id,
+      vehicle_type,
+      lesson_number,
+    });
     if (existingLesson) {
-      return res.status(400).json({ message: `Lesson ${lesson_number} already recorded` });
+      return res
+        .status(400)
+        .json({ message: `Lesson ${lesson_number} already recorded for ${vehicle_type}` });
     }
 
-    // 3️⃣ Prevent adding more lessons than allowed
-    if (tracking.completed_lessons >= tracking.total_lessons) {
-      return res.status(400).json({ message: "All lessons already completed for this course" });
-    }
-
-    // 4️⃣ Save the new lesson progress
+    // 2️⃣ Save the new lesson progress
     const newLesson = new LessonProgress({
       student_id,
       student_course_id,
@@ -45,14 +40,15 @@ export const addLessonProgress = async (req, res) => {
     });
     await newLesson.save();
 
-    // 5️⃣ Auto update progress (caps at 100%)
+    // 3️⃣ Auto update progress (creates ProgressTracking if missing)
     const progress = await updateProgress(student_id, vehicle_type);
 
     res.status(201).json({
-      message: "Lesson added and progress updated",
+      message: "✅ Lesson added and progress updated",
       data: { lesson: newLesson, progress },
     });
   } catch (error) {
+    console.error("Error in addLessonProgress:", error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -78,18 +74,31 @@ export const getAllLessonProgress = async (req, res) => {
 };
 
 // ✅ Delete a lesson progress entry
+// ✅ Delete a lesson progress entry and re-sync progress
 export const deleteLessonProgress = async (req, res) => {
   try {
     const { lessonId } = req.params;
 
-    const deleted = await LessonProgress.findByIdAndDelete(lessonId);
-
-    if (!deleted) {
+    // 1️⃣ Find the lesson first
+    const lesson = await LessonProgress.findById(lessonId);
+    if (!lesson) {
       return res.status(404).json({ message: "Lesson not found" });
     }
 
-    res.json({ message: "Lesson deleted successfully", deleted });
+    // 2️⃣ Delete the lesson
+    await LessonProgress.findByIdAndDelete(lessonId);
+
+    // 3️⃣ Recalculate progress for this student + course
+    const progress = await updateProgress(lesson.student_id, lesson.vehicle_type);
+
+    res.json({
+      message: "✅ Lesson deleted successfully and progress updated",
+      deleted: lesson,
+      updatedProgress: progress,
+    });
   } catch (error) {
+    console.error("Error in deleteLessonProgress:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
