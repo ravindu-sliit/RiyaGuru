@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+// src/pages/Auth/RegisterStudent.jsx
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function RegisterStudent() {
@@ -15,19 +16,21 @@ function RegisterStudent() {
     password: "",
   });
 
-  // Only store FIRST visible error at a time:
+  // Track which fields the user has interacted with
+  const [touched, setTouched] = useState({});
+  // Store all field errors (keyed by field name)
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  // Refs to focus on server-side dup errors
+  // Refs for focusing server-side dup errors
   const emailRef = useRef(null);
   const nicRef = useRef(null);
   const phoneRef = useRef(null);
 
   const API_BASE = "http://localhost:5000";
 
-  // ------------- Validators (single-field) -------------
+  // -------- Validators (single-field) --------
   const validators = {
     full_name: (v) => {
       if (!v.trim()) return "Full name is required";
@@ -50,7 +53,7 @@ function RegisterStudent() {
         : "Enter 9 digits (or 0 followed by 9 digits)";
     },
     birthyear: (v) => {
-      const val = String(v).trim();
+      const val = String(v ?? "").trim();
       if (!val) return "Birth year is required";
       if (!/^\d{4}$/.test(val)) return "Birth year must be a 4-digit number";
       const yearNum = Number(val);
@@ -62,9 +65,13 @@ function RegisterStudent() {
         return "You must be at least 18 years old to register";
       return "";
     },
-    gender: () => "",
+    gender: (v) => {
+      // Optional in earlier code, but if you want required, swap the next line:
+      // if (!String(v).trim()) return "Gender is required";
+      return "";
+    },
     address: (v) => {
-      const val = v.trim();
+      const val = String(v ?? "").trim();
       if (!val) return "Address is required";
       if (val.length < 5) return "Address is too short";
       return /^[A-Za-z0-9\s,.\-/#]+$/.test(val)
@@ -72,7 +79,7 @@ function RegisterStudent() {
         : "Address contains invalid characters";
     },
     email: (v) => {
-      const val = v.trim();
+      const val = String(v ?? "").trim();
       if (!val) return "Email is required";
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
         ? ""
@@ -86,7 +93,6 @@ function RegisterStudent() {
     },
   };
 
-  // Order to validate on submit (first error wins)
   const fieldOrder = [
     "full_name",
     "nic",
@@ -98,51 +104,80 @@ function RegisterStudent() {
     "password",
   ];
 
-  // Validate first invalid field only
-  const validateFirstError = () => {
-    for (const name of fieldOrder) {
-      const v = inputs[name] ?? "";
-      const msg = validators[name] ? validators[name](v) : "";
-      if (msg) {
-        setErrors({ [name]: msg });
-        // focus the field
-        const el = document.getElementById(name);
-        el?.focus?.();
-        return false;
-      }
-    }
-    setErrors({});
-    return true;
+  // Validate a single field
+  const validateField = (name, value) => {
+    const fn = validators[name];
+    if (!fn) return "";
+    return fn(value);
   };
 
+  // Validate all fields, return an errors map
+  const validateAll = (vals) => {
+    const nextErrors = {};
+    for (const name of fieldOrder) {
+      const msg = validateField(name, vals[name] ?? "");
+      if (msg) nextErrors[name] = msg;
+    }
+    return nextErrors;
+  };
+
+  // --- Real-time validation: validate on change for touched fields ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     const nextVal = name === "nic" ? value.toUpperCase() : value;
-    setInputs((prev) => ({ ...prev, [name]: nextVal }));
 
-    // if the currently shown error is for this field, revalidate it live
-    if (errors[name]) {
-      const msg = validators[name] ? validators[name](nextVal) : "";
-      setErrors(msg ? { [name]: msg } : {});
-    }
+    setInputs((prev) => {
+      const merged = { ...prev, [name]: nextVal };
+      return merged;
+    });
+
+    // Consider the field 'touched' once user interacts
+    setTouched((prev) => (prev[name] ? prev : { ...prev, [name]: true }));
+
+    // Live-validate this field once touched
+    setErrors((prev) => {
+      const msg = validateField(name, nextVal);
+      const next = { ...prev };
+      if (msg) next[name] = msg;
+      else delete next[name];
+      return next;
+    });
   };
 
   const handleBlur = (e) => {
-    const { name, value } = e.target;
-    // Only validate on blur if this field currently has the visible error
-    if (errors[name]) {
-      const msg = validators[name] ? validators[name](value) : "";
-      setErrors(msg ? { [name]: msg } : {});
-    }
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    setErrors((prev) => {
+      const msg = validateField(name, inputs[name] ?? "");
+      const next = { ...prev };
+      if (msg) next[name] = msg;
+      else delete next[name];
+      return next;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError("");
 
-    // client-side: show only the first error
-    const ok = validateFirstError();
-    if (!ok) return;
+    // Validate everything
+    const nextErrors = validateAll(inputs);
+    setErrors(nextErrors);
+    // Mark everything touched so all errors display
+    const allTouched = Object.fromEntries(fieldOrder.map((f) => [f, true]));
+    setTouched(allTouched);
+
+    if (Object.keys(nextErrors).length > 0) {
+      // focus first invalid
+      for (const name of fieldOrder) {
+        if (nextErrors[name]) {
+          const el = document.getElementById(name);
+          el?.focus?.();
+          break;
+        }
+      }
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -166,7 +201,6 @@ function RegisterStudent() {
         const data = await res.json().catch(() => ({}));
 
         if (res.status === 409) {
-          // Backend returns { message, field }
           setSubmitError(data.message || "Duplicate value.");
           const f = String(data.field || "").toLowerCase();
           if (f === "email") emailRef.current?.focus();
@@ -197,12 +231,25 @@ function RegisterStudent() {
     }
   };
 
+  // Field error block with stable id for aria-describedby
   const FieldError = ({ name }) =>
-    errors[name] ? (
-      <p style={{ color: "crimson", marginTop: 6 }} role="alert">
+    touched[name] && errors[name] ? (
+      <div
+        id={`${name}-error`}
+        className="field-error"
+        role="alert"
+        aria-live="assertive"
+      >
         {errors[name]}
-      </p>
+      </div>
     ) : null;
+
+  // Helper to wire a11y attributes/valid-state
+  const a11y = (name) => ({
+    "aria-invalid": !!(touched[name] && errors[name]),
+    "aria-describedby": touched[name] && errors[name] ? `${name}-error` : undefined,
+    "data-valid": touched[name] ? (!errors[name] ? "true" : "false") : undefined,
+  });
 
   return (
     <div className="register-student" style={{ maxWidth: 520, margin: "0 auto" }}>
@@ -220,6 +267,7 @@ function RegisterStudent() {
             onChange={handleChange}
             onBlur={handleBlur}
             placeholder="e.g., John Doe"
+            {...a11y("full_name")}
           />
           <FieldError name="full_name" />
         </div>
@@ -236,6 +284,7 @@ function RegisterStudent() {
             onChange={handleChange}
             onBlur={handleBlur}
             placeholder="12 digits OR 9 digits + V"
+            {...a11y("nic")}
           />
           <FieldError name="nic" />
         </div>
@@ -253,6 +302,7 @@ function RegisterStudent() {
             onBlur={handleBlur}
             inputMode="numeric"
             placeholder="0XXXXXXXXX or 9 digits"
+            {...a11y("phone")}
           />
           <FieldError name="phone" />
         </div>
@@ -270,7 +320,9 @@ function RegisterStudent() {
             placeholder="e.g., 2002"
             min="1900"
             max={new Date().getFullYear()}
+            {...a11y("birthyear")}
           />
+          <FieldError name="birthyear" />
         </div>
 
         {/* Gender */}
@@ -282,6 +334,7 @@ function RegisterStudent() {
             value={inputs.gender}
             onChange={handleChange}
             onBlur={handleBlur}
+            {...a11y("gender")}
           >
             <option value="">Select gender</option>
             <option value="Male">Male</option>
@@ -289,6 +342,7 @@ function RegisterStudent() {
             <option value="Prefer not to say">Prefer not to say</option>
             <option value="Other">Other</option>
           </select>
+          <FieldError name="gender" />
         </div>
 
         {/* Address */}
@@ -302,6 +356,7 @@ function RegisterStudent() {
             onBlur={handleBlur}
             placeholder="Street, City"
             rows={3}
+            {...a11y("address")}
           />
           <FieldError name="address" />
         </div>
@@ -318,6 +373,7 @@ function RegisterStudent() {
             onChange={handleChange}
             onBlur={handleBlur}
             placeholder="you@example.com"
+            {...a11y("email")}
           />
           <FieldError name="email" />
         </div>
@@ -333,17 +389,18 @@ function RegisterStudent() {
             onChange={handleChange}
             onBlur={handleBlur}
             placeholder="Strong password"
+            {...a11y("password")}
           />
-          <small style={{ display: "block", opacity: 0.7, marginTop: 4 }}>
+          <small className="help-text">
             Min 6 chars incl. 1 uppercase, 1 lowercase, 1 number, 1 special
           </small>
           <FieldError name="password" />
         </div>
 
         {submitError && (
-          <p style={{ color: "crimson", marginTop: 8 }} role="alert">
+          <div className="submit-error" role="alert" aria-live="assertive">
             {submitError}
-          </p>
+          </div>
         )}
 
         <button type="submit" disabled={submitting} style={{ marginTop: 12 }}>

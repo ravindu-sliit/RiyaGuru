@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
 import { apiFetch, API_BASE } from "../../services/api";
+import "../../styles/student-dashboard.css"; // <-- ensure this path exists
 
 export default function StudentDashboard() {
   const { id } = useParams();
@@ -15,7 +16,6 @@ export default function StudentDashboard() {
   const [ok, setOk] = useState("");
   const [docs, setDocs] = useState([]);
 
-  // Hooks must run unconditionally
   useEffect(() => {
     async function loadStudent() {
       if (!token) return;
@@ -101,189 +101,139 @@ export default function StudentDashboard() {
 
   if (!student) return <div style={{ padding: 16 }}>Loading...</div>;
 
-  // Extract first name
   const firstName = student.full_name?.split(" ")[0] || "Student";
+  const avatarSrc = student.profilePicUrl || "/default-avatar.png";
 
   return (
-    <div style={{ padding: 16 }}>
-      {/* Header with greeting + buttons */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
-        <h1>Hello {firstName}!</h1>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            onClick={handleReturnHome}
-            style={{
-              background: "#3182ce",
-              color: "white",
-              border: "none",
-              borderRadius: 6,
-              padding: "6px 12px",
-              cursor: "pointer",
-            }}
-          >
-            Return Home
-          </button>
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "#e53e3e",
-              color: "white",
-              border: "none",
-              borderRadius: 6,
-              padding: "6px 12px",
-              cursor: "pointer",
-            }}
-          >
-            Log Out
-          </button>
-        </div>
-      </div>
+    <div className="student-dashboard">
+      {/* Header: avatar ABOVE details, all centered */}
+      <header className="sd-header">
+        <img
+          src={avatarSrc}
+          alt="Profile"
+          className="sd-avatar"
+          loading="lazy"
+          decoding="async"
+        />
 
-      {err && <div style={{ color: "crimson", marginBottom: 8 }}>{err}</div>}
-      {ok && <div style={{ color: "green", marginBottom: 8 }}>{ok}</div>}
+        <h1 className="sd-greet">Hello {firstName}!</h1>
 
-      {/* Quick actions */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        <button onClick={() => navigate(`/student/${id}/edit`)}>Edit Details</button>
-        <button onClick={() => navigate(`/student/${id}/password`)}>Change Password</button>
-      </div>
-
-      {/* Profile Picture */}
-      <section style={{ marginBottom: 24 }}>
-        <h3>Profile Picture</h3>
-        {student.profilePicUrl ? (
-          <>
-            <img
-              src={student.profilePicUrl}
-              alt="Profile"
-              style={{
-                width: 160,
-                height: 160,
-                objectFit: "cover",
-                borderRadius: 8,
-                border: "1px solid #eee",
-              }}
-            />
-            <p style={{ marginTop: 8 }}>Replace profile picture:</p>
-            <form onSubmit={uploadPic}>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-              />
-              <button style={{ marginLeft: 8 }} type="submit">
-                Upload
-              </button>
-            </form>
-          </>
-        ) : (
-          <>
-            <p>No profile picture uploaded yet.</p>
-            <form onSubmit={uploadPic}>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-              />
-              <button style={{ marginLeft: 8 }} type="submit">
-                Upload
-              </button>
-            </form>
-          </>
-        )}
-      </section>
-
-      {/* Documents */}
-      <section style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <h3 style={{ margin: 0 }}>My Documents</h3>
-          <Link to={`/student/${id}/docs/upload`}>
-            <button>Upload Documents</button>
-          </Link>
-        </div>
-
-        {docs.length === 0 ? (
-          <p style={{ marginTop: 8 }}>No documents uploaded yet.</p>
-        ) : (
-          <div
-            style={{
-              marginTop: 12,
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: 12,
-            }}
-          >
-            {docs.map((d) => (
-              <div
-                key={d.docId}
-                style={{
-                  border: "1px solid #eee",
-                  borderRadius: 8,
-                  padding: 10,
-                }}
-              >
-                <div style={{ fontWeight: 600, marginBottom: 6 }}>
-                  {d.docType}
-                </div>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <img
-                    src={d.frontUrl}
-                    alt={`${d.docType} Front`}
-                    style={{
-                      width: 90,
-                      height: 60,
-                      objectFit: "cover",
-                      borderRadius: 4,
-                    }}
-                  />
-                  <img
-                    src={d.backUrl}
-                    alt={`${d.docType} Back`}
-                    style={{
-                      width: 90,
-                      height: 60,
-                      objectFit: "cover",
-                      borderRadius: 4,
-                    }}
-                  />
-                </div>
-                <button
-                  style={{ marginTop: 10 }}
-                  onClick={() => deleteDoc(d.docType)}
-                >
-                  Delete {d.docType}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Student Info */}
-      <section>
-        <h3>My Info</h3>
-        <ul>
+        {/* Student key details (slightly larger, centered) */}
+        <ul className="sd-details">
           <li><b>Student ID:</b> {student.studentId}</li>
           <li><b>Name:</b> {student.full_name}</li>
           <li><b>NIC:</b> {student.nic}</li>
           <li><b>Phone:</b> {student.phone}</li>
-          <li><b>Birth Year:</b> {student.birthyear}</li>
-          <li><b>Gender:</b> {student.gender}</li>
-          <li><b>Address:</b> {student.address}</li>
           <li><b>Email:</b> {student.email}</li>
         </ul>
-      </section>
 
-      <Link to={`/student/${id}/preferences`}>
-        <button style={{ marginTop: 10 }}>Preferences</button>
-      </Link>
+        {/* Primary actions directly beneath details */}
+        <div className="sd-actions">
+          <button
+            className="btn btn-soft"
+            onClick={() => navigate(`/student/${id}/edit`)}
+          >
+            Edit Details
+          </button>
+          <button
+            className="btn btn-soft"
+            onClick={() => navigate(`/student/${id}/password`)}
+          >
+            Change Password
+          </button>
+        </div>
+
+        {/* Secondary utilities */}
+        <div className="sd-utilities">
+          <button className="btn btn-outline" onClick={handleReturnHome}>
+            Return Home
+          </button>
+          <button className="btn btn-danger" onClick={handleLogout}>
+            Log Out
+          </button>
+        </div>
+      </header>
+
+      {/* Alerts */}
+      <div className="sd-messages">
+        {err && <div className="alert error" role="alert">{err}</div>}
+        {ok && <div className="alert success" role="status">{ok}</div>}
+      </div>
+
+      {/* Content grid */}
+      <main className="sd-grid">
+        {/* Profile Picture (upload/replace preview) */}
+        <section className="card sd-card">
+          <h3 className="card-title">Profile Picture</h3>
+
+          <div className="sd-upload-preview">
+            <img
+              src={avatarSrc}
+              alt="Current avatar"
+              className="sd-avatar-sm"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="text-muted">Replace your profile picture:</div>
+          </div>
+
+          <form onSubmit={uploadPic} className="sd-upload">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+            />
+            <button className="btn btn-primary" type="submit">Upload</button>
+          </form>
+        </section>
+
+        {/* Documents */}
+        <section className="card sd-card">
+          <div className="card-header">
+            <h3 className="card-title">My Documents</h3>
+            <Link to={`/student/${id}/docs/upload`}>
+              <button className="btn btn-navy">Upload Documents</button>
+            </Link>
+          </div>
+
+          {docs.length === 0 ? (
+            <p className="text-muted">No documents uploaded yet.</p>
+          ) : (
+            <div className="sd-docs">
+              {docs.map((d) => (
+                <div key={d.docId} className="sd-doc">
+                  <div className="sd-doc-title">{d.docType}</div>
+                  <div className="sd-doc-images">
+                    <img src={d.frontUrl} alt={`${d.docType} Front`} loading="lazy" />
+                    <img src={d.backUrl} alt={`${d.docType} Back`} loading="lazy" />
+                  </div>
+                  <button
+                    className="btn btn-outline"
+                    onClick={() => deleteDoc(d.docType)}
+                  >
+                    Delete {d.docType}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Full info (kept for completeness) */}
+        <section className="card sd-card">
+          <h3 className="card-title">My Info</h3>
+          <ul className="sd-info-list">
+            <li><b>Student ID:</b> {student.studentId}</li>
+            <li><b>Name:</b> {student.full_name}</li>
+            <li><b>NIC:</b> {student.nic}</li>
+            <li><b>Phone:</b> {student.phone}</li>
+            <li><b>Birth Year:</b> {student.birthyear}</li>
+            <li><b>Gender:</b> {student.gender}</li>
+            <li><b>Address:</b> {student.address}</li>
+            <li><b>Email:</b> {student.email}</li>
+          </ul>
+        </section>
+      </main>
     </div>
   );
 }
