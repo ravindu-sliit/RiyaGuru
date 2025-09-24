@@ -124,7 +124,7 @@ export default function InstructorListPage() {
             Vehicles Management
           </Link>
           <Link
-            to="/instructors"
+            to="/Instructordashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
              Instructors Management

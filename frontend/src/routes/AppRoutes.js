@@ -9,11 +9,7 @@ import StudentHome from "../pages/Home/StudentHome";
 import InstructorHome from "../pages/Home/InstructorHome";
 import AdminHome from "../pages/Home/AdminHome";
 
-
 import AdminViewStudents from "../pages/Admin/AdminViewStudents"; //View All Students
-
-
-
 // Maintenance
 import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
 
@@ -31,6 +27,14 @@ import StudentInquiry from "../pages/Inquiry/StudentInquiry";
 
 // Instructor
 import InstructorRoutes from "./instructorRoutes";
+import InstructorPage from "../pages/Instructor/InstructorPage";
+import InstructorListPage from "../pages/Instructor/InstructorListPage";
+import InstructorDetailsPage from "../pages/Instructor/InstructorDetailsPage";
+import AddInstructorPage from "../pages/Instructor/AddInstructorPage";
+import EditInstructorPage from "../pages/Instructor/EditInstructorPage";
+import AvailabilityPage from "../pages/Instructor/AvailabilityPage";
+import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
+
 
 // Vehicles
 import VehicleList from "../pages/Vehicle/VehicleList";
@@ -45,9 +49,18 @@ import AddBookingPage from "../pages/Booking/AddBookingPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
 import BookingEditPage from "../pages/Booking/BookingEditPage";
 
+
 export default function AppRoutes() {
   return (
     <Routes>
+       {/* Instructor CRUD */}
+      <Route path="instructors/list" element={<InstructorListPage />} />
+      <Route path="instructors/:id" element={<InstructorDetailsPage />} />
+      <Route path="instructors/add" element={<AddInstructorPage />} />
+      <Route path="instructors/:id/edit" element={<EditInstructorPage />} />
+      <Route path="instructors/availability" element={<AvailabilityPage />} />
+      <Route path="instructors/status" element={<StatusFilterPage />} />
+
       {/* Public */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/landing" element={<DriveManagerLanding />} />
@@ -76,6 +89,7 @@ export default function AppRoutes() {
 
       {/* Instructors */}
       <Route path="/instructor/*" element={<InstructorRoutes />} />
+       <Route path="Instructordashboard" element={<InstructorPage />} />
 
       {/* Vehicles */}
       <Route path="/vehicles" element={<VehicleList />} />

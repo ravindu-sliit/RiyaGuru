@@ -99,7 +99,7 @@ export default function LoginPage() {
       } else if (data.role === "Instructor") {
         navigate("/instructor", { replace: true });
       } else if (data.role === "Admin") {
-        navigate("/admin", { replace: true });
+        navigate("/home/admin", { replace: true });
       } else {
         navigate("/landing", { replace: true });
       }

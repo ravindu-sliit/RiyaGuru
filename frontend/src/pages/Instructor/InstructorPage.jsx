@@ -1,4 +1,6 @@
 // src/pages/Instructor/InstructorPage.jsx
+
+//sankalpa instructor landin dashBoard
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import InstructorAPI from "../../api/instructorApi";
@@ -117,7 +119,7 @@ const cards = useMemo(
           <Link to="/dashboard" className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium">
             Vehicles Management
           </Link>
-          <Link to="/instructors" className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium">
+          <Link to="/Instructordashboard" className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium">
             Instructors Management
           </Link>
         </div>
@@ -142,7 +144,7 @@ const cards = useMemo(
               <Link to="/instructors/availability" className="bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-semibold border shadow-sm">
                 Availability
               </Link>
-              <Link to="/instructor/filter" className="bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-semibold border shadow-sm">
+              <Link to="" className="bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-semibold border shadow-sm">
                 Filter Status
               </Link>
             </div>

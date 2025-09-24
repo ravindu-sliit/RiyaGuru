@@ -5,13 +5,9 @@ import InstructorLayout from "../layouts/InstructorLayout";
 // Pages
 import InstructorLessonProgressHome from "../pages/Instructor/InstructorLessonProgressHome";
 import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
-import InstructorListPage from "../pages/Instructor/InstructorListPage";
-import InstructorDetailsPage from "../pages/Instructor/InstructorDetailsPage";
-import AddInstructorPage from "../pages/Instructor/AddInstructorPage";
-import EditInstructorPage from "../pages/Instructor/EditInstructorPage";
-import AvailabilityPage from "../pages/Instructor/AvailabilityPage";
-import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
+
 import ProfilePage from "../pages/Instructor/ProfilePage";
+
 
 import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
 import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
@@ -26,13 +22,9 @@ export default function InstructorRoutes() {
         {/* Dashboard (default) */}
         <Route index element={<InstructorLessonProgressHome />} />
 
-        {/* Instructor CRUD */}
-        <Route path="instructors/list" element={<InstructorListPage />} />
-        <Route path="instructors/:id" element={<InstructorDetailsPage />} />
-        <Route path="instructors/add" element={<AddInstructorPage />} />
-        <Route path="instructors/:id/edit" element={<EditInstructorPage />} />
-        <Route path="instructors/availability" element={<AvailabilityPage />} />
-        <Route path="instructors/status" element={<StatusFilterPage />} />
+       
+
+       
 
         {/* Lesson Progress */}
         <Route path="lesson-entry" element={<InstructorLessonEntryPage />} />
