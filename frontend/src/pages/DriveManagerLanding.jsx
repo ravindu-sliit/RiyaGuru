@@ -28,15 +28,18 @@ export default function DriveManagerLanding() {
     }
 
     function handleNavbarScroll() {
-      const navbar = document.querySelector(".navbar");
-      if (window.scrollY > 100) {
-        navbar.style.background = "rgba(255, 255, 255, 0.95)";
-        navbar.style.backdropFilter = "blur(10px)";
-      } else {
-        navbar.style.background = "#FFFFFF";
-        navbar.style.backdropFilter = "none";
-      }
-    }
+  const navbar = document.querySelector(".navbar");
+  if (!navbar) return; // ✅ skip if navbar not found
+
+  if (window.scrollY > 100) {
+    navbar.style.background = "rgba(255, 255, 255, 0.95)";
+    navbar.style.backdropFilter = "blur(10px)";
+  } else {
+    navbar.style.background = "#FFFFFF";
+    navbar.style.backdropFilter = "none";
+  }
+}
+
 
     function setupSmoothScrolling() {
       document.querySelectorAll('a[href^="#"]').forEach((anchor) => {

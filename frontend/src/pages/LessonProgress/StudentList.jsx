@@ -66,7 +66,7 @@ export default function StudentList() {
           {filtered.map((s) => (
             <Link
               key={s.studentId}
-              to={`/lesson-progress/student/${s.studentId}`}
+              to={`/instructor/lesson-progress/student/${s.studentId}`}
               className="group bg-white rounded-xl shadow border border-gray-100 p-6 hover:shadow-lg hover:border-blue-200 transition-all duration-300"
             >
               <h2 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600">

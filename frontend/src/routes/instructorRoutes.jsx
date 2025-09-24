@@ -6,8 +6,7 @@ import InstructorLayout from "../layouts/InstructorLayout";
 import InstructorLessonProgressHome from "../pages/Instructor/InstructorLessonProgressHome";
 import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
 
-import ProfilePage from "../pages/Instructor/ProfilePage";
-
+import ProfilePage from "../pages/Instructor/InstructorProfile";
 
 import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
 import LessonProgressList from "../pages/LessonProgress/LessonProgressList";

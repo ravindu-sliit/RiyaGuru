@@ -14,7 +14,7 @@ export default function InstructorLessonEntryPage() {
   const [form, setForm] = useState({
     student_id: "",
     student_course_id: "",
-    instructor_id: "I001", // TODO: replace with logged-in instructor
+    instructor_id: localStorage.getItem("rg_userId") || "",
     vehicle_type: "",
     lesson_number: 1,
     status: "Completed",
