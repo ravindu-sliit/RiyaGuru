@@ -1,4 +1,3 @@
-// controllers/maintenancepdfController.js
 import Maintenance from "../models/Maintenance.js";
 import PDFDocument from "pdfkit";
 
@@ -9,11 +8,10 @@ export const generateMaintenancePDF = async (req, res) => {
 
     const doc = new PDFDocument({ margin: 50 });
 
-    // Set headers for PDF download
+    // Headers for download
     res.setHeader("Content-Disposition", "attachment; filename=maintenance-report.pdf");
     res.setHeader("Content-Type", "application/pdf");
 
-    // Pipe PDF stream to response
     doc.pipe(res);
 
     // Title
@@ -40,7 +38,7 @@ export const generateMaintenancePDF = async (req, res) => {
 
     records.forEach((rec) => {
       const vehicle = rec.vehicleId ? `${rec.vehicleId.regNo} (${rec.vehicleId.model})` : "N/A";
-      const serviceDate = new Date(rec.serviceDate).toLocaleDateString("en-US");
+      const serviceDate = rec.serviceDate ? new Date(rec.serviceDate).toLocaleDateString("en-US") : "N/A";
       const type = rec.serviceType || "N/A";
       const cost = rec.cost ? parseFloat(rec.cost).toFixed(2) : "0.00";
 
@@ -51,7 +49,7 @@ export const generateMaintenancePDF = async (req, res) => {
 
       y += 20;
 
-      // Add new page if too long
+      // Add new page if needed
       if (y > 700) {
         doc.addPage();
         y = 50;
@@ -59,7 +57,6 @@ export const generateMaintenancePDF = async (req, res) => {
     });
 
     // Footer
-    doc.moveDown(2);
     doc.fontSize(10).text(`Generated on: ${new Date().toLocaleString()}`, 50, 750, {
       align: "right",
     });
