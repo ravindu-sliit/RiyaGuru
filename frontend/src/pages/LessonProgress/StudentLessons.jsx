@@ -79,7 +79,7 @@ export default function StudentLessons() {
               <BookOpen className="w-4 h-4 text-white" />
             </div>
             <span>
-              Drive<span className="text-orange-400">Manager</span> Pro
+              Riya<span className="text-orange-400">Guru</span>.lk
             </span>
           </div>
           <Link
