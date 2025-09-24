@@ -27,6 +27,14 @@ import receiptRoutes from "./route/receiptRoutes.js";
 import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
 
+import adminPaymentRoutes from "./route/adminPaymentRoutes.js";
+
+import adminRoutes from "./route/AdminRoutes.js"; 
+
+// This one exists on your local branch:
+//import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
+
+
 // -----------------------------
 // Routes (plural folder)
 // -----------------------------
@@ -102,7 +110,14 @@ app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
 
-// -----------------------------
+
+app.use("/api/admin/payments", adminPaymentRoutes);
+
+app.use("/api/students", studentRoutes);
+
+app.use("/api/admins", adminRoutes);
+
+
 // Global error handler
 // -----------------------------
 app.use((err, req, res, next) => {
