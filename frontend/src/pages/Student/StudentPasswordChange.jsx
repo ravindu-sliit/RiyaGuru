@@ -32,6 +32,13 @@ export default function StudentPasswordChange() {
     load();
   }, [id]);
 
+  // 🔹 Password validation helper
+  function validatePassword(pwd) {
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    return regex.test(pwd);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setErr("");
@@ -45,8 +52,10 @@ export default function StudentPasswordChange() {
       setErr("New passwords do not match.");
       return;
     }
-    if (newPwd.length < 6) {
-      setErr("New password must be at least 6 characters.");
+    if (!validatePassword(newPwd)) {
+      setErr(
+        "Password must be at least 6 characters long, include one uppercase, one lowercase, one number, and one special character."
+      );
       return;
     }
 
@@ -57,13 +66,13 @@ export default function StudentPasswordChange() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password: oldPwd }),
       });
-      const bodyLogin = await resLogin.json().catch(() => ({}));
+
       if (!resLogin.ok) {
-        throw new Error(bodyLogin.message || "Old password is incorrect.");
+        throw new Error("Old Password Incorrect");
       }
 
       // 2) Update password through StudentController
-      const updateRes = await apiFetch(`/api/students/${id}`, {
+      await apiFetch(`/api/students/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: newPwd }),
@@ -85,7 +94,9 @@ export default function StudentPasswordChange() {
   return (
     <div style={{ padding: 16 }}>
       <h2>Change Password</h2>
-      <p><Link to={`/student/${id}/dashboard`}>&larr; Back to Dashboard</Link></p>
+      <p>
+        <Link to={`/student/${id}/dashboard`}>&larr; Back to Dashboard</Link>
+      </p>
 
       {err && <div style={{ color: "crimson", marginBottom: 8 }}>{err}</div>}
       {ok && <div style={{ color: "green", marginBottom: 8 }}>{ok}</div>}
@@ -93,22 +104,41 @@ export default function StudentPasswordChange() {
       <form onSubmit={handleSubmit} style={{ maxWidth: 420 }}>
         <div style={{ marginBottom: 10 }}>
           <label>Email</label>
-          <input value={email} disabled style={{ width: "100%", background: "#f7f7f7" }} />
+          <input
+            value={email}
+            disabled
+            style={{ width: "100%", background: "#f7f7f7" }}
+          />
         </div>
 
         <div style={{ marginBottom: 10 }}>
           <label>Current Password</label>
-          <input type="password" value={oldPwd} onChange={(e) => setOldPwd(e.target.value)} style={{ width: "100%" }} />
+          <input
+            type="password"
+            value={oldPwd}
+            onChange={(e) => setOldPwd(e.target.value)}
+            style={{ width: "100%" }}
+          />
         </div>
 
         <div style={{ marginBottom: 10 }}>
           <label>New Password</label>
-          <input type="password" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} style={{ width: "100%" }} />
+          <input
+            type="password"
+            value={newPwd}
+            onChange={(e) => setNewPwd(e.target.value)}
+            style={{ width: "100%" }}
+          />
         </div>
 
         <div style={{ marginBottom: 16 }}>
           <label>Confirm New Password</label>
-          <input type="password" value={newPwd2} onChange={(e) => setNewPwd2(e.target.value)} style={{ width: "100%" }} />
+          <input
+            type="password"
+            value={newPwd2}
+            onChange={(e) => setNewPwd2(e.target.value)}
+            style={{ width: "100%" }}
+          />
         </div>
 
         <button type="submit">Change Password</button>

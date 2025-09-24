@@ -20,17 +20,73 @@ function unlinkIfExists(filename) {
   }
 }
 
+function parseDuplicateKeyField(err) {
+  if (err?.code !== 11000) return null;
+  const kp = err?.keyPattern || {};
+  if (kp.email === 1) return "email";
+  if (kp.nic === 1) return "nic";
+  if (kp.phone === 1) return "phone";
+  // fallback: inspect errmsg
+  const msg = String(err?.errmsg || "").toLowerCase();
+  if (msg.includes("email")) return "email";
+  if (msg.includes("nic")) return "nic";
+  if (msg.includes("phone")) return "phone";
+  return null;
+}
+
 // Add a new student (profile pic optional)
 export const addStudent = async (req, res) => {
   const { full_name, nic, phone, birthyear, gender, address, email, password } = req.body;
 
   if (!email || !password) {
-    // cleanup uploaded pic if any
     unlinkIfExists(req?.file?.filename);
     return res.status(400).json({ message: "Email and password are required" });
   }
 
   try {
+    // Normalizations
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const normalizedNIC = String(nic || "").trim().toUpperCase();
+    const normalizedPhone = String(phone || "").trim();
+
+    // 🔎 PRECHECK: email unique across User + Student
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      unlinkIfExists(req?.file?.filename);
+      return res.status(409).json({
+        message: "This email is already registered. Please use another email or sign in.",
+        field: "email",
+      });
+    }
+    const existingStudentEmail = await Student.findOne({ email: normalizedEmail });
+    if (existingStudentEmail) {
+      unlinkIfExists(req?.file?.filename);
+      return res.status(409).json({
+        message: "This email is already registered. Please use another email or sign in.",
+        field: "email",
+      });
+    }
+
+    // 🔎 PRECHECK: NIC unique
+    const existingNic = await Student.findOne({ nic: normalizedNIC });
+    if (existingNic) {
+      unlinkIfExists(req?.file?.filename);
+      return res.status(409).json({
+        message: "This NIC is already registered. Please check and try again.",
+        field: "nic",
+      });
+    }
+
+    // 🔎 PRECHECK: Phone unique
+    const existingPhone = await Student.findOne({ phone: normalizedPhone });
+    if (existingPhone) {
+      unlinkIfExists(req?.file?.filename);
+      return res.status(409).json({
+        message: "This phone number is already registered. Please use another number.",
+        field: "phone",
+      });
+    }
+
     // 1️⃣ Get next student sequence
     const counter = await Counter.findOneAndUpdate(
       { _id: "studentId" },
@@ -42,18 +98,18 @@ export const addStudent = async (req, res) => {
     // 2️⃣ Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 3️⃣ Create student (store profilePicPath if uploaded)
+    // 3️⃣ Create student
     const profilePicPath = req?.file?.filename || null;
 
     const student = new Student({
       studentId,
       full_name,
-      nic,
-      phone,
+      nic: normalizedNIC,
+      phone: normalizedPhone,
       birthyear,
       gender,
       address,
-      email,
+      email: normalizedEmail,
       profilePicPath,
     });
     await student.save();
@@ -63,12 +119,11 @@ export const addStudent = async (req, res) => {
       userId: studentId,
       name: full_name,
       role: "Student",
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
     });
     await user.save();
 
-    // Build public URL if pic exists
     const profilePicUrl = profilePicPath
       ? `${req.protocol}://${req.get("host")}/uploads/studentProfPics/${profilePicPath}`
       : null;
@@ -78,8 +133,19 @@ export const addStudent = async (req, res) => {
       user,
     });
   } catch (err) {
-    // in case of error, cleanup uploaded pic
     unlinkIfExists(req?.file?.filename);
+
+    const dupField = parseDuplicateKeyField(err);
+    if (dupField) {
+      const message =
+        dupField === "email"
+          ? "This email is already registered. Please use another email or sign in."
+          : dupField === "nic"
+          ? "This NIC is already registered. Please check and try again."
+          : "This phone number is already registered. Please use another number.";
+      return res.status(409).json({ message, field: dupField });
+    }
+
     console.error("Error adding student:", err);
     res.status(500).json({ message: "Server error while adding student" });
   }
@@ -129,21 +195,69 @@ export const updateStudent = async (req, res) => {
   const { full_name, nic, phone, birthyear, gender, address, email, password } = req.body;
 
   try {
-    // Hash password if provided (for User only; Student.password is not required)
+    // Find current student
+    const current = await Student.findOne({ studentId: req.params.id });
+    if (!current) {
+      unlinkIfExists(req?.file?.filename);
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Normalizations & change detection
+    const nextEmail = email ? String(email).trim().toLowerCase() : current.email;
+    const nextNIC = nic ? String(nic).trim().toUpperCase() : current.nic;
+    const nextPhone = phone ? String(phone).trim() : current.phone;
+
+    // 🔎 If email changes, ensure unique across users/students
+    if (nextEmail !== current.email) {
+      const emailTakenUser = await User.findOne({ email: nextEmail, userId: { $ne: req.params.id } });
+      if (emailTakenUser) {
+        unlinkIfExists(req?.file?.filename);
+        return res.status(409).json({
+          message: "This email is already registered. Please use another email.",
+          field: "email",
+        });
+      }
+      const emailTakenStudent = await Student.findOne({ email: nextEmail, studentId: { $ne: req.params.id } });
+      if (emailTakenStudent) {
+        unlinkIfExists(req?.file?.filename);
+        return res.status(409).json({
+          message: "This email is already registered. Please use another email.",
+          field: "email",
+        });
+      }
+    }
+
+    // 🔎 If NIC changes, ensure unique
+    if (nextNIC !== current.nic) {
+      const nicTaken = await Student.findOne({ nic: nextNIC, studentId: { $ne: req.params.id } });
+      if (nicTaken) {
+        unlinkIfExists(req?.file?.filename);
+        return res.status(409).json({
+          message: "This NIC is already registered. Please check and try again.",
+          field: "nic",
+        });
+      }
+    }
+
+    // 🔎 If phone changes, ensure unique
+    if (nextPhone !== current.phone) {
+      const phoneTaken = await Student.findOne({ phone: nextPhone, studentId: { $ne: req.params.id } });
+      if (phoneTaken) {
+        unlinkIfExists(req?.file?.filename);
+        return res.status(409).json({
+          message: "This phone number is already registered. Please use another number.",
+          field: "phone",
+        });
+      }
+    }
+
+    // Hash password if provided
     let hashedPassword;
     if (password) {
       hashedPassword = await bcrypt.hash(password, 10);
     }
 
-    // Find current student
-    const current = await Student.findOne({ studentId: req.params.id });
-    if (!current) {
-      // cleanup new upload if any
-      unlinkIfExists(req?.file?.filename);
-      return res.status(404).json({ message: "Student not found" });
-    }
-
-    // If a new pic is uploaded, delete the old file (if existed)
+    // Handle profile pic replacement
     let profilePicPath = current.profilePicPath;
     if (req?.file?.filename) {
       if (profilePicPath) unlinkIfExists(profilePicPath);
@@ -154,12 +268,12 @@ export const updateStudent = async (req, res) => {
       { studentId: req.params.id },
       {
         full_name,
-        nic,
-        phone,
+        nic: nextNIC,
+        phone: nextPhone,
         birthyear,
         gender,
         address,
-        email,
+        email: nextEmail,
         profilePicPath,
       },
       { new: true }
@@ -169,7 +283,7 @@ export const updateStudent = async (req, res) => {
     const user = await User.findOneAndUpdate(
       { userId: req.params.id },
       {
-        email,
+        email: nextEmail,
         ...(hashedPassword && { password: hashedPassword }),
       },
       { new: true }
@@ -181,8 +295,19 @@ export const updateStudent = async (req, res) => {
 
     res.status(200).json({ student: { ...student.toObject(), profilePicUrl }, user });
   } catch (err) {
-    // cleanup uploaded pic if update failed
     unlinkIfExists(req?.file?.filename);
+
+    const dupField = parseDuplicateKeyField(err);
+    if (dupField) {
+      const message =
+        dupField === "email"
+          ? "This email is already registered. Please use another email."
+          : dupField === "nic"
+          ? "This NIC is already registered. Please check and try again."
+          : "This phone number is already registered. Please use another number.";
+      return res.status(409).json({ message, field: dupField });
+    }
+
     console.error("Error updating student:", err);
     res.status(500).json({ message: "Server error while updating student" });
   }
@@ -207,7 +332,6 @@ export const deleteStudent = async (req, res) => {
 export const getMe = async (req, res) => {
   try {
     const student = await Student.findOne({ studentId: req.user.userId }); // userId == studentId
-
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }

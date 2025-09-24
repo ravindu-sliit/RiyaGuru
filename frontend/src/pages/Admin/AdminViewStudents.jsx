@@ -1,8 +1,5 @@
 // frontend/src/pages/Admin/AdminViewStudents.jsx
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
@@ -25,8 +22,6 @@ async function apiFetch(path, options = {}) {
 }
 
 export default function AdminViewStudents() {
-  const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [opMsg, setOpMsg] = useState("");
@@ -109,7 +104,6 @@ export default function AdminViewStudents() {
     }
   }
 
-  // Delete student → confirm → delete → POPUP → redirect back to /admin/students
   async function handleDelete(studentId) {
     const yes = window.confirm(
       `Are you sure you want to permanently delete student ${studentId}? This cannot be undone.`
@@ -120,13 +114,8 @@ export default function AdminViewStudents() {
       setErr("");
       setOpMsg("");
       await apiFetch(`/api/students/${studentId}`, { method: "DELETE" });
-
-      // Optimistically update UI
       setStudents((prev) => prev.filter((s) => s.studentId !== studentId));
-
-      // Show popup and redirect to the same page (refresh UX)
-      window.alert(`Deleted student ${studentId}.`);
-      navigate("/admin/students", { replace: true });
+      setOpMsg(`Deleted student ${studentId}.`);
     } catch (e) {
       setErr(e.message);
     }
@@ -260,4 +249,3 @@ export default function AdminViewStudents() {
     </div>
   );
 }
-
