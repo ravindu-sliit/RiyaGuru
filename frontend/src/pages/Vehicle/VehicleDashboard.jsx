@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { vehicleService } from "../../services/vehicleService";
@@ -10,7 +9,6 @@ import {
   Plus,
   TrendingUp,
   Calendar,
-  Settings,
   Filter,
 } from "lucide-react";
 import { toast } from "react-toastify";
@@ -100,7 +98,7 @@ const VehicleDashboard = () => {
             to="/Instructordashboard"
             className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-orange-500 bg-orange-50"
           >
-             Instructors Dashboard
+            Instructors Dashboard
           </Link>
           <Link
             to="/vehicles"
@@ -113,6 +111,13 @@ const VehicleDashboard = () => {
             className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
           >
             <Plus size={16} /> Add Vehicle
+          </Link>
+          {/* 🔙 Back Button to Admin */}
+          <Link
+            to="/home/admin"
+            className="px-4 py-2 rounded-lg text-slate-600 hover:text-red-500 hover:bg-red-50 transition-all font-medium"
+          >
+            ⬅ Back
           </Link>
         </div>
       </div>
@@ -184,7 +189,9 @@ const VehicleDashboard = () => {
               <span className="text-sm font-medium text-gray-500">
                 {stat.title}
               </span>
-              <div className={`w-10 h-10 rounded-md flex items-center justify-center ${stat.bg}`}>
+              <div
+                className={`w-10 h-10 rounded-md flex items-center justify-center ${stat.bg}`}
+              >
                 {stat.icon}
               </div>
             </div>

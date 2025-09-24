@@ -7,6 +7,7 @@ import InstructorLessonProgressHome from "../pages/Instructor/InstructorLessonPr
 import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
 
 import ProfilePage from "../pages/Instructor/InstructorProfile";
+import InstructorBookings from "../pages/Instructor/InstructorBookings";
 
 import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
 import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
@@ -23,7 +24,7 @@ export default function InstructorRoutes() {
 
        
 
-       
+        <Route path="instructorbooking" element={<InstructorBookings />} />
 
         {/* Lesson Progress */}
         <Route path="lesson-entry" element={<InstructorLessonEntryPage />} />
