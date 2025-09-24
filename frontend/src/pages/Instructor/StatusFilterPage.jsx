@@ -58,7 +58,7 @@ export default function StatusFilterPage() {
             Vehicle Management
           </Link>
           <Link
-            to="/instructors"
+            to="/Instructordashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
           >
             Instructor Management

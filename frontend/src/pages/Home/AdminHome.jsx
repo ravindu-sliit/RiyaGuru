@@ -17,6 +17,14 @@ export default function AdminHome() {
       description: "Manage the driving school fleet",
       icon: <Car className="w-6 h-6 text-orange-600" />,
       path: "/dashboard",
+
+    },
+    {
+      title: "Instructors",
+      description: "Manage the driving school fleet",
+      icon: <Car className="w-6 h-6 text-orange-600" />,
+      path: "/Instructordashboard",
+
     },
     {
       title: "Payments",

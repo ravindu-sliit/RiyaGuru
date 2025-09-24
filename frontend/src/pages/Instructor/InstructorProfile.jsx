@@ -130,10 +130,10 @@ export default function InstructorDetailsPage() {
         </div>
         <div className="flex items-center gap-6">
           <Link
-            to=""
+            to="/Instructordashboard"
             className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
           >
-            Back To Home
+            Back To DashBoard
           </Link>
         </div>
       </nav>

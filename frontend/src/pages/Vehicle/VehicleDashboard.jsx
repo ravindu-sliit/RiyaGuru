@@ -97,7 +97,7 @@ const VehicleDashboard = () => {
         </div>
         <div className="flex items-center gap-4">
           <Link
-            to="/instructors"
+            to="/Instructordashboard"
             className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-orange-500 bg-orange-50"
           >
              Instructors Dashboard
