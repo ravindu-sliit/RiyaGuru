@@ -7,6 +7,7 @@ import StudentDocUpload from "../pages/Student/StudentDocUpload";
 import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
 import StudentPreferences from "../pages/Student/StudentPreferences";
 import StudentProgressPage from "../pages/Student/StudentProgressPage";
+import BookingDetails from "../pages/Booking/BookingDetails";
 
 export default function StudentRoutes() {
   return (
@@ -18,6 +19,7 @@ export default function StudentRoutes() {
         <Route path=":id/edit" element={<StudentDetailsEdit />} />
         <Route path=":id/preferences" element={<StudentPreferences />} />
         <Route path="progress" element={<StudentProgressPage />} />
+        <Route path="bookings" element={<BookingDetails />} />
         <Route path="*" element={<Navigate to="/student" replace />} />
       </Route>
     </Routes>
