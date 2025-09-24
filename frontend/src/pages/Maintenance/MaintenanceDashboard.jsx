@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, AlertCircle, CheckCircle } from "lucide-react";
+import { Plus, FileDown, AlertCircle, CheckCircle } from "lucide-react";
 import MaintenanceList from "./MaintenanceList";
 import MaintenanceForm from "./MaintenanceForm";
 import MaintenanceView from "./MaintenanceView";
@@ -12,6 +12,8 @@ import {
   deleteMaintenance,
 } from "../../services/maintenanceAPI";
 
+import { API_BASE } from "../../services/api"; // ✅ added
+
 const MaintenanceDashboard = () => {
   const [activeView, setActiveView] = useState("list");
   const [maintenanceRecords, setMaintenanceRecords] = useState([]);
@@ -23,7 +25,6 @@ const MaintenanceDashboard = () => {
 
   useEffect(() => {
     loadMaintenanceRecords();
-    // Defer loading vehicles until user opens the form; avoids noisy toast on first load
   }, []);
 
   const showNotification = (message, type = "success") => {
@@ -31,7 +32,6 @@ const MaintenanceDashboard = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // Derived list filtered by search
   const filteredRecords = React.useMemo(() => {
     const q = (search || "").trim().toLowerCase();
     if (!q) return maintenanceRecords;
@@ -60,7 +60,6 @@ const MaintenanceDashboard = () => {
       const list = await getVehicles();
       setVehicles(Array.isArray(list) ? list : []);
     } catch (err) {
-      // Fail silently and keep vehicles as empty array; user can still open the form
       console.warn("Failed to load vehicles:", err?.message || err);
       setVehicles([]);
     }
@@ -99,7 +98,9 @@ const MaintenanceDashboard = () => {
       setLoading(true);
       if (selectedRecord) {
         const updated = await updateMaintenance(selectedRecord._id, formData);
-        setMaintenanceRecords((prev) => prev.map((r) => (r._id === selectedRecord._id ? updated : r)));
+        setMaintenanceRecords((prev) =>
+          prev.map((r) => (r._id === selectedRecord._id ? updated : r))
+        );
         showNotification("Maintenance updated");
       } else {
         const created = await createMaintenance(formData);
@@ -114,35 +115,90 @@ const MaintenanceDashboard = () => {
     }
   };
 
+  // ✅ PDF Export Handler (replaced with working version)
+  const handleGeneratePDF = async () => {
+    try {
+      const token = localStorage.getItem("rg_token") || "";
+
+      const res = await fetch(`${API_BASE}/api/maintenance/pdf`, {
+        method: "GET",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || "Failed to generate PDF");
+      }
+
+      const blob = await res.blob();
+
+      let filename = "Maintenance_Report.pdf";
+      const cd = res.headers.get("Content-Disposition");
+      if (cd) {
+        const match = cd.match(/filename="?([^"]+)"?/i);
+        if (match && match[1]) filename = match[1];
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      showNotification("PDF downloaded");
+    } catch (err) {
+      showNotification(err.message || "Error generating PDF", "error");
+    }
+  };
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
         <div className="header-content">
           <div className="header-info">
             <h1 className="dashboard-title">Vehicle Maintenance</h1>
-            <p className="dashboard-subtitle">Manage vehicle maintenance records</p>
+            <p className="dashboard-subtitle">
+              Manage vehicle maintenance records
+            </p>
           </div>
-          {activeView === "list" && (
-            <div className="header-actions">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="form-input header-search"
-                placeholder="Search by Vehicle ID / Reg / Model"
-              />
-              <button onClick={handleCreate} className="btn btn-primary add-btn">
-                <Plus size={20} />
-                Add Maintenance
-              </button>
-            </div>
-          )}
+          <div className="header-actions">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="form-input header-search"
+              placeholder="Search by Vehicle ID / Reg / Model"
+            />
+            <button
+              onClick={handleCreate}
+              className="btn btn-primary add-btn"
+            >
+              <Plus size={20} />
+              Add Maintenance
+            </button>
+            <button
+              onClick={handleGeneratePDF}
+              className="btn btn-secondary export-btn"
+            >
+              <FileDown size={20} />
+              Generate PDF
+            </button>
+          </div>
         </div>
       </div>
 
       {notification && (
         <div className={`notification ${notification.type}`}>
-          {notification.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+          {notification.type === "success" ? (
+            <CheckCircle size={20} />
+          ) : (
+            <AlertCircle size={20} />
+          )}
           {notification.message}
         </div>
       )}
