@@ -1,5 +1,15 @@
 // src/pages/Home/StudentHome.jsx
-import { BookOpen, Calendar, Car, CreditCard, User } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  Car,
+  CreditCard,
+  User,
+  FileText,
+  Settings,
+  Lock,
+  HelpCircle,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function StudentHome() {
@@ -17,10 +27,10 @@ export default function StudentHome() {
 
   const quickLinks = [
     {
-      title: "My Dashboard",
-      description: "View progress and lessons",
+      title: "Progress Dashboard",
+      description: "Track courses, lessons, and certificates",
       icon: <BookOpen className="w-6 h-6 text-blue-600" />,
-      path: `/student/${studentId}/dashboard`,
+      path: "/student/progress",
     },
     {
       title: "Bookings",
@@ -41,17 +51,43 @@ export default function StudentHome() {
       path: "/payments",
     },
     {
-      title: "Profile",
-      description: "Update details and preferences",
+      title: "Profile & Dashboard",
+      description: "Update details and view student dashboard",
       icon: <User className="w-6 h-6 text-green-600" />,
-      path: `/student/${studentId}/profile`,
+      path: `/student/${studentId}/dashboard`, // 👈 go to student dashboard (profile inside it)
+    },
+    {
+      title: "My Documents",
+      description: "Upload driving license, NIC, and other docs",
+      icon: <FileText className="w-6 h-6 text-indigo-600" />,
+      path: `/student/${studentId}/docs/upload`,
+    },
+    {
+      title: "Preferences",
+      description: "Set course or lesson preferences",
+      icon: <Settings className="w-6 h-6 text-teal-600" />,
+      path: `/student/${studentId}/preferences`,
+    },
+    {
+      title: "Change Password",
+      description: "Update your login password",
+      icon: <Lock className="w-6 h-6 text-red-600" />,
+      path: `/student/${studentId}/password`,
+    },
+    {
+      title: "Inquiries",
+      description: "Ask questions or contact support",
+      icon: <HelpCircle className="w-6 h-6 text-gray-600" />,
+      path: "/inquiry",
     },
   ];
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Welcome Student</h1>
-      <p className="text-sm text-gray-600 mb-6">Manage your learning journey</p>
+      <p className="text-sm text-gray-600 mb-6">
+        Manage your learning journey with quick access
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {quickLinks.map((link, idx) => (
