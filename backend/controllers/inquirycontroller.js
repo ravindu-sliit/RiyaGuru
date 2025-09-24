@@ -1,6 +1,6 @@
 import Inquiry from "../models/Inquiry.js";
 
-// Create
+// Create inquiry
 export const createInquiry = async (req, res) => {
   try {
     const { userId, subject, message } = req.body;
@@ -11,7 +11,7 @@ export const createInquiry = async (req, res) => {
   }
 };
 
-// Read all
+// Read all inquiry
 export const getAllInquiries = async (_req, res) => {
   try {
     const inquiries = await Inquiry.find().populate("userId", "name email");
@@ -21,7 +21,7 @@ export const getAllInquiries = async (_req, res) => {
   }
 };
 
-// Read one
+// Read one inquiry using ID 
 export const getInquiryById = async (req, res) => {
   try {
     const inquiry = await Inquiry.findById(req.params.id).populate("userId", "name email");
@@ -32,7 +32,7 @@ export const getInquiryById = async (req, res) => {
   }
 };
 
-// Update (admin)
+// Update inquiry (admin)
 export const updateInquiry = async (req, res) => {
   try {
     const { status, response } = req.body;
@@ -49,7 +49,7 @@ export const updateInquiry = async (req, res) => {
   }
 };
 
-// Delete
+// Delete inquiry
 export const deleteInquiry = async (req, res) => {
   try {
     const del = await Inquiry.findByIdAndDelete(req.params.id);
