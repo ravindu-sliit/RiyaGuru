@@ -44,20 +44,16 @@ export default function StudentHome() {
       title: "Profile",
       description: "Update details and preferences",
       icon: <User className="w-6 h-6 text-green-600" />,
-      path: `/student/${studentId}/dashboard`,
+      path: `/student/${studentId}/profile`,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow px-6 py-4 border-b">
-        <h1 className="text-xl font-bold text-gray-800">Welcome Student</h1>
-        <p className="text-sm text-gray-600">Manage your learning journey</p>
-      </div>
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Welcome Student</h1>
+      <p className="text-sm text-gray-600 mb-6">Manage your learning journey</p>
 
-      {/* Quick Links */}
-      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {quickLinks.map((link, idx) => (
           <Link
             key={idx}

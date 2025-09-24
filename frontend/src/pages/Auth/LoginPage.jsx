@@ -64,16 +64,16 @@ export default function LoginPage() {
 
 
       // ✅ Redirect based on role
-      if (data.role === "Student") {
-        navigate("/home/student", { replace: true });
-      } else if (data.role === "Instructor") {
-        navigate("/home/instructor", { replace: true });
-      } else if (data.role === "Admin") {
-        navigate("/home/admin", { replace: true });
-      } else {
-        // fallback if no role provided
-        navigate("/landing", { replace: true });
-      }
+if (data.role === "Student") {
+  navigate("/student", { replace: true });
+} else if (data.role === "Instructor") {
+  navigate("/instructor", { replace: true });
+} else if (data.role === "Admin") {
+  navigate("/admin", { replace: true });
+} else {
+  navigate("/landing", { replace: true });
+}
+
 
     } catch (err) {
       setError(err.message || "Invalid credentials");
