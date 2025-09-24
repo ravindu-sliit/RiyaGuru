@@ -12,7 +12,7 @@ export default function AdminHome() {
       title: "Students",
       description: "View and manage student records",
       icon: <Users className="w-8 h-8 text-blue-600" />,
-      path: "/lesson-progress/students",
+      path: "/admin/students",
       bgColor: "bg-blue-50",
       borderColor: "border-blue-100",
       hoverColor: "hover:bg-blue-100"
