@@ -106,7 +106,7 @@ export default function DriveManagerLanding() {
       <nav className="navbar">
         <div className="nav-container">
           <div className="logo">
-            Drive<span>Manager</span> Pro
+            Riya<span>Guru</span>.lk
           </div>
           <ul className="nav-links">
             <li><a href="#features">Lesson Progress</a></li>
@@ -253,7 +253,7 @@ export default function DriveManagerLanding() {
             <h2>Ready to Transform Your Driving School?</h2>
             <p>
               Join hundreds of driving instructors who are already using
-              DriveManager Pro to streamline their operations and enhance
+              RiyaGuru.lk to streamline their operations and enhance
               student learning.
             </p>
             <a href="#get-started" className="cta-button">
@@ -305,7 +305,7 @@ export default function DriveManagerLanding() {
             </div>
           </div>
           <div className="footer-bottom">
-            <p>&copy; 2025 DriveManager Pro. All rights reserved.</p>
+            <p>&copy; 2025 RiyaGuru.lk. All rights reserved.</p>
           </div>
         </div>
       </footer>
