@@ -36,6 +36,12 @@ export default function AdminHome() {
       icon: <BookOpen className="w-6 h-6 text-green-600" />,
       path: "/lesson-progress",
     },
+    {
+      title: "Manage Students",
+      description: "View and manage student accounts",
+      icon: <Users className="w-6 h-6 text-blue-600" />,
+      path: "/admin/students",
+    },
   ];
 
   return (

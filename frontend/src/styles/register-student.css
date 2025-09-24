@@ -1,0 +1,158 @@
+/* src/styles/register-student.css
+   RiyaGuru register form styling (palette + clear errors + live-valid cues) */
+
+/* --- Tokens (fallbacks if global theme isn't loaded) --- */
+:root{
+  --rg-orange:#F47C20;
+  --rg-navy:#0A1A2F;
+  --rg-white:#FFFFFF;
+  --rg-gray-50:#F5F6FA;
+  --rg-blue:#2D74C4;
+
+  --rg-green:#28A745;
+  --rg-red:#DC3545;
+
+  --rg-border:#E5E8EF;
+  --rg-shadow:0 12px 36px rgba(10,26,47,.10);
+  --rg-ring:0 0 0 3px rgba(45,116,196,.25);
+}
+
+/* Page backdrop */
+body{ background:var(--rg-gray-50); color:#0E223A; }
+
+/* ---- Card container ---- */
+.register-student{
+  margin-top: 8vh !important;
+  margin-bottom: 8vh !important;
+  background: var(--rg-white);
+  border: 1px solid var(--rg-border);
+  border-radius: 18px;
+  box-shadow: var(--rg-shadow);
+  padding: 28px;
+  max-width: 520px;
+}
+
+.register-student h2{
+  margin: 0 0 18px 0;
+  text-align: center;
+  font-weight: 700;
+  color:#0E223A;
+  letter-spacing:.2px;
+}
+
+/* ---- Form layout ---- */
+.register-student form > div{ margin-bottom: 16px; }
+
+.register-student label{
+  display:block;
+  margin-bottom: 6px;
+  font-size:14px;
+  color:#30435C;
+}
+
+/* Inputs */
+.register-student input[type="text"],
+.register-student input[type="tel"],
+.register-student input[type="number"],
+.register-student input[type="email"],
+.register-student input[type="password"],
+.register-student select,
+.register-student textarea{
+  width:100%;
+  padding:12px 12px;
+  border:1px solid var(--rg-border);
+  border-radius:12px;
+  background:#fff;
+  transition:border .2s, box-shadow .2s, background .2s;
+  outline:none;
+  font:inherit;
+}
+
+.register-student input::placeholder,
+.register-student textarea::placeholder{ color:#9AA5B5; }
+
+.register-student input:focus,
+.register-student select:focus,
+.register-student textarea:focus{
+  border-color:#C9D6EA;
+  box-shadow:var(--rg-ring);
+}
+
+/* Small helper text */
+.register-student .help-text{
+  display:block;
+  color:#6A778B;
+  margin-top:4px;
+  font-size:12.5px;
+}
+
+/* ---- Error styles (field + submit) ---- */
+.field-error{
+  display:block !important;
+  color:#DC3545 !important;
+  background:rgba(220,53,69,.06);
+  border:1px solid rgba(220,53,69,.25);
+  padding:8px 10px;
+  border-radius:10px;
+  margin-top:8px !important;
+  font-size:13px;
+  line-height:1.25;
+}
+
+.submit-error{
+  display:block !important;
+  text-align:center;
+  color:#DC3545 !important;
+  background:rgba(220,53,69,.08);
+  border:1px solid rgba(220,53,69,.28);
+  padding:10px 12px;
+  border-radius:12px;
+  margin-top:12px !important;
+  font-weight:600;
+}
+
+/* --- Live validation cues --- */
+.register-student [aria-invalid="true"]{
+  border-color: rgba(220,53,69,.45) !important;
+  box-shadow: 0 0 0 3px rgba(220,53,69,.15) !important;
+}
+
+.register-student [data-valid="true"]{
+  border-color: rgba(40,167,69,.45) !important;       /* green */
+  box-shadow: 0 0 0 3px rgba(40,167,69,.18) !important;
+}
+
+/* ---- Primary button ---- */
+.register-student button[type="submit"]{
+  width:100%;
+  padding:12px 16px;
+  border:none;
+  border-radius:14px;
+  background:var(--rg-orange);
+  color:#fff;
+  font-weight:700;
+  letter-spacing:.2px;
+  cursor:pointer;
+  box-shadow:0 6px 20px rgba(244,124,32,.25);
+  transition:transform .04s ease, filter .15s ease, box-shadow .2s ease;
+  margin-top:12px;
+}
+
+.register-student button[type="submit"]:hover{
+  filter:brightness(.96);
+  box-shadow:0 10px 28px rgba(244,124,32,.35);
+}
+
+.register-student button[type="submit"]:active{
+  transform:translateY(1px);
+}
+
+.register-student button[type="submit"]:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
+
+/* ---- Responsive ---- */
+@media (max-width:520px){
+  .register-student{ padding:22px; margin:6vh 12px; }
+}

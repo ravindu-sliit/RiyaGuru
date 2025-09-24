@@ -1,0 +1,187 @@
+/* RiyaGuru — OTP Request Page
+   Palette:
+   -- Primary Orange: #F47C20
+   -- Dark Navy:     #0A1A2F
+   -- White:         #FFFFFF
+   -- Light Gray:    #F5F6FA
+   -- Soft Blue:     #2D74C4
+   -- Green:         #28A745
+   -- Red:           #DC3545
+*/
+
+:root{
+  --rg-orange:#F47C20;
+  --rg-navy:#0A1A2F;
+  --rg-white:#FFFFFF;
+  --rg-gray:#F5F6FA;
+  --rg-blue:#2D74C4;
+  --rg-green:#28A745;
+  --rg-red:#DC3545;
+
+  --rg-border:#E5E8EF;
+  --rg-shadow:0 12px 36px rgba(10,26,47,.12);
+  --rg-ring:0 0 0 3px rgba(45,116,196,.25);
+  --rg-font:-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+}
+
+/* Soft backdrop so the card sits in the middle nicely */
+html, body, #root { min-height: 100%; }
+body{
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 20% -20%, rgba(45,116,196,.10), transparent 60%),
+    radial-gradient(1200px 600px at 120% 120%, rgba(244,124,32,.10), transparent 60%),
+    var(--rg-gray);
+  color:#0E223A;
+  font-family: var(--rg-font);
+}
+
+/* The OTP card itself */
+.otp-request{
+  /* center on page */
+  margin: 10vh auto !important;          /* vertical & horizontal centering */
+  width: min(600px, 92vw);               /* a little bigger than before */
+  max-width: 600px !important;           /* override inline maxWidth=420 */
+  background: var(--rg-white);
+  border: 1px solid var(--rg-border);
+  border-radius: 18px;
+  box-shadow: var(--rg-shadow);
+  padding: 28px 26px;
+  text-align: left;
+}
+
+.otp-request h2{
+  margin: 0 0 6px 0;
+  text-align: center;
+  font-weight: 800;
+  color: var(--rg-navy);
+}
+
+.otp-request > p{
+  text-align: center;
+  margin: 2px 0 16px 0 !important;
+  color: #4b5a6d !important;
+  font-size: 15px;
+}
+
+/* Form layout */
+.otp-request form > div{
+  margin-bottom: 14px;
+}
+
+.otp-request label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:600;
+  color:#2a3b54;
+}
+
+.otp-request input[type="text"],
+.otp-request input[type="number"],
+.otp-request input[type="email"],
+.otp-request input[type="password"]{
+  width:100%;
+  height:48px;
+  padding:0 12px;
+  border:1px solid var(--rg-border);
+  border-radius:12px;
+  background:#fff;
+  transition: border .2s, box-shadow .2s, background .2s;
+  outline:none;
+  font-size:16px;
+}
+
+.otp-request input:focus{
+  border-color:#c9d6ea;
+  box-shadow: var(--rg-ring);
+}
+
+.otp-request small{
+  display:block;
+  margin-top:6px;
+  color:#6a778b !important;
+  font-size:13px;
+}
+
+/* Messages (keep popup styles untouched) */
+.otp-request p[role="alert"]{
+  color: var(--rg-red) !important;
+  background: rgba(220,53,69,.06);
+  border: 1px solid rgba(220,53,69,.25);
+  padding: 8px 10px;
+  border-radius: 10px;
+  margin: 8px 0 !important;
+  text-align: left;
+}
+
+.otp-request p[role="status"]{
+  color: var(--rg-green) !important;
+  background: rgba(40,167,69,.06);
+  border: 1px solid rgba(40,167,69,.25);
+  padding: 8px 10px;
+  border-radius: 10px;
+  margin: 8px 0 !important;
+  text-align: left;
+}
+
+/* Primary button (Verify) */
+.otp-request button[type="submit"]{
+  width:100%;
+  height:48px;
+  border:none;
+  border-radius:14px;
+  background: var(--rg-orange);
+  color:#fff;
+  font-weight:700;
+  letter-spacing:.2px;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(244,124,32,.28);
+  transition: filter .15s ease, transform .04s ease, box-shadow .2s ease;
+  margin-top: 12px !important;
+}
+
+.otp-request button[type="submit"]:hover:not(:disabled){
+  filter:brightness(.96);
+  box-shadow:0 12px 30px rgba(244,124,32,.36);
+}
+.otp-request button[type="submit"]:active{ transform: translateY(1px); }
+.otp-request button[type="submit"]:disabled{ opacity:.65; cursor:not-allowed; }
+
+/* Resend CTA block */
+.otp-request .resend-section{
+  margin-top: 14px;
+  text-align: center;
+}
+
+.otp-request .resend-section > button{
+  min-width: 220px;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(45,116,196,.28);
+  border-radius: 12px;
+  background: rgba(45,116,196,.10);
+  color: var(--rg-blue);
+  font-weight:700;
+  cursor:pointer;
+  transition: background .2s, box-shadow .2s, transform .04s;
+  box-shadow: 0 6px 18px rgba(45,116,196,.15);
+}
+
+.otp-request .resend-section > button:hover:not(:disabled){
+  background: rgba(45,116,196,.16);
+  box-shadow: 0 10px 24px rgba(45,116,196,.22);
+}
+.otp-request .resend-section > button:active{ transform: translateY(1px); }
+.otp-request .resend-section > button:disabled{ opacity:.6; cursor:not-allowed; }
+
+.otp-request .retry-hint{
+  margin-top: 8px;
+  color:#596a84;
+  font-size: 14px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 480px){
+  .otp-request{ padding: 22px 18px; margin: 7vh auto !important; }
+  .otp-request h2{ font-size: 22px; }
+}
