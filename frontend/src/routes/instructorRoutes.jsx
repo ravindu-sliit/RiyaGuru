@@ -11,7 +11,7 @@ import AddInstructorPage from "../pages/Instructor/AddInstructorPage";
 import EditInstructorPage from "../pages/Instructor/EditInstructorPage";
 import AvailabilityPage from "../pages/Instructor/AvailabilityPage";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
-import ProfilePage from "../pages/Instructor/ProfilePage";
+import ProfilePage from "../pages/Instructor/InstructorProfile";
 
 import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
 import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
