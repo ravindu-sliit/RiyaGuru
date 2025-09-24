@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { validateInquiryStatus } from "../../validation/inquiryValidation"; // ✅ Import central validator
 
 const STATUS_OPTIONS = ["Pending", "In Progress", "Resolved"];
 
@@ -10,6 +11,11 @@ const InquiryStatus = ({ item, loading, onSubmit, onCancel }) => {
   }, [item]);
 
   const handleSave = () => {
+    const error = validateInquiryStatus(status); // ✅ Use central validation
+    if (error) {
+      alert(error); // You can replace with your notification system if needed
+      return;
+    }
     onSubmit({ status });
   };
 

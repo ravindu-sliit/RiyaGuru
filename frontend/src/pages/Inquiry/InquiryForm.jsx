@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { validateInquiryForm } from "../../validation/inquiryValidation"; // ✅ Import central validator
 
 // statuses removed: form collects only userId, subject, message
 
@@ -49,11 +50,9 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
   // Simple MongoDB ObjectId validation (24 hex chars)
   const isValidObjectId = (val) => /^[a-fA-F0-9]{24}$/.test(val);
 
+  // ✅ Updated validate function using central validator
   const validate = () => {
-    const e = {};
-    if (!form.userId) e.userId = "Please enter a valid User ID or code";
-    if (!form.subject || form.subject.trim().length < 3) e.subject = "Subject is required (min 3 chars)";
-    if (!form.message || form.message.trim().length < 5) e.message = "Message is required (min 5 chars)";
+    const e = validateInquiryForm(form); 
     setErrors(e);
     return Object.keys(e).length === 0;
   };
