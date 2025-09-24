@@ -8,20 +8,42 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // field-level errors
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  // general (non-field) error
+  const [generalError, setGeneralError] = useState("");
+
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
+  // ---------------- Email validation ----------------
+  const validateEmailFormat = (val) => {
+    const v = val.trim();
+    if (!v) return "Email is required";
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+      ? ""
+      : "Enter a valid email address";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setGeneralError("");
+    setEmailError("");
+    setPasswordError("");
 
     const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail || !password) {
-      setError("Please enter both email and password.");
-      return;
+
+    // front-end validation
+    const emailFmtErr = validateEmailFormat(normalizedEmail);
+    if (emailFmtErr) {
+      setEmailError(emailFmtErr);
     }
+    if (!password) {
+      setPasswordError("Password is required");
+    }
+    if (emailFmtErr || !password) return;
 
     setSubmitting(true);
     try {
@@ -35,35 +57,46 @@ export default function LoginPage() {
       });
 
       const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        throw new Error(data.message || `Login failed (${res.status})`);
+        const msg = (data && data.message) || "";
+        if (res.status === 404 || /user not found/i.test(msg)) {
+          setEmailError("Email is not registered");
+        } else if (res.status === 400 || /invalid credentials/i.test(msg)) {
+          setPasswordError("Invalid Credentials");
+        } else {
+          setGeneralError(msg || `Login failed (${res.status})`);
+        }
+        return;
       }
 
       // Save token & minimal user info
       if (data.token) localStorage.setItem("rg_token", data.token);
       if (data.userId) localStorage.setItem("rg_userId", data.userId);
-      if (data.role) localStorage.setItem("rg_role", data.role); // "Student" | "Instructor" | "Admin"
-      
-      // ✅ NEW: normalize and save the student id under the exact key your app expects
-    const inferredId =
-      data.studentId ??
-      data.userId ??
-      data.id ??
-      data.user?.id ??
-      data.user?.studentId ??
-      null;
+      if (data.role) localStorage.setItem("rg_role", data.role);
 
-        if (inferredId) {
-      localStorage.setItem("rg_id", String(inferredId));  // <<--- IMPORTANT
-    } else {
-      // If your API returns the id only in the JWT, you could parse it here as a fallback.
-      // For now, fail loudly so you see it during dev:
-      console.warn("Login success, but couldn't infer student id from response:", data);
-    }
+      // Infer ID
+      const inferredId =
+        data.studentId ??
+        data.userId ??
+        data.id ??
+        data.user?.id ??
+        data.user?.studentId ??
+        null;
+
+      if (inferredId) {
+        localStorage.setItem("rg_id", String(inferredId));
+      } else {
+        console.warn(
+          "Login success, but couldn't infer student id from response:",
+          data
+        );
+      }
 
 
 
       // ✅ Redirect based on role
+
       if (data.role === "Student") {
         navigate("/home/student", { replace: true });
       } else if (data.role === "Instructor") {
@@ -71,12 +104,11 @@ export default function LoginPage() {
       } else if (data.role === "Admin") {
         navigate("/home/admin", { replace: true });
       } else {
-        // fallback if no role provided
         navigate("/landing", { replace: true });
       }
 
     } catch (err) {
-      setError(err.message || "Invalid credentials");
+      setGeneralError(err.message || "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -98,6 +130,7 @@ export default function LoginPage() {
       </h2>
 
       <form onSubmit={handleSubmit} noValidate>
+        {/* Email */}
         <div style={{ marginBottom: 12 }}>
           <label htmlFor="email" style={{ display: "block", marginBottom: 6 }}>
             Email
@@ -108,7 +141,11 @@ export default function LoginPage() {
             type="email"
             placeholder="you@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) setEmailError("");
+            }}
+            onBlur={() => setEmailError(validateEmailFormat(email))}
             required
             style={{
               width: "100%",
@@ -117,8 +154,14 @@ export default function LoginPage() {
               border: "1px solid #ccc",
             }}
           />
+          {emailError && (
+            <p style={{ color: "crimson", marginTop: 6 }} role="alert">
+              {emailError}
+            </p>
+          )}
         </div>
 
+        {/* Password */}
         <div style={{ marginBottom: 12 }}>
           <label
             htmlFor="password"
@@ -132,7 +175,10 @@ export default function LoginPage() {
             type="password"
             placeholder="Your password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (passwordError) setPasswordError("");
+            }}
             required
             style={{
               width: "100%",
@@ -141,9 +187,15 @@ export default function LoginPage() {
               border: "1px solid #ccc",
             }}
           />
+          {passwordError && (
+            <p style={{ color: "crimson", marginTop: 6 }} role="alert">
+              {passwordError}
+            </p>
+          )}
         </div>
 
-        {error && (
+        {/* General error */}
+        {generalError && (
           <p
             style={{
               color: "crimson",
@@ -153,10 +205,11 @@ export default function LoginPage() {
             }}
             role="alert"
           >
-            {error}
+            {generalError}
           </p>
         )}
 
+        {/* Submit */}
         <button
           type="submit"
           disabled={submitting}
@@ -175,6 +228,22 @@ export default function LoginPage() {
           {submitting ? "Signing in..." : "Next"}
         </button>
       </form>
+
+      {/* Sign Up clickable text */}
+      <p style={{ textAlign: "center", marginTop: 16 }}>
+        Don’t have an account?{" "}
+        <span
+          onClick={() => navigate("/register")}
+          style={{
+            color: "#1f6feb",
+            cursor: "pointer",
+            fontWeight: 600,
+            textDecoration: "underline",
+          }}
+        >
+          Sign Up
+        </span>
+      </p>
     </div>
   );
 }
