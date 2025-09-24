@@ -5,17 +5,22 @@ import {
   getMaintenanceById,
   updateMaintenance,
   deleteMaintenance,
-} from "../controllers/maintenancecontroller.js";
+} from "../controllers/maintenanceController.js"; // ✅ only CRUD here
+
+import { generateMaintenancePDF } from "../controllers/maintenancepdfController.js"; // ✅ PDF export here
 
 import {
   createMaintenanceValidator,
   updateMaintenanceValidator,
-  maintenanceIdValidator
+  maintenanceIdValidator,
 } from "../validators/maintenanceValidator.js";
 
 import validateRequest from "../middleware/validateRequest.js";
 
 const router = express.Router();
+
+// ✅ Put /pdf route BEFORE /:id route
+router.get("/pdf", generateMaintenancePDF);
 
 // CRUD routes with validation
 router.post("/", createMaintenanceValidator, validateRequest, createMaintenance);
