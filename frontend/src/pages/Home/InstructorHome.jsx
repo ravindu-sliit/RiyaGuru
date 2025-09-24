@@ -28,7 +28,7 @@ export default function InstructorHome() {
       title: "Bookings",
       description: "Manage your schedule",
       icon: <Calendar className="w-6 h-6 text-purple-600" />,
-      path: "/bookings",
+      path: "/instructor/instructorbooking",
     },
   ];
 

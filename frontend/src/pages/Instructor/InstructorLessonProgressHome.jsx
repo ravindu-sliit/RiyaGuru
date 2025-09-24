@@ -39,7 +39,7 @@ export default function InstructorLessonProgressHome() {
             <NavItem to="/instructor/progress-tracking" icon={<TrendingUp size={18} />}>
               Progress
             </NavItem>
-            <NavItem to="/bookings" icon={<Calendar size={18} />}>
+            <NavItem to="/instructor/instructorbooking" icon={<Calendar size={18} />}>
               Bookings
             </NavItem>
             <NavItem to="/instructor/profile" icon={<User size={18} />}>
