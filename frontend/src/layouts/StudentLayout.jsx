@@ -17,8 +17,15 @@ export default function StudentLayout() {
   ];
 
   const handleSignOut = () => {
-    localStorage.clear();
-    navigate("/login", { replace: true });
+    if (window.confirm("Are you sure you want to sign out?")) {
+        localStorage.removeItem("rg_token");
+        localStorage.removeItem("rg_userId");
+        localStorage.removeItem("rg_role");
+        localStorage.removeItem("rg_id");
+
+        navigate("/login", { replace: true });
+    }
+    
   };
 
   return (
