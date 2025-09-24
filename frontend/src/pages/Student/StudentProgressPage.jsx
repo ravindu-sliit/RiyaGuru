@@ -1,3 +1,4 @@
+// src/pages/Student/StudentProgressPage.jsx
 import { useEffect, useState } from "react";
 import { BookOpen, CheckCircle, Award, TrendingUp } from "lucide-react";
 
@@ -141,7 +142,7 @@ export default function StudentProgressPage() {
           courses.map((c) => {
             const pct = Number(c?.progress_percent || 0);
 
-            // Certificate file path
+            // Build certificate file path if issued
             let certificateHref = "";
             if (c?.certificate_file) {
               const idx = String(c.certificate_file).lastIndexOf("uploads");
@@ -207,7 +208,7 @@ export default function StudentProgressPage() {
                       <span className="text-green-600">Available</span>
                     ) : c.certificate_status === "Eligible" ? (
                       <span className="text-green-600">
-                        Eligible (waiting for issuance)
+                        Eligible (ready to generate)
                       </span>
                     ) : (
                       <span className="text-gray-500">Not eligible yet</span>
@@ -233,14 +234,24 @@ export default function StudentProgressPage() {
                         try {
                           const res = await fetch(
                             `http://localhost:5000/api/certificates/issue/${studentId}/${c.course_name}`,
-                            { method: "POST" }
+                            {
+                              method: "POST",
+                              headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                  "rg_token"
+                                )}`,
+                              },
+                            }
                           );
                           const json = await res.json();
                           if (!res.ok)
-                            throw new Error(json.message || "Failed to issue");
+                            throw new Error(
+                              json.message || "Failed to generate"
+                            );
+
                           alert("Certificate generated!");
 
-                          // Update course in state
+                          // Update state so button changes to "Download"
                           setData((prev) => ({
                             ...prev,
                             courses: prev.courses.map((course) =>
