@@ -7,6 +7,7 @@ import {
   getMyBookings,
   updateBooking,
   updateBookingStatus,
+  getMyCourses,
   deleteBooking,
 } from "../controllers/bookingController.js";
 
@@ -35,5 +36,6 @@ router.delete("/:id", protect, deleteBooking);
 
 router.put("/:id", protect, updateBooking);
 
+router.get("/my-courses", protect, getMyCourses);
 
 export default router;
