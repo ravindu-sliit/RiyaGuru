@@ -88,30 +88,63 @@ export default function InstructorLessonEntryPage() {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setMessage("");
-    try {
-      const res = await fetch("http://localhost:5000/api/lesson-progress/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to save");
+  e.preventDefault();
+  setMessage("");
 
-      setMessage("✅ Lesson saved and progress updated!");
-      setStats((prev) => ({
-        ...prev,
-        lessonsCompleted: prev.lessonsCompleted + 1,
-      }));
-    } catch (err) {
-      setMessage("❌ " + err.message);
-      setStats((prev) => ({
-        ...prev,
-        pendingEntries: prev.pendingEntries + 1,
-      }));
-    }
+  // 🔹 Validate student
+  if (!form.student_id) {
+    setMessage("❌ Please select a student.");
+    return;
   }
+
+  // 🔹 Validate course
+  if (!form.student_course_id) {
+    setMessage("❌ Please select a course.");
+    return;
+  }
+
+  // 🔹 Validate lesson number
+  if (!form.lesson_number || form.lesson_number < 1) {
+    setMessage("❌ Lesson number must be at least 1.");
+    return;
+  }
+
+  // 🔹 Validate instructor
+  if (!form.instructor_id) {
+    setMessage("❌ Instructor ID missing. Please log in again.");
+    return;
+  }
+
+  // 🔹 Require feedback if lesson is marked Completed
+  if (form.status === "Completed" && !form.feedback.trim()) {
+    setMessage("❌ Please provide feedback for a completed lesson.");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/lesson-progress/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to save");
+
+    setMessage("✅ Lesson saved and progress updated!");
+    setStats((prev) => ({
+      ...prev,
+      lessonsCompleted: prev.lessonsCompleted + 1,
+    }));
+  } catch (err) {
+    setMessage("❌ " + err.message);
+    setStats((prev) => ({
+      ...prev,
+      pendingEntries: prev.pendingEntries + 1,
+    }));
+  }
+}
+
 
   return (
     <div className="min-h-screen bg-gray-50">
