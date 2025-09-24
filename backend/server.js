@@ -28,18 +28,13 @@ import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
 
 import adminPaymentRoutes from "./route/adminPaymentRoutes.js";
-
 import adminRoutes from "./route/AdminRoutes.js"; 
-
-// This one exists on your local branch:
-//import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
-
 
 // -----------------------------
 // Routes (plural folder)
 // -----------------------------
 import inquiryRoutes from "./route/inquiryroutes.js";
-import maintenanceRoutes from "./route/maintenanceroutes.js";
+import maintenanceRoutes from "./route/maintenanceroutes.js"; // ✅ your maintenance routes (with PDF)
 import publicReportRoutes from "./route/reportroutes.js";
 import progressReportRoutes from "./route/progressReportRoutes.js";
 
@@ -69,6 +64,8 @@ app.use(
   cors({
     origin: ["http://localhost:3000"],
     credentials: true,
+    // ✅ allow frontend to read Content-Disposition header (needed for filename)
+    exposedHeaders: ["Content-Disposition"],
   })
 );
 
@@ -89,7 +86,7 @@ app.get("/", (req, res) => {
 // API Routes
 // -----------------------------
 app.use("/api/inquiries", inquiryRoutes);
-app.use("/api/maintenance", maintenanceRoutes);
+app.use("/api/maintenance", maintenanceRoutes); // ✅ includes your new /pdf endpoint
 app.use("/api/reports", publicReportRoutes);
 app.use("/api/progress-reports", progressReportRoutes);
 app.use("/api/instructors", instructorRoutes);
@@ -110,14 +107,11 @@ app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
 
-
 app.use("/api/admin/payments", adminPaymentRoutes);
-
 app.use("/api/students", studentRoutes);
-
 app.use("/api/admins", adminRoutes);
 
-
+// -----------------------------
 // Global error handler
 // -----------------------------
 app.use((err, req, res, next) => {
