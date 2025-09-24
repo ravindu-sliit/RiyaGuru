@@ -9,6 +9,11 @@ import StudentHome from "../pages/Home/StudentHome";
 import InstructorHome from "../pages/Home/InstructorHome";
 import AdminHome from "../pages/Home/AdminHome";
 
+
+import AdminViewStudents from "../pages/Admin/AdminViewStudents"; //View All Students
+
+
+
 // Maintenance
 import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
 
@@ -60,9 +65,14 @@ export default function AppRoutes() {
       <Route path="/register" element={<RegisterStudent />} />
       <Route path="/otp-request" element={<OtpRequest />} />
 
-      {/* Inquiry */}
+
+
+      <Route path="/admin/students" element={<AdminViewStudents />} /> 
+
+      {/* Inquiry (⭐ added before catch-all) */}
       <Route path="/inquiries" element={<InquiryDashboard />} />
       <Route path="/inquiry" element={<StudentInquiry />} />
+
 
       {/* Instructors */}
       <Route path="/instructor/*" element={<InstructorRoutes />} />

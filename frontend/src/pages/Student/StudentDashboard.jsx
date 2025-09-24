@@ -90,11 +90,61 @@ export default function StudentDashboard() {
     }
   }
 
+  function handleLogout() {
+    localStorage.clear();
+    navigate("/landing", { replace: true });
+  }
+
+  function handleReturnHome() {
+    navigate("/home/student", { replace: true });
+  }
+
   if (!student) return <div style={{ padding: 16 }}>Loading...</div>;
+
+  // Extract first name
+  const firstName = student.full_name?.split(" ")[0] || "Student";
 
   return (
     <div style={{ padding: 16 }}>
-      <h1>Student Dashboard</h1>
+      {/* Header with greeting + buttons */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
+        <h1>Hello {firstName}!</h1>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            onClick={handleReturnHome}
+            style={{
+              background: "#3182ce",
+              color: "white",
+              border: "none",
+              borderRadius: 6,
+              padding: "6px 12px",
+              cursor: "pointer",
+            }}
+          >
+            Return Home
+          </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              background: "#e53e3e",
+              color: "white",
+              border: "none",
+              borderRadius: 6,
+              padding: "6px 12px",
+              cursor: "pointer",
+            }}
+          >
+            Log Out
+          </button>
+        </div>
+      </div>
 
       {err && <div style={{ color: "crimson", marginBottom: 8 }}>{err}</div>}
       {ok && <div style={{ color: "green", marginBottom: 8 }}>{ok}</div>}
@@ -113,20 +163,38 @@ export default function StudentDashboard() {
             <img
               src={student.profilePicUrl}
               alt="Profile"
-              style={{ width: 160, height: 160, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }}
+              style={{
+                width: 160,
+                height: 160,
+                objectFit: "cover",
+                borderRadius: 8,
+                border: "1px solid #eee",
+              }}
             />
             <p style={{ marginTop: 8 }}>Replace profile picture:</p>
             <form onSubmit={uploadPic}>
-              <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-              <button style={{ marginLeft: 8 }} type="submit">Upload</button>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+              />
+              <button style={{ marginLeft: 8 }} type="submit">
+                Upload
+              </button>
             </form>
           </>
         ) : (
           <>
             <p>No profile picture uploaded yet.</p>
             <form onSubmit={uploadPic}>
-              <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-              <button style={{ marginLeft: 8 }} type="submit">Upload</button>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+              />
+              <button style={{ marginLeft: 8 }} type="submit">
+                Upload
+              </button>
             </form>
           </>
         )}
@@ -144,15 +212,52 @@ export default function StudentDashboard() {
         {docs.length === 0 ? (
           <p style={{ marginTop: 8 }}>No documents uploaded yet.</p>
         ) : (
-          <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+          <div
+            style={{
+              marginTop: 12,
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+              gap: 12,
+            }}
+          >
             {docs.map((d) => (
-              <div key={d.docId} style={{ border: "1px solid #eee", borderRadius: 8, padding: 10 }}>
-                <div style={{ fontWeight: 600, marginBottom: 6 }}>{d.docType}</div>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <img src={d.frontUrl} alt={`${d.docType} Front`} style={{ width: 90, height: 60, objectFit: "cover", borderRadius: 4 }} />
-                  <img src={d.backUrl} alt={`${d.docType} Back`} style={{ width: 90, height: 60, objectFit: "cover", borderRadius: 4 }} />
+              <div
+                key={d.docId}
+                style={{
+                  border: "1px solid #eee",
+                  borderRadius: 8,
+                  padding: 10,
+                }}
+              >
+                <div style={{ fontWeight: 600, marginBottom: 6 }}>
+                  {d.docType}
                 </div>
-                <button style={{ marginTop: 10 }} onClick={() => deleteDoc(d.docType)}>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <img
+                    src={d.frontUrl}
+                    alt={`${d.docType} Front`}
+                    style={{
+                      width: 90,
+                      height: 60,
+                      objectFit: "cover",
+                      borderRadius: 4,
+                    }}
+                  />
+                  <img
+                    src={d.backUrl}
+                    alt={`${d.docType} Back`}
+                    style={{
+                      width: 90,
+                      height: 60,
+                      objectFit: "cover",
+                      borderRadius: 4,
+                    }}
+                  />
+                </div>
+                <button
+                  style={{ marginTop: 10 }}
+                  onClick={() => deleteDoc(d.docType)}
+                >
                   Delete {d.docType}
                 </button>
               </div>
@@ -176,15 +281,9 @@ export default function StudentDashboard() {
         </ul>
       </section>
 
-        <Link to={`/student/${id}/preferences`}>
-  <button style={{ marginTop: 10 }}>
-    { /* if you later fetch and know exists */ }
-    {/* prefExists ? "View Preferences" : "Select Preferences" */}
-    Preferences
-  </button>
-</Link>
-
-
+      <Link to={`/student/${id}/preferences`}>
+        <button style={{ marginTop: 10 }}>Preferences</button>
+      </Link>
     </div>
   );
 }

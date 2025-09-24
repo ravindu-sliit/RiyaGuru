@@ -12,18 +12,18 @@ const profPicsDir = path.join(__dirname, "..", "uploads", "studentProfPics");
 const studentSchema = new mongoose.Schema({
   studentId: {
     type: String,
-    unique: true
+    unique: true,
   },
   full_name: { type: String, required: true },
-  nic: { type: String, required: true },
-  phone: { type: String, required: true },
+  nic: { type: String, required: true, unique: true },     // ✅ unique NIC
+  phone: { type: String, required: true, unique: true },   // ✅ unique phone
   birthyear: { type: Number, required: true },
   gender: { type: String, required: true },
   address: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },   // existing unique email
   password: { type: String },
 
-  // ✅ NEW: optional profile picture (store just the filename)
+  // optional profile picture (we store only the filename)
   profilePicPath: { type: String, default: null },
 });
 
@@ -38,7 +38,7 @@ studentSchema.post("findOneAndDelete", async function (doc) {
   // Delete student courses linked to this student
   await StudentCourse.deleteMany({ student_id: sid });
 
-  // ✅ Delete profile picture file if present
+  // Delete profile picture file if present
   if (doc.profilePicPath) {
     const filePath = path.join(profPicsDir, doc.profilePicPath);
     try {
