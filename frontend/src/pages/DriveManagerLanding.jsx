@@ -115,7 +115,7 @@ export default function DriveManagerLanding() {
             <li><a href="#vehicles">Vehicles</a></li>
             <li><a href="#dashboard">Student Dashboard</a></li>
           </ul>
-          <a href="#login" className="login-btn">Log In</a>
+          <a href="/login" className="login-btn">Log In</a>
         </div>
       </nav>
 

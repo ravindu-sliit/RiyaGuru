@@ -43,6 +43,25 @@ export default function LoginPage() {
       if (data.token) localStorage.setItem("rg_token", data.token);
       if (data.userId) localStorage.setItem("rg_userId", data.userId);
       if (data.role) localStorage.setItem("rg_role", data.role); // "Student" | "Instructor" | "Admin"
+      
+      // ✅ NEW: normalize and save the student id under the exact key your app expects
+    const inferredId =
+      data.studentId ??
+      data.userId ??
+      data.id ??
+      data.user?.id ??
+      data.user?.studentId ??
+      null;
+
+        if (inferredId) {
+      localStorage.setItem("rg_id", String(inferredId));  // <<--- IMPORTANT
+    } else {
+      // If your API returns the id only in the JWT, you could parse it here as a fallback.
+      // For now, fail loudly so you see it during dev:
+      console.warn("Login success, but couldn't infer student id from response:", data);
+    }
+
+
 
       // ✅ Redirect based on role
       if (data.role === "Student") {
@@ -55,6 +74,7 @@ export default function LoginPage() {
         // fallback if no role provided
         navigate("/landing", { replace: true });
       }
+
     } catch (err) {
       setError(err.message || "Invalid credentials");
     } finally {

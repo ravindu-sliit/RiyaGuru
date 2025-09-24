@@ -23,8 +23,13 @@ import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
 import StudentPreferences from "../pages/Student/StudentPreferences";
 import StudentProgressPage from "../pages/Student/StudentProgressPage";
 
+// Inquiry (⭐ added)
+import InquiryDashboard from "../pages/Inquiry/InquiryDashboard";
+import StudentInquiry from "../pages/Inquiry/StudentInquiry";
+
 // Instructor
 import InstructorRoutes from "./instructorRoutes";
+
 
 // Vehicles
 import VehicleList from "../pages/Vehicle/VehicleList";
@@ -44,6 +49,7 @@ import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
 import BookingDashboard from "../pages/Booking/BookingDashboard";
 import AddBookingPage from "../pages/Booking/AddBookingPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
+import BookingEditPage from "../pages/Booking/BookingEditPage";
 
 // 🔒 Simple guard for Student-only routes
 function RequireStudent({ children }) {
@@ -123,8 +129,15 @@ export default function AppRoutes() {
       <Route path="/register" element={<RegisterStudent />} />
       <Route path="/otp-request" element={<OtpRequest />} />
 
+      {/* Inquiry (⭐ added before catch-all) */}
+      <Route path="/inquiries" element={<InquiryDashboard />} />
+      <Route path="/inquiry" element={<StudentInquiry />} />
+
       {/* Instructors */}
       <Route path="/instructor/*" element={<InstructorRoutes />} />
+
+       {/* ✅ Logged-in Instructor Profile (always “/instructor/profile”) */}
+      <Route path="/instructor/profile" element={<Instructorprofile />} />
 
       {/* Progress tracking */}
 
@@ -139,13 +152,22 @@ export default function AppRoutes() {
       <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
       <Route path="/dashboard" element={<VehicleDashboard />} />
 
-      {/* Booking */}
-      <Route path="/bookings" element={<BookingDashboard />} />
-      <Route path="/bookings/add" element={<AddBookingPage />} />
+
+           {/* Booking Routes */}
+        <Route path="/bookings" element={<BookingDashboard />} />
+        <Route path="/bookings/add" element={<AddBookingPage />} />
+        <Route path="/bookings/:id" element={<BookingDetails />} />
+        <Route path="/bookings/:id/edit" element={<BookingEditPage />} />
+
+        <Route path="/instructor/bookings" element={<InstructorBookings />} />
+
+      
+      
       <Route path="/bookings/:id" element={<BookingDetails />} />
 
       {/* Maintenance */}
       <Route path="/maintenance" element={<MaintenanceDashboard />} />
+
 
       {/* Default redirect */}
       <Route path="/" element={<DriveManagerLanding />} />

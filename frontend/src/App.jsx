@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthContext";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/App.css";
 import "./styles/maintenance.css";
+import "./styles/inquiry.css";
 
 function App() {
   return (
