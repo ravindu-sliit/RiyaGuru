@@ -8,6 +8,8 @@ import {
   TrendingUp,
   BarChart3,
   ClipboardList,
+  Calendar,
+  User,
 } from "lucide-react";
 
 export default function InstructorLessonProgressHome() {
@@ -21,21 +23,27 @@ export default function InstructorLessonProgressHome() {
               <BookOpen className="w-4 h-4 text-white" />
             </div>
             <span>
-              Drive<span className="text-orange-500">Manager</span> Pro
+              Riya<span className="text-orange-500">Guru</span>.lk
             </span>
           </div>
           <div className="flex items-center gap-6">
-            <NavItem to="/lesson-progress" icon={<BarChart3 size={18} />} active>
+            <NavItem to="/instructor/lesson-progress" icon={<BarChart3 size={18} />} active>
               Dashboard
             </NavItem>
             <NavItem to="/instructor/lesson-entry" icon={<Plus size={18} />}>
               Add Lesson
             </NavItem>
-            <NavItem to="/lesson-progress/students" icon={<Users size={18} />}>
+            <NavItem to="/instructor/lesson-progress/students" icon={<Users size={18} />}>
               Students
             </NavItem>
-            <NavItem to="/progress-tracking" icon={<TrendingUp size={18} />}>
+            <NavItem to="/instructor/progress-tracking" icon={<TrendingUp size={18} />}>
               Progress
+            </NavItem>
+            <NavItem to="/bookings" icon={<Calendar size={18} />}>
+              Bookings
+            </NavItem>
+            <NavItem to="/instructor/profile" icon={<User size={18} />}>
+              My Profile
             </NavItem>
           </div>
         </div>
@@ -45,22 +53,22 @@ export default function InstructorLessonProgressHome() {
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-12">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
-            Instructor Lesson Progress
+            Instructor Dashboard
           </h1>
           <p className="text-blue-200 text-lg max-w-2xl mx-auto">
-            Manage lessons, track student progress, and issue certificates with a modern dashboard.
+            Manage lessons, students, bookings, and your profile with a modern dashboard.
           </p>
         </div>
       </div>
 
       {/* Navigation Cards Section */}
-      <div className="px-6 py-12 max-w-7xl mx-auto grid md:grid-cols-2 gap-6">
+      <div className="px-6 py-12 max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <NavCard
           title="Lesson Dashboard"
           description="Overview of all lessons and stats"
           icon={<BookOpen className="w-8 h-8" />}
           gradient="from-blue-500 to-blue-600"
-          to="/lesson-progress"
+          to="/instructor/lesson-progress"
         />
         <NavCard
           title="Add Lesson"
@@ -74,14 +82,28 @@ export default function InstructorLessonProgressHome() {
           description="Manage lessons for each student individually"
           icon={<Users className="w-8 h-8" />}
           gradient="from-green-500 to-emerald-600"
-          to="/lesson-progress/students"
+          to="/instructor/lesson-progress/students"
         />
         <NavCard
           title="Progress Tracking"
           description="Monitor course completion & issue certificates"
           icon={<TrendingUp className="w-8 h-8" />}
           gradient="from-purple-500 to-indigo-600"
-          to="/progress-tracking"
+          to="/instructor/progress-tracking"
+        />
+        <NavCard
+          title="Bookings"
+          description="View and manage your schedule"
+          icon={<Calendar className="w-8 h-8" />}
+          gradient="from-pink-500 to-rose-600"
+          to="/bookings"
+        />
+        <NavCard
+          title="My Profile"
+          description="View and edit your instructor details"
+          icon={<User className="w-8 h-8" />}
+          gradient="from-gray-700 to-gray-900"
+          to="/instructor/profile"
         />
       </div>
 

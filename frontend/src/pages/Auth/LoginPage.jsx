@@ -93,7 +93,10 @@ export default function LoginPage() {
         );
       }
 
-      // Redirect based on role
+
+
+      // ✅ Redirect based on role
+
       if (data.role === "Student") {
         navigate("/home/student", { replace: true });
       } else if (data.role === "Instructor") {
@@ -103,6 +106,7 @@ export default function LoginPage() {
       } else {
         navigate("/landing", { replace: true });
       }
+
     } catch (err) {
       setGeneralError(err.message || "Something went wrong. Please try again.");
     } finally {

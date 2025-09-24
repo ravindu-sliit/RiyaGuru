@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import * as instructorService from "../services/instructorService.js";
 import fs from "fs";
 import path from "path";
+import Booking from "../models/Booking.js";
 
 // 🔹 Generate next InstructorID (I001, I002…)
 const getNextInstructorId = async () => {
@@ -183,5 +184,35 @@ export const getInstructorsByStatus = async (req, res) => {
     res.json(instructors);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// ✅ Get logged-in instructor profile
+export const getMyProfile = async (req, res) => {
+  try {
+    const instructor = await Instructor.findOne({ instructorId: req.user.userId });
+    if (!instructor) return res.status(404).json({ message: "Instructor not found" });
+
+    res.json({ instructor });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching instructor profile", error: err.message });
+  }
+};
+
+// ✅ Get logged-in instructor bookings
+export const getInstructorBookings = async (req, res) => {
+  try {
+    // find instructor by ID from JWT
+    const instructor = await Instructor.findOne({ instructorId: req.user.userId });
+    if (!instructor) {
+      return res.status(404).json({ message: "Instructor not found" });
+    }
+
+    // fetch bookings using instructor name (because Booking stores names)
+    const bookings = await Booking.find({ instructorName: instructor.name });
+
+    res.json({ bookings });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching bookings", error: err.message });
   }
 };

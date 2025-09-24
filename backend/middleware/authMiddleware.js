@@ -11,10 +11,13 @@ export const protect = (req, res, next) => {
 
   try {
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallbackSecretKey");
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallbackSecretKey"
+    );
 
     // Attach user details to request
-    req.user = decoded; // e.g., { userId: "S010", role: "student" }
+    req.user = decoded; // e.g., { userId: "I001", role: "Instructor" }
     next();
   } catch (error) {
     res.status(401).json({ message: "Token failed or expired" });

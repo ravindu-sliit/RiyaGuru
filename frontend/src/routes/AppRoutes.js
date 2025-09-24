@@ -5,14 +5,15 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import DriveManagerLanding from "../pages/DriveManagerLanding";
 import LoginPage from "../pages/Auth/LoginPage";
 import StudentDashboard from "../pages/Student/StudentDashboard";
-import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 //import Home from "../pages/Home/Home";
 import StudentHome from "../pages/Home/StudentHome";
 import InstructorHome from "../pages/Home/InstructorHome";
 import AdminHome from "../pages/Home/AdminHome";
 
+
 import AdminViewStudents from "../pages/Admin/AdminViewStudents"; //View All Students
+
 
 
 // Maintenance
@@ -27,11 +28,13 @@ import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
 import StudentPreferences from "../pages/Student/StudentPreferences";
 import StudentProgressPage from "../pages/Student/StudentProgressPage";
 
+// Inquiry (⭐ added)
+import InquiryDashboard from "../pages/Inquiry/InquiryDashboard";
+import StudentInquiry from "../pages/Inquiry/StudentInquiry";
+
 // Instructor
 import InstructorRoutes from "./instructorRoutes";
-import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
-import InstructorLessonEntryPage from "../pages/Instructor/InstructorLessonEntryPage";
-import InstructorLessonProgressHome from "../pages/Instructor/InstructorLessonProgressHome";
+
 
 // Vehicles
 import VehicleList from "../pages/Vehicle/VehicleList";
@@ -41,16 +44,17 @@ import VehicleDetails from "../pages/Vehicle/VehicleDetails";
 import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
 
 // Lesson Progress
-import ProgressTrackingDashboard from "../pages/ProgressTracking/ProgressTrackingDashboard";
-import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
-import StudentLessons from "../pages/LessonProgress/StudentLessons";
-import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
-import StudentList from "../pages/LessonProgress/StudentList";
+// import ProgressTrackingDashboard from "../pages/ProgressTracking/ProgressTrackingDashboard";
+// import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
+// import StudentLessons from "../pages/LessonProgress/StudentLessons";
+// import LessonProgressDashboard from "../pages/LessonProgress/LessonProgressDashboard";
+// import StudentList from "../pages/LessonProgress/StudentList";
 
 // Booking
 import BookingDashboard from "../pages/Booking/BookingDashboard";
 import AddBookingPage from "../pages/Booking/AddBookingPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
+import BookingEditPage from "../pages/Booking/BookingEditPage";
 
 // 🔒 Simple guard for Student-only routes
 function RequireStudent({ children }) {
@@ -122,30 +126,34 @@ export default function AppRoutes() {
       />
 
       <Route path="/student/progress" element={<StudentProgressPage />} />
-      <Route path="/instructor/*" element={<InstructorDashboard />} />
+
+      {/* Admin */}
       <Route path="/admin/*" element={<AdminDashboard />} />
 
+      {/* Register & OTP */}
       <Route path="/register" element={<RegisterStudent />} />
       <Route path="/otp-request" element={<OtpRequest />} />
 
 
+
       <Route path="/admin/students" element={<AdminViewStudents />} /> 
 
+      {/* Inquiry (⭐ added before catch-all) */}
+      <Route path="/inquiries" element={<InquiryDashboard />} />
+      <Route path="/inquiry" element={<StudentInquiry />} />
+
+
       {/* Instructors */}
-      <Route path="/*" element={<InstructorRoutes />} />
-      <Route path="/instructor/filter" element={<StatusFilterPage />} />
-      <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
-      <Route path="/instructor/lesson-entry" element={<InstructorLessonEntryPage />} />
-      <Route path="/instructor/lesson-progress" element={<InstructorLessonProgressHome />} />
+      <Route path="/instructor/*" element={<InstructorRoutes />} />
+
+       {/* ✅ Logged-in Instructor Profile (always “/instructor/profile”) */}
+      <Route path="/instructor/profile" element={<Instructorprofile />} />
 
       {/* Progress tracking */}
-      <Route path="/progress-tracking" element={<ProgressTrackingDashboard />} />
+
 
       {/* Lesson progress */}
-      <Route path="/lesson-progress" element={<LessonProgressDashboard />} />
-      <Route path="/lesson-progress/all" element={<LessonProgressList />} />
-      <Route path="/lesson-progress/students" element={<StudentList />} />
-      <Route path="/lesson-progress/student/:studentId" element={<StudentLessons />} />
+
 
       {/* Vehicles */}
       <Route path="/vehicles" element={<VehicleList />} />
@@ -154,13 +162,22 @@ export default function AppRoutes() {
       <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
       <Route path="/dashboard" element={<VehicleDashboard />} />
 
-      {/* Booking */}
-      <Route path="/bookings" element={<BookingDashboard />} />
-      <Route path="/bookings/add" element={<AddBookingPage />} />
+
+           {/* Booking Routes */}
+        <Route path="/bookings" element={<BookingDashboard />} />
+        <Route path="/bookings/add" element={<AddBookingPage />} />
+        <Route path="/bookings/:id" element={<BookingDetails />} />
+        <Route path="/bookings/:id/edit" element={<BookingEditPage />} />
+
+        <Route path="/instructor/bookings" element={<InstructorBookings />} />
+
+      
+      
       <Route path="/bookings/:id" element={<BookingDetails />} />
 
       {/* Maintenance */}
       <Route path="/maintenance" element={<MaintenanceDashboard />} />
+
 
       {/* Default redirect */}
       <Route path="/" element={<DriveManagerLanding />} />

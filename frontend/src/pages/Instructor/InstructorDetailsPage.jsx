@@ -1,4 +1,5 @@
 // src/pages/Instructor/InstructorDetailsPage.jsx
+//profile
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { StarIcon } from "@heroicons/react/24/solid";
