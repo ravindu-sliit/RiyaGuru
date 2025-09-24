@@ -7,13 +7,21 @@ import {
   deleteInquiry
 } from "../controllers/inquirycontroller.js";
 
+import {
+  createInquiryValidator,
+  updateInquiryValidator,
+  inquiryIdValidator
+} from "../validators/inquiryValidator.js";
+
+import validateRequest from "../middleware/validateRequest.js";
+
 const router = express.Router();
 
-// CRUD routes
-router.post("/", createInquiry);        // Create inquiry
-router.get("/", getAllInquiries);       // Get all inquiries
-router.get("/:id", getInquiryById);     // Get single inquiry
-router.put("/:id", updateInquiry);      // Update inquiry
-router.delete("/:id", deleteInquiry);   // Delete inquiry
+// CRUD routes with validation
+router.post("/", createInquiryValidator, validateRequest, createInquiry);
+router.get("/", getAllInquiries);
+router.get("/:id", inquiryIdValidator, validateRequest, getInquiryById);
+router.put("/:id", updateInquiryValidator, validateRequest, updateInquiry);
+router.delete("/:id", inquiryIdValidator, validateRequest, deleteInquiry);
 
 export default router;

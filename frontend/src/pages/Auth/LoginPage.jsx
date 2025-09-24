@@ -93,13 +93,13 @@ export default function LoginPage() {
         );
       }
 
-      // Redirect based on role
+      // ✅ Redirect based on role
       if (data.role === "Student") {
-        navigate("/home/student", { replace: true });
+        navigate("/student", { replace: true });
       } else if (data.role === "Instructor") {
-        navigate("/home/instructor", { replace: true });
+        navigate("/instructor", { replace: true });
       } else if (data.role === "Admin") {
-        navigate("/home/admin", { replace: true });
+        navigate("/admin", { replace: true });
       } else {
         navigate("/landing", { replace: true });
       }

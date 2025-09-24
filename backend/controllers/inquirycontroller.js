@@ -1,66 +1,61 @@
-import Inquiry from "../models/Inquiry.js"; // use import, not require
+import Inquiry from "../models/Inquiry.js";
 
-// Create a new inquiry
+// Create inquiry
 export const createInquiry = async (req, res) => {
   try {
     const { userId, subject, message } = req.body;
-
-    const inquiry = new Inquiry({ userId, subject, message });
-    await inquiry.save();
-
+    const inquiry = await Inquiry.create({ userId, subject, message });
     res.status(201).json({ success: true, data: inquiry });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 
-// Get all inquiries
-export const getAllInquiries = async (req, res) => {
+// Read all inquiry
+export const getAllInquiries = async (_req, res) => {
   try {
     const inquiries = await Inquiry.find().populate("userId", "name email");
     res.status(200).json({ success: true, data: inquiries });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 
-// Get inquiry by ID
+// Read one inquiry using ID 
 export const getInquiryById = async (req, res) => {
   try {
     const inquiry = await Inquiry.findById(req.params.id).populate("userId", "name email");
     if (!inquiry) return res.status(404).json({ success: false, message: "Inquiry not found" });
-
     res.status(200).json({ success: true, data: inquiry });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 
-// Update inquiry status/response
+// Update inquiry (admin)
 export const updateInquiry = async (req, res) => {
   try {
     const { status, response } = req.body;
-    const inquiry = await Inquiry.findByIdAndUpdate(
+    const updated = await Inquiry.findByIdAndUpdate(
       req.params.id,
       { status, response },
       { new: true }
     );
-    if (!inquiry) return res.status(404).json({ success: false, message: "Inquiry not found" });
 
-    res.status(200).json({ success: true, data: inquiry });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    if (!updated) return res.status(404).json({ success: false, message: "Inquiry not found" });
+    res.status(200).json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 
-// Delete an inquiry
+// Delete inquiry
 export const deleteInquiry = async (req, res) => {
   try {
-    const inquiry = await Inquiry.findByIdAndDelete(req.params.id);
-    if (!inquiry) return res.status(404).json({ success: false, message: "Inquiry not found" });
-
+    const del = await Inquiry.findByIdAndDelete(req.params.id);
+    if (!del) return res.status(404).json({ success: false, message: "Inquiry not found" });
     res.status(200).json({ success: true, message: "Inquiry deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 };

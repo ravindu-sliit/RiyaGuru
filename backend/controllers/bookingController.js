@@ -21,40 +21,37 @@ export const createBooking = async (req, res) => {
   try {
     const { instructorId, regNo, date, time, course } = req.body;
     const userId = req.user.userId; // e.g., "S003"
-
+    console.log(`User ID ${userId}`);
     // 🔹 Fetch student
     const student = await Student.findOne({ studentId: userId });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
     // 🔹 Verify student is enrolled in requested course (string match)
     const enrolled = await StudentCourse.findOne({
-      student_id: student.studentId,   // use studentId string
-      course_id: course,               // e.g., "Motorcycle"
+      student_id: student.studentId, // use studentId string
+      course_id: course, // e.g., "Motorcycle"
       status: "Active",
     });
 
     if (!enrolled) {
-      return res.status(403).json({ message: `You are not enrolled in ${course}` });
+      return res
+        .status(403)
+        .json({ message: `You are not enrolled in ${course}` });
     }
 
     // 🔹 Fetch instructor
     const instructor = await Instructor.findOne({ instructorId });
-    if (!instructor) return res.status(404).json({ message: "Instructor not found" });
+    if (!instructor)
+      return res.status(404).json({ message: "Instructor not found" });
 
     // 🔹 Fetch vehicle
     const vehicle = await Vehicle.findOne({ regNo });
     if (!vehicle) return res.status(404).json({ message: "Vehicle not found" });
 
-    // 🔹 Vehicle type must match enrolled course
-    if (vehicle.type !== course) {
-      return res.status(403).json({
-        message: `This vehicle is for ${vehicle.type}, but you are only enrolled in ${course}`,
-      });
-    }
-
     // 🔹 Prevent double booking
     const existing = await Booking.findOne({ instructorId, regNo, date, time });
-    if (existing) return res.status(400).json({ message: "Already booked at this time" });
+    if (existing)
+      return res.status(400).json({ message: "Already booked at this time" });
 
     // 🔹 Generate booking ID
     const bookingId = await getNextBookingId();
@@ -75,21 +72,25 @@ export const createBooking = async (req, res) => {
     });
     await booking.save();
 
-      // THIS PART changes vehicle (and instructor) status
+    // THIS PART changes vehicle (and instructor) status
     instructor.status = "Active";
     await instructor.save();
 
-    vehicle.status = "Active";   //vehicle status is updated
+    vehicle.status = "Active"; //vehicle status is updated
     await vehicle.save();
 
-
     // 🔹 Generate PDF receipt
-    const pdfPath = await generateBookingPDF(booking, student, instructor, vehicle);
+    const pdfPath = await generateBookingPDF(
+      booking,
+      student,
+      instructor,
+      vehicle
+    );
 
     res.status(201).json({
       message: "Booking created successfully",
       booking,
-      pdf: `http://localhost:5000/${pdfPath}`,
+      pdf: `http://localhost:5001/${pdfPath}`,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -131,11 +132,13 @@ export const updateBooking = async (req, res) => {
 
     // 🔹 Fetch instructor
     const instructor = await Instructor.findOne({ instructorId });
-    if (!instructor) return res.status(404).json({ message: "New instructor not found" });
+    if (!instructor)
+      return res.status(404).json({ message: "New instructor not found" });
 
     // 🔹 Fetch vehicle
     const vehicle = await Vehicle.findOne({ regNo });
-    if (!vehicle) return res.status(404).json({ message: "New vehicle not found" });
+    if (!vehicle)
+      return res.status(404).json({ message: "New vehicle not found" });
 
     // 🔹 Check enrollment again
     const student = await Student.findOne({ studentId: booking.userId });
@@ -146,14 +149,9 @@ export const updateBooking = async (req, res) => {
     });
 
     if (!enrolled) {
-      return res.status(403).json({ message: `You are not enrolled in ${course}` });
-    }
-
-    // 🔹 Vehicle type must match enrolled course
-    if (vehicle.type !== course) {
-      return res.status(403).json({
-        message: `This vehicle is for ${vehicle.type}, but you are only enrolled in ${course}`,
-      });
+      return res
+        .status(403)
+        .json({ message: `You are not enrolled in ${course}` });
     }
 
     // 🔹 Prevent double booking
@@ -163,7 +161,8 @@ export const updateBooking = async (req, res) => {
       $or: [{ instructorId }, { regNo }],
       _id: { $ne: booking._id },
     });
-    if (conflict) return res.status(400).json({ message: "Already booked at this time" });
+    if (conflict)
+      return res.status(400).json({ message: "Already booked at this time" });
 
     booking.instructor = instructor._id;
     booking.instructorId = instructorId;
@@ -228,7 +227,13 @@ export const checkAvailability = async (req, res) => {
       type: { $in: allowedTypes }, // only vehicles matching enrolled course names
     });
 
-    res.json({ date, time, allowedTypes, availableInstructors, availableVehicles });
+    res.json({
+      date,
+      time,
+      allowedTypes,
+      availableInstructors,
+      availableVehicles,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -247,7 +252,7 @@ export const getMyCourses = async (req, res) => {
     });
 
     const myCourses = enrollments.map((en) => ({
-      name: en.course_id,       // course name string
+      name: en.course_id, // course name string
       enrollmentDate: en.enrollmentDate,
       status: en.status,
     }));
@@ -255,5 +260,65 @@ export const getMyCourses = async (req, res) => {
     res.json(myCourses);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const { status } = req.body; // e.g., "completed", "cancelled"
+    const booking = await Booking.findById(req.params.id)
+      .populate("instructor")
+      .populate("vehicle");
+
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    // Allowed statuses
+    const allowedStatuses = ["booked", "completed", "cancelled"];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        message: `Invalid status. Allowed: ${allowedStatuses.join(", ")}`,
+      });
+    }
+
+    booking.status = status;
+    await booking.save();
+
+    // 🔹 If completed/cancelled, free instructor & vehicle
+    if (["completed", "cancelled"].includes(status)) {
+      if (booking.instructor) {
+        booking.instructor.status = "Available";
+        await booking.instructor.save();
+      }
+      if (booking.vehicle) {
+        booking.vehicle.status = "Available";
+        await booking.vehicle.save();
+      }
+    }
+
+    res.json({
+      message: `Booking status updated to '${status}'`,
+      booking,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ✅ Get logged-in instructor's bookings
+export const getMyBookings = async (req, res) => {
+  try {
+    // 1. Find instructor by their userId
+    const instructor = await Instructor.findOne({ instructorId: req.user.userId });
+    if (!instructor) {
+      return res.status(404).json({ message: "Instructor not found" });
+    }
+
+    // 2. Find bookings by instructor name (since booking table uses name)
+    const bookings = await Booking.find({ instructorName: instructor.name });
+
+    res.json({ bookings });
+  } catch (err) {
+    console.error("Error fetching instructor bookings:", err);
+    res.status(500).json({ message: "Error fetching instructor bookings" });
   }
 };

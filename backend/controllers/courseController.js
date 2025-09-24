@@ -19,3 +19,13 @@ export const addCourse = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+export const getAllCourses = async (req, res) => {
+  try {
+    const result = await Course.find();
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error });
+  }
+};
