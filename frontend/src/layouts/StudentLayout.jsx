@@ -10,7 +10,7 @@ export default function StudentLayout() {
 
   const navItems = [
     { to: `/student/progress`, label: "Dashboard", icon: <BookOpen size={18} /> },
-    { to: "/bookings", label: "Bookings", icon: <Calendar size={18} /> },
+    { to: "/student/bookings", label: "Bookings", icon: <Calendar size={18} /> },
     { to: "/vehicles", label: "Vehicles", icon: <Car size={18} /> },
     { to: "/payments", label: "Payments", icon: <CreditCard size={18} /> },
     { to: `/student/${studentId}/profile`, label: "Profile", icon: <User size={18} /> },

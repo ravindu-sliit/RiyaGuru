@@ -26,7 +26,7 @@ export default function StudentHome() {
       title: "Bookings",
       description: "Schedule or view your driving lessons",
       icon: <Calendar className="w-6 h-6 text-purple-600" />,
-      path: "/bookings",
+      path: "/student/bookings",
     },
     {
       title: "Vehicles",
