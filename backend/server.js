@@ -32,6 +32,8 @@ import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
 import adminPaymentRoutes from "./route/adminPaymentRoutes.js";
 
+import adminRoutes from "./route/AdminRoutes.js"; 
+
 // This one exists on your local branch:
 //import legacyReportRoutes from "./route/reportRoutes.js"; // aliased to avoid clash
 
@@ -121,7 +123,7 @@ app.use("/api/admin/payments", adminPaymentRoutes);
 
 app.use("/api/students", studentRoutes);
 
-
+app.use("/api/admins", adminRoutes);
 
 
 
