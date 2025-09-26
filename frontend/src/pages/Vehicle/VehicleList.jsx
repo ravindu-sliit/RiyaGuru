@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { vehicleService } from '../../services/vehicleService';
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 import { 
   Search, 
   Filter, 
@@ -16,6 +19,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
+
+
 const VehicleList = () => {
   const [vehicles, setVehicles] = useState([]);
   const [filteredVehicles, setFilteredVehicles] = useState([]);
@@ -24,6 +29,37 @@ const VehicleList = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const navigate = useNavigate();
+
+  // ⬇️ Place the function here (AFTER states, BEFORE return)
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Vehicle Details", 14, 15);
+
+    const headers = [["Reg No", "Brand", "Model", "Type", "Year", "Fuel", "Mileage", "Status", "Instructor"]];
+
+    const body = filteredVehicles.map((v) => [
+      v.regNo,
+      v.brand,
+      v.model,
+      v.type,
+      v.year,
+      v.fuelType,
+      v.mileage ? v.mileage.toLocaleString() + " km" : "0 km",
+      v.status,
+      v.assignedInstructor ? v.assignedInstructor.name : "N/A",
+    ]);
+
+    autoTable(doc, {
+      head: headers,
+      body: body,
+      startY: 25,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [255, 165, 0] },
+    });
+
+    doc.save("vehicles.pdf");
+  };
 
   useEffect(() => {
     fetchVehicles();
@@ -115,6 +151,12 @@ const VehicleList = () => {
             <Plus size={18} />
             Add Vehicle
           </Link>
+          <button
+          onClick={exportPDF}
+            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-medium px-4 py-2 rounded-md shadow-sm transition"
+           >
+           Download PDF
+            </button>
           {/* ✅ Dashboard button in header */}
           <button
             onClick={() => navigate('/dashboard')}
