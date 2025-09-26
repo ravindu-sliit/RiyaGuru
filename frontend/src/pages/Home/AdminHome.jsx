@@ -1,6 +1,10 @@
 // src/pages/Home/AdminHome.jsx
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { Users, Car, CreditCard, BookOpen, Calendar, LogOut, Settings, Bell } from "lucide-react";
+=======
+import { Users, Car, CreditCard, BookOpen, Calendar, Wrench, MessageSquare } from "lucide-react";
+>>>>>>> Stashed changes
 =======
 import { Users, Car, CreditCard, BookOpen, Calendar, Wrench, MessageSquare } from "lucide-react";
 >>>>>>> Stashed changes
@@ -27,9 +31,12 @@ export default function AdminHome() {
       icon: <Car className="w-8 h-8 text-orange-600" />,
       path: "/dashboard",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       bgColor: "bg-orange-50",
       borderColor: "border-orange-100",
       hoverColor: "hover:bg-orange-100"
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     },
@@ -39,9 +46,12 @@ export default function AdminHome() {
       icon: <Users className="w-8 h-8 text-green-600" />,
       path: "/Instructordashboard",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       bgColor: "bg-green-50",
       borderColor: "border-green-100",
       hoverColor: "hover:bg-green-100"
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     },
@@ -80,6 +90,20 @@ export default function AdminHome() {
       bgColor: "bg-blue-50",
       borderColor: "border-blue-100",
       hoverColor: "hover:bg-blue-100"
+    },
+   
+    {
+      title: "Maintenance",
+      description: "Manage vehicle maintenance records",
+      icon: <Wrench className="w-6 h-6 text-red-600" />,
+      path: "/maintenance",
+    },
+    
+    {
+      title: "View Inquiries",
+      description: "Check and respond to student inquiries",
+      icon: <MessageSquare className="w-6 h-6 text-indigo-600" />,
+      path: "/inquiries",
     },
    
     {
