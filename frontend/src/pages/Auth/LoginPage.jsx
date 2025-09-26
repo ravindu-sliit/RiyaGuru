@@ -1,30 +1,32 @@
 // src/pages/Auth/LoginPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../../styles/LoginPage.css";
 
 export default function LoginPage() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // field-level errors
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  // general (non-field) error
   const [generalError, setGeneralError] = useState("");
-
   const [submitting, setSubmitting] = useState(false);
+
+  const EMAIL_RE =
+    /^(?=.{1,254}$)(?=.{1,64}@)[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,24}$/;
 
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-  // ---------------- Email validation ----------------
   const validateEmailFormat = (val) => {
-    const v = val.trim();
+    const v = String(val || "").trim();
     if (!v) return "Email is required";
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
-      ? ""
-      : "Enter a valid email address";
+
+    // Accept pure-numeric student IDs
+    if (/^\d+$/.test(v)) return "";
+
+    // Otherwise validate email with letters-only final TLD
+    return EMAIL_RE.test(v) ? "" : "Enter a valid email";
   };
 
   const handleSubmit = async (e) => {
@@ -35,14 +37,9 @@ export default function LoginPage() {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // front-end validation
     const emailFmtErr = validateEmailFormat(normalizedEmail);
-    if (emailFmtErr) {
-      setEmailError(emailFmtErr);
-    }
-    if (!password) {
-      setPasswordError("Password is required");
-    }
+    if (emailFmtErr) setEmailError(emailFmtErr);
+    if (!password) setPasswordError("Passcode is required");
     if (emailFmtErr || !password) return;
 
     setSubmitting(true);
@@ -50,16 +47,13 @@ export default function LoginPage() {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: normalizedEmail,
-          password: password,
-        }),
+        body: JSON.stringify({ email: normalizedEmail, password }),
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        const msg = (data && data.message) || "";
+        const msg = data?.message || "";
         if (res.status === 404 || /user not found/i.test(msg)) {
           setEmailError("Email is not registered");
         } else if (res.status === 400 || /invalid credentials/i.test(msg)) {
@@ -70,12 +64,10 @@ export default function LoginPage() {
         return;
       }
 
-      // Save token & minimal user info
       if (data.token) localStorage.setItem("rg_token", data.token);
       if (data.userId) localStorage.setItem("rg_userId", data.userId);
       if (data.role) localStorage.setItem("rg_role", data.role);
 
-      // Infer ID
       const inferredId =
         data.studentId ??
         data.userId ??
@@ -83,26 +75,14 @@ export default function LoginPage() {
         data.user?.id ??
         data.user?.studentId ??
         null;
+      if (inferredId) localStorage.setItem("rg_id", String(inferredId));
 
-      if (inferredId) {
-        localStorage.setItem("rg_id", String(inferredId));
-      } else {
-        console.warn(
-          "Login success, but couldn't infer student id from response:",
-          data
-        );
-      }
-
-      // ✅ Redirect based on role
-      if (data.role === "Student") {
-        navigate("/student", { replace: true });
-      } else if (data.role === "Instructor") {
+      if (data.role === "Student") navigate("/student", { replace: true });
+      else if (data.role === "Instructor")
         navigate("/instructor", { replace: true });
-      } else if (data.role === "Admin") {
+      else if (data.role === "Admin")
         navigate("/home/admin", { replace: true });
-      } else {
-        navigate("/landing", { replace: true });
-      }
+      else navigate("/landing", { replace: true });
     } catch (err) {
       setGeneralError(err.message || "Something went wrong. Please try again.");
     } finally {
@@ -111,135 +91,85 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 420,
-        margin: "10vh auto",
-        padding: 24,
-        borderRadius: 12,
-        boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
-        background: "white",
-      }}
-    >
-      <h2 style={{ marginTop: 0, marginBottom: 16, textAlign: "center" }}>
-        Login
-      </h2>
+    <div className="login-container">
+      {/* Left Panel */}
+      <div className="login-left">
+        <h2>Sign In to RiyaGuru.LK</h2>
+        <p className="subtitle">
+          Access the Student Portal using your email and passcode.
+        </p>
 
-      <form onSubmit={handleSubmit} noValidate>
-        {/* Email */}
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="email" style={{ display: "block", marginBottom: 6 }}>
-            Email
-          </label>
+        <form onSubmit={handleSubmit} noValidate>
+          {/* Email */}
+          <label htmlFor="email">Email</label>
           <input
             id="email"
-            name="email"
-            type="email"
-            placeholder="you@example.com"
+            type="text"
+            placeholder="Enter your registered email address"
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (emailError) setEmailError("");
-            }}
+            onChange={(e) => setEmail(e.target.value)}
             onBlur={() => setEmailError(validateEmailFormat(email))}
-            required
-            style={{
-              width: "100%",
-              padding: 10,
-              borderRadius: 8,
-              border: "1px solid #ccc",
-            }}
+            aria-invalid={!!emailError}
           />
-          {emailError && (
-            <p style={{ color: "crimson", marginTop: 6 }} role="alert">
-              {emailError}
-            </p>
-          )}
-        </div>
+          {emailError && <p className="error">{emailError}</p>}
 
-        {/* Password */}
-        <div style={{ marginBottom: 12 }}>
-          <label
-            htmlFor="password"
-            style={{ display: "block", marginBottom: 6 }}
-          >
-            Password
-          </label>
+          {/* Password */}
+          <div className="passcode-label">
+            <label htmlFor="password">Passcode</label>
+            <button
+              type="button"
+              className="forgot"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot Code?
+            </button>
+          </div>
           <input
             id="password"
-            name="password"
             type="password"
-            placeholder="Your password"
+            placeholder="Enter your passcode"
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (passwordError) setPasswordError("");
-            }}
-            required
-            style={{
-              width: "100%",
-              padding: 10,
-              borderRadius: 8,
-              border: "1px solid #ccc",
-            }}
+            onChange={(e) => setPassword(e.target.value)}
+            aria-invalid={!!passwordError}
           />
-          {passwordError && (
-            <p style={{ color: "crimson", marginTop: 6 }} role="alert">
-              {passwordError}
-            </p>
-          )}
-        </div>
+          {passwordError && <p className="error">{passwordError}</p>}
 
-        {/* General error */}
-        {generalError && (
-          <p
-            style={{
-              color: "crimson",
-              marginTop: 4,
-              marginBottom: 8,
-              textAlign: "center",
-            }}
-            role="alert"
+          {generalError && <p className="error">{generalError}</p>}
+
+          <button type="submit" disabled={submitting}>
+            {submitting ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+
+        <p className="create-account">
+          New on our platform?{" "}
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => navigate("/register")}
           >
-            {generalError}
-          </p>
-        )}
+            Create an account
+          </button>
+        </p>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={submitting}
-          style={{
-            width: "100%",
-            marginTop: 8,
-            padding: "10px 14px",
-            borderRadius: 8,
-            border: "none",
-            cursor: "pointer",
-            background: "#1f6feb",
-            color: "#fff",
-            fontWeight: 600,
-          }}
-        >
-          {submitting ? "Signing in..." : "Next"}
-        </button>
-      </form>
+        <footer>
+          <button type="button" className="link-btn">
+            Terms &amp; Conditions
+          </button>{" "}
+          |{" "}
+          <button type="button" className="link-btn">
+            Privacy Policy
+          </button>{" "}
+          |{" "}
+          <button type="button" className="link-btn">
+            Refund Policy
+          </button>
+          <p>© RiyaGuru LK – Online Portal</p>
+        </footer>
+      </div>
 
-      {/* Sign Up clickable text */}
-      <p style={{ textAlign: "center", marginTop: 16 }}>
-        Don’t have an account?{" "}
-        <span
-          onClick={() => navigate("/register")}
-          style={{
-            color: "#1f6feb",
-            cursor: "pointer",
-            fontWeight: 600,
-            textDecoration: "underline",
-          }}
-        >
-          Sign Up
-        </span>
-      </p>
+      {/* Right Panel */}
+      <div className="login-right" />
     </div>
   );
 }
