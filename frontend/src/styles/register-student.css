@@ -1,7 +1,6 @@
 /* src/styles/register-student.css
-   RiyaGuru register form styling (palette + clear errors + live-valid cues) */
+   Register page — two-panel layout with FIXED hero image (non-scrolling) and a scrolling form */
 
-/* --- Tokens (fallbacks if global theme isn't loaded) --- */
 :root{
   --rg-orange:#F47C20;
   --rg-navy:#0A1A2F;
@@ -15,49 +14,96 @@
   --rg-border:#E5E8EF;
   --rg-shadow:0 12px 36px rgba(10,26,47,.10);
   --rg-ring:0 0 0 3px rgba(45,116,196,.25);
+
+  /* Wide-layout split (match login feel). Left ~42%, right ~58%. */
+  --rg-right-w: 58vw;
 }
 
-/* Page backdrop */
-body{ background:var(--rg-gray-50); color:#0E223A; }
+/* Ensure normal page scroll bar on the right */
+html, body { height: 100%; }
+body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
 
-/* ---- Card container ---- */
-.register-student{
-  margin-top: 8vh !important;
-  margin-bottom: 8vh !important;
+/* ---------- Layout ---------- */
+.register-container{
+  min-height:100vh;
+  /* Reserve space for the fixed right panel so content doesn't overlap it */
+  padding-right: var(--rg-right-w);
+  position: relative;
+  font-family: Inter, Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+/* Left form card (this column scrolls with the page) */
+.register-left{
+  max-width: 560px;
+  margin: 8vh clamp(16px, 4vw, 48px);
   background: var(--rg-white);
-  border: 1px solid var(--rg-border);
-  border-radius: 18px;
-  box-shadow: var(--rg-shadow);
-  padding: 28px;
-  max-width: 520px;
+  padding: 40px;
 }
 
-.register-student h2{
-  margin: 0 0 18px 0;
-  text-align: center;
+/* Right hero image — fixed so it DOES NOT SCROLL */
+.register-right{
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--rg-right-w);
+  height: 100vh;
+  background:
+    linear-gradient(rgba(10,26,47,.55), rgba(10,26,47,.55)),
+    url("/public/car-training - reg page.jpg") no-repeat center center/cover;
+  /* Keep it behind the form */
+  z-index: 0;
+}
+
+/* The form card sits above the fixed image */
+.register-left { position: relative; z-index: 1; }
+
+/* ---------- Responsive: stack on narrow screens ---------- */
+@media (max-width: 900px){
+  .register-container{
+    padding-right: 0;          /* no reserved space needed */
+  }
+  .register-right{
+    position: relative;        /* allow it to scroll in mobile layout */
+    width: 100%;
+    height: 32vh;
+  }
+  .register-left{
+    margin: 12px auto 32px auto;
+    padding: 22px;
+  }
+}
+
+/* ---------- Headings ---------- */
+.register-left h2{
+  margin: 0 0 8px 0;
+  font-size: 24px;
   font-weight: 700;
   color:#0E223A;
-  letter-spacing:.2px;
+}
+.register-left .subtitle{
+  font-size: 14px;
+  color:#555;
+  margin-bottom: 18px;
 }
 
-/* ---- Form layout ---- */
-.register-student form > div{ margin-bottom: 16px; }
+/* ---------- Form layout ---------- */
+.register-left form > div{ margin-bottom: 16px; }
 
-.register-student label{
+.register-left label{
   display:block;
   margin-bottom: 6px;
   font-size:14px;
   color:#30435C;
 }
 
-/* Inputs */
-.register-student input[type="text"],
-.register-student input[type="tel"],
-.register-student input[type="number"],
-.register-student input[type="email"],
-.register-student input[type="password"],
-.register-student select,
-.register-student textarea{
+/* Inputs (match Login styling) */
+.register-left input[type="text"],
+.register-left input[type="tel"],
+.register-left input[type="number"],
+.register-left input[type="email"],
+.register-left input[type="password"],
+.register-left select,
+.register-left textarea{
   width:100%;
   padding:12px 12px;
   border:1px solid var(--rg-border);
@@ -67,19 +113,18 @@ body{ background:var(--rg-gray-50); color:#0E223A; }
   outline:none;
   font:inherit;
 }
+.register-left input::placeholder,
+.register-left textarea::placeholder{ color:#9AA5B5; }
 
-.register-student input::placeholder,
-.register-student textarea::placeholder{ color:#9AA5B5; }
-
-.register-student input:focus,
-.register-student select:focus,
-.register-student textarea:focus{
+.register-left input:focus,
+.register-left select:focus,
+.register-left textarea:focus{
   border-color:#C9D6EA;
   box-shadow:var(--rg-ring);
 }
 
 /* Small helper text */
-.register-student .help-text{
+.register-left .help-text{
   display:block;
   color:#6A778B;
   margin-top:4px;
@@ -98,7 +143,6 @@ body{ background:var(--rg-gray-50); color:#0E223A; }
   font-size:13px;
   line-height:1.25;
 }
-
 .submit-error{
   display:block !important;
   text-align:center;
@@ -112,18 +156,17 @@ body{ background:var(--rg-gray-50); color:#0E223A; }
 }
 
 /* --- Live validation cues --- */
-.register-student [aria-invalid="true"]{
+.register-left [aria-invalid="true"]{
   border-color: rgba(220,53,69,.45) !important;
   box-shadow: 0 0 0 3px rgba(220,53,69,.15) !important;
 }
-
-.register-student [data-valid="true"]{
-  border-color: rgba(40,167,69,.45) !important;       /* green */
+.register-left [data-valid="true"]{
+  border-color: rgba(40,167,69,.45) !important;
   box-shadow: 0 0 0 3px rgba(40,167,69,.18) !important;
 }
 
 /* ---- Primary button ---- */
-.register-student button[type="submit"]{
+.register-left button[type="submit"]{
   width:100%;
   padding:12px 16px;
   border:none;
@@ -137,22 +180,35 @@ body{ background:var(--rg-gray-50); color:#0E223A; }
   transition:transform .04s ease, filter .15s ease, box-shadow .2s ease;
   margin-top:12px;
 }
-
-.register-student button[type="submit"]:hover{
+.register-left button[type="submit"]:hover{
   filter:brightness(.96);
   box-shadow:0 10px 28px rgba(244,124,32,.35);
 }
-
-.register-student button[type="submit"]:active{
-  transform:translateY(1px);
+.register-left button[type="submit"]:active{ transform:translateY(1px); }
+.register-left button[type="submit"]:disabled{
+  opacity:.65; cursor:not-allowed;
 }
 
-.register-student button[type="submit"]:disabled{
-  opacity:.65;
-  cursor:not-allowed;
+/* ---- “Already have an account?” link ---- */
+.have-account{
+  text-align:center;
+  margin-top:14px;
+  font-size:14px;
+  color:#30435C;
 }
-
-/* ---- Responsive ---- */
-@media (max-width:520px){
-  .register-student{ padding:22px; margin:6vh 12px; }
+.link-btn{
+  background:none;
+  border:none;
+  color:#2D74C4;
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:underline;
+  padding:0;
+}
+.link-btn:hover,
+.link-btn:focus,
+.link-btn:active{
+  outline:none;
+  box-shadow:none;
+  background:none;
 }
