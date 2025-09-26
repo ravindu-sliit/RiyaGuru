@@ -34,7 +34,7 @@ import adminRoutes from "./route/AdminRoutes.js";
 // Routes (plural folder)
 // -----------------------------
 import inquiryRoutes from "./route/inquiryroutes.js";
-import maintenanceRoutes from "./route/maintenanceroutes.js"; // ✅ your maintenance routes (with PDF)
+import maintenanceRoutes from "./route/maintenanceroutes.js"; 
 import publicReportRoutes from "./route/reportroutes.js";
 import progressReportRoutes from "./route/progressReportRoutes.js";
 
