@@ -5,9 +5,9 @@ import {
   getMaintenanceById,
   updateMaintenance,
   deleteMaintenance,
-} from "../controllers/maintenanceController.js"; // ✅ only CRUD here
+} from "../controllers/maintenancecontroller.js"; 
 
-import { generateMaintenancePDF } from "../controllers/maintenancepdfController.js"; // ✅ PDF export here
+import { generateMaintenancePDF } from "../controllers/maintenancepdfController.js"; 
 
 import {
   createMaintenanceValidator,
@@ -19,7 +19,7 @@ import validateRequest from "../middleware/validateRequest.js";
 
 const router = express.Router();
 
-// ✅ Put /pdf route BEFORE /:id route
+//PDF route 
 router.get("/pdf", generateMaintenancePDF);
 
 // CRUD routes with validation
