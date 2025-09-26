@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { validateInquiryForm } from "../../validation/inquiryValidation"; // ✅ Import central validator
+import { validateInquiryForm } from "../../validation/inquiryValidation"; // Import central validator
 
 // statuses removed: form collects only userId, subject, message
 
