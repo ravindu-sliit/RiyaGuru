@@ -1,5 +1,9 @@
 // src/pages/Home/AdminHome.jsx
+<<<<<<< Updated upstream
 import { Users, Car, CreditCard, BookOpen, Calendar, LogOut, Settings, Bell } from "lucide-react";
+=======
+import { Users, Car, CreditCard, BookOpen, Calendar, Wrench, MessageSquare } from "lucide-react";
+>>>>>>> Stashed changes
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -22,18 +26,24 @@ export default function AdminHome() {
       description: "Manage the driving school fleet",
       icon: <Car className="w-8 h-8 text-orange-600" />,
       path: "/dashboard",
+<<<<<<< Updated upstream
       bgColor: "bg-orange-50",
       borderColor: "border-orange-100",
       hoverColor: "hover:bg-orange-100"
+=======
+>>>>>>> Stashed changes
     },
     {
       title: "Instructors",
       description: "Manage instructor profiles and schedules",
       icon: <Users className="w-8 h-8 text-green-600" />,
       path: "/Instructordashboard",
+<<<<<<< Updated upstream
       bgColor: "bg-green-50",
       borderColor: "border-green-100",
       hoverColor: "hover:bg-green-100"
+=======
+>>>>>>> Stashed changes
     },
     {
       title: "Payments",
@@ -70,6 +80,20 @@ export default function AdminHome() {
       bgColor: "bg-blue-50",
       borderColor: "border-blue-100",
       hoverColor: "hover:bg-blue-100"
+    },
+   
+    {
+      title: "Maintenance",
+      description: "Manage vehicle maintenance records",
+      icon: <Wrench className="w-6 h-6 text-red-600" />,
+      path: "/maintenance",
+    },
+    
+    {
+      title: "View Inquiries",
+      description: "Check and respond to student inquiries",
+      icon: <MessageSquare className="w-6 h-6 text-indigo-600" />,
+      path: "/inquiries",
     },
   ];
 
@@ -117,6 +141,7 @@ export default function AdminHome() {
         </div>
       </div>
 
+<<<<<<< Updated upstream
       {/* Stats Cards */}
       <div className="px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -129,6 +154,18 @@ export default function AdminHome() {
               <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
+=======
+      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {quickLinks.map((link, idx) => (
+          <button
+            key={idx}
+            onClick={() => navigate(link.path)}
+            className="bg-white rounded-xl shadow hover:shadow-md transition p-5 text-left border border-gray-100"
+          >
+            <div className="flex items-center gap-3">
+              {link.icon}
+              <h2 className="text-lg font-semibold text-gray-800">{link.title}</h2>
+>>>>>>> Stashed changes
             </div>
           </div>
           
