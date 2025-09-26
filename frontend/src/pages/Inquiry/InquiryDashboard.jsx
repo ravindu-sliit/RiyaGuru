@@ -51,7 +51,7 @@ const InquiryDashboard = () => {
       // refresh and go back to view to see the updated status
       await loadInquiries();
       // find the updated item to display in view
-      const updated = (prev => prev)(null); // noop to keep linter calm
+      const updated = (prev => prev)(null); 
       setSelected((cur) => {
         const found = (inquiries || []).find((x) => x._id === selected._id);
         return found || cur;
