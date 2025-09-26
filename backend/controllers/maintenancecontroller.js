@@ -1,7 +1,7 @@
 import PDFDocument from "pdfkit";
 import Maintenance from "../models/Maintenance.js";
 
-// ➕ Create Maintenance Record
+//  Create Maintenance Record
 export const createMaintenance = async (req, res) => {
   try {
     const maintenance = new Maintenance(req.body);
@@ -17,7 +17,7 @@ export const createMaintenance = async (req, res) => {
   }
 };
 
-// 📋 Get all Maintenance Records
+//  Get all Maintenance Records
 export const getAllMaintenance = async (req, res) => {
   try {
     const records = await Maintenance.find()
@@ -30,7 +30,7 @@ export const getAllMaintenance = async (req, res) => {
   }
 };
 
-// 🔍 Get Maintenance by ID
+// Get Maintenance by ID
 export const getMaintenanceById = async (req, res) => {
   try {
     const record = await Maintenance.findById(req.params.id).populate(
@@ -49,7 +49,7 @@ export const getMaintenanceById = async (req, res) => {
   }
 };
 
-// ✏️ Update Maintenance
+//  Update Maintenance
 export const updateMaintenance = async (req, res) => {
   try {
     const record = await Maintenance.findByIdAndUpdate(
@@ -69,7 +69,7 @@ export const updateMaintenance = async (req, res) => {
   }
 };
 
-// ❌ Delete Maintenance
+//  Delete Maintenance
 export const deleteMaintenance = async (req, res) => {
   try {
     const record = await Maintenance.findByIdAndDelete(req.params.id);
@@ -86,7 +86,7 @@ export const deleteMaintenance = async (req, res) => {
   }
 };
 
-// 📄 Generate Maintenance PDF Report
+//  Generate Maintenance PDF Report
 export const generateMaintenancePDF = async (req, res) => {
   try {
     const maintenanceRecords = await Maintenance.find().populate(
