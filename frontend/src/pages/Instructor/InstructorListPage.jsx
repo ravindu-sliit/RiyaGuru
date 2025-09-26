@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InstructorAPI from "../../api/instructorApi";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const headers = [
   { key: "instructorId", label: "ID", icon: "" },
@@ -57,23 +59,50 @@ export default function InstructorListPage() {
     return list;
   }, [rows, q, spec, sortKey, asc]);
 
-  const exportCSV = () => {
-    const header = ["ID,Name,Email,Phone,Specialization,Status"];
-    const body = filtered.map((r) =>
-      [r.instructorId, r.name, r.email, r.phone, r.specialization, r.status]
-        .map((x) => `"${String(x ?? "").replace(/"/g, '""')}"`)
-        .join(",")
-    );
-    const blob = new Blob([header.concat(body).join("\n")], {
-      type: "text/csv;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "instructors.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  // const exportCSV = () => {
+  //   const header = ["ID,Name,Email,Phone,Specialization,Status"];
+  //   const body = filtered.map((r) =>
+  //     [r.instructorId, r.name, r.email, r.phone, r.specialization, r.status]
+  //       .map((x) => `"${String(x ?? "").replace(/"/g, '""')}"`)
+  //       .join(",")
+  //   );
+  //   const blob = new Blob([header.concat(body).join("\n")], {
+  //     type: "text/csv;charset=utf-8",
+  //   });
+  //   const url = URL.createObjectURL(blob);
+  //   const a = document.createElement("a");
+  //   a.href = url;
+  //   a.download = "instructors.csv";
+  //   a.click();
+  //   URL.revokeObjectURL(url);
+  // };
+
+ const exportPDF = () => {
+  const doc = new jsPDF();
+
+  const headers = [["ID", "Name", "Email", "Phone", "Specialization", "Status"]];
+  const body = filtered.map((r) => [
+    r.instructorId,
+    r.name,
+    r.email,
+    r.phone,
+    r.specialization,
+    r.status,
+  ]);
+
+  doc.setFontSize(16);
+  doc.text("Instructor List", 14, 15);
+
+  // ✅ correct way to use autoTable
+  autoTable(doc, {
+    head: headers,
+    body: body,
+    startY: 25,
+  });
+
+  doc.save("instructors.pdf");
+};
+
 
   const toggleStatus = async (rec) => {
     const next = rec.status === "Active" ? "Not-Active" : "Active";
@@ -159,10 +188,10 @@ export default function InstructorListPage() {
               Add Instructor
             </Link>
             <button
-              onClick={exportCSV}
+              onClick={exportPDF }
               className="flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
             >
-              Export CSV
+              Export PDF
             </button>
           </div>
         </div>
