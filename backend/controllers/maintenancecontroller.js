@@ -8,7 +8,7 @@ export const createMaintenance = async (req, res) => {
     const saved = await maintenance.save();
     const populated = await saved.populate(
       "vehicleId",
-      "_id regNo model type fuelType year"
+      "_id regNo model type fuelType year"   // ✅ use regNo
     );
 
     res.status(201).json({ success: true, data: populated });
@@ -21,7 +21,7 @@ export const createMaintenance = async (req, res) => {
 export const getAllMaintenance = async (req, res) => {
   try {
     const records = await Maintenance.find()
-      .populate("vehicleId", "_id regNo model type fuelType year")
+      .populate("vehicleId", "_id regNo model type fuelType year")  // ✅ regNo
       .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, data: records });
@@ -35,7 +35,7 @@ export const getMaintenanceById = async (req, res) => {
   try {
     const record = await Maintenance.findById(req.params.id).populate(
       "vehicleId",
-      "_id regNo model type fuelType year"
+      "_id regNo model type fuelType year"   // ✅ regNo
     );
 
     if (!record)
@@ -56,7 +56,7 @@ export const updateMaintenance = async (req, res) => {
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    ).populate("vehicleId", "_id regNo model type fuelType year");
+    ).populate("vehicleId", "_id regNo model type fuelType year");  // ✅ regNo
 
     if (!record)
       return res
@@ -91,7 +91,7 @@ export const generateMaintenancePDF = async (req, res) => {
   try {
     const maintenanceRecords = await Maintenance.find().populate(
       "vehicleId",
-      "regNumber model"
+      "regNo model"    // ✅ regNo
     );
 
     if (!maintenanceRecords || maintenanceRecords.length === 0) {
@@ -116,7 +116,7 @@ export const generateMaintenancePDF = async (req, res) => {
     maintenanceRecords.forEach((record, index) => {
       doc.fontSize(12).text(`Record #${index + 1}`, { underline: true });
       doc.text(
-        `Vehicle: ${record.vehicleId?.regNumber || "N/A"} - ${
+        `Vehicle: ${record.vehicleId?.regNo || "N/A"} - ${
           record.vehicleId?.model || ""
         }`
       );
