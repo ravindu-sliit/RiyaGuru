@@ -1,5 +1,6 @@
 import Payment from "../models/Payment.js";
 import { generateReceipt } from "../utils/pdf.js";
+import { sendEmail } from "../services/emailService.js";
 
 // PATCH /api/admin/payments/:id/approve
 export const approvePayment = async (req, res) => {
@@ -13,8 +14,8 @@ export const approvePayment = async (req, res) => {
     payment.paidDate = new Date();
     if (adminComment) payment.adminComment = adminComment;
 
-    // Generate and save receipt
-    const filePath = generateReceipt(payment);
+    // Generate and save receipt (await to get string path)
+    const filePath = await generateReceipt(payment);
     payment.receiptURL = filePath;
 
     // If installment → adjust balance and next due date
@@ -29,6 +30,21 @@ export const approvePayment = async (req, res) => {
     }
 
     await payment.save();
+
+    // Notify student via email (if we have an email)
+    if (payment.studentEmail) {
+      const subject = `Payment Approved - ${payment.courseName}`;
+      const lines = [
+        `Hi,`,
+        `Your payment has been approved.`,
+        `Course: ${payment.courseName}`,
+        `Amount: ${payment.amount}`,
+        payment.receiptURL ? `Receipt: ${payment.receiptURL}` : null,
+        adminComment ? `Admin note: ${adminComment}` : null,
+      ].filter(Boolean);
+      try { await sendEmail(payment.studentEmail, subject, lines.join("\n")); } catch {}
+    }
+
     return res.status(200).json({ payment });
   } catch (err) {
     console.error("❌ Error in approvePayment:", err);
@@ -47,6 +63,21 @@ export const rejectPayment = async (req, res) => {
     );
 
     if (!payment) return res.status(404).json({ message: "Unable to reject payment" });
+
+    // Notify student
+    if (payment.studentEmail) {
+      const subject = `Payment Rejected - ${payment.courseName}`;
+      const lines = [
+        `Hi,`,
+        `Your payment was rejected.`,
+        `Course: ${payment.courseName}`,
+        `Amount: ${payment.amount}`,
+        adminComment ? `Reason: ${adminComment}` : null,
+        `Please re-submit the payment with corrections.`,
+      ].filter(Boolean);
+      try { await sendEmail(payment.studentEmail, subject, lines.join("\n")); } catch {}
+    }
+
     return res.status(200).json({ payment });
   } catch (err) {
     console.error("❌ Error in rejectPayment:", err);

@@ -4,12 +4,15 @@ import {
   addPayment,
   getPaymentById,
   updatePayment,
-  deletePayment
+  deletePayment,
+  uploadSlip
 } from "../controllers/paymentController.js";
+import paymentSlipUpload from "../middleware/paymentSlipUpload.js";
 
 const router = Router();
 
 // No authentication middleware (independent module)
+router.post("/upload-slip", paymentSlipUpload.single("file"), uploadSlip);
 router.get("/", getAllPayments);
 router.post("/", addPayment);
 router.get("/:id", getPaymentById);

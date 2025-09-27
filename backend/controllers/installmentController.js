@@ -53,6 +53,26 @@ export const createPlan = async (req, res) => {
   }
 };
 
+// DELETE /api/installments/:id
+export const deletePlan = async (req, res) => {
+  try {
+    const plan = await InstallmentPlan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ message: "Plan not found" });
+
+    // Guard: prevent deletion if any installment is approved
+    const hasApproved = (plan.schedule || []).some((i) => i.status === "Approved");
+    if (hasApproved) {
+      return res.status(400).json({ message: "Cannot delete a plan with approved installments" });
+    }
+
+    await InstallmentPlan.findByIdAndDelete(req.params.id);
+    return res.status(204).send();
+  } catch (err) {
+    console.error("❌ Error in deletePlan:", err);
+    return res.status(400).json({ message: "Unable to delete plan" });
+  }
+};
+
 // GET /api/installments
 export const getAllPlans = async (req, res) => {
   try {

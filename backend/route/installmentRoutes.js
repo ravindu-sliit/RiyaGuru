@@ -4,7 +4,8 @@ import {
   getAllPlans,
   getPlanById,
   updatePlan,
-  payInstallment
+  payInstallment,
+  deletePlan
 } from "../controllers/installmentController.js";
 
 const router = Router();
@@ -15,5 +16,6 @@ router.get("/", getAllPlans);
 router.get("/:id", getPlanById);
 router.put("/:id", updatePlan);
 router.patch("/:id/pay", payInstallment);
+router.delete("/:id", deletePlan);
 
 export default router;

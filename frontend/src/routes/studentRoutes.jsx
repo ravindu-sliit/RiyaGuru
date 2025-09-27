@@ -8,6 +8,9 @@ import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
 import StudentPreferences from "../pages/Student/StudentPreferences";
 import StudentProgressPage from "../pages/Student/StudentProgressPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
+import MyEnrollments from "../pages/Enrollment/MyEnrollments";
+import PaymentsHub from "../pages/Payment/PaymentsHub";
+import EnrollmentDetails from "../pages/Enrollment/EnrollmentDetails";
 
 export default function StudentRoutes() {
   return (
@@ -20,6 +23,9 @@ export default function StudentRoutes() {
         <Route path=":id/preferences" element={<StudentPreferences />} />
         <Route path="progress" element={<StudentProgressPage />} />
         <Route path="bookings" element={<BookingDetails />} />
+        <Route path="my-enrollments" element={<MyEnrollments />} />
+        <Route path="my-payments" element={<PaymentsHub />} />
+        <Route path="enrollments/:id" element={<EnrollmentDetails />} />
         <Route path="*" element={<Navigate to="/student" replace />} />
       </Route>
     </Routes>

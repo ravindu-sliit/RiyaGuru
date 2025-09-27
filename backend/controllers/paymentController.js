@@ -2,8 +2,22 @@ import Payment from "../models/Payment.js";
 import { processCardPayment } from "../utils/gateway.js";
 import { paymentSchema } from "../validators/paymentValidation.js";
 
+// POST /api/payments/upload-slip
+export const uploadSlip = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    // Build public path that matches server static mounting at /uploads
+    const filePath = `/uploads/slips/${req.file.filename}`;
+    return res.status(201).json({ path: filePath });
+  } catch (err) {
+    console.error("Error in uploadSlip:", err);
+    return res.status(500).json({ message: "Failed to upload slip" });
+  }
+};
 
-// GET /api/payments
+// GET payments
 export const getAllPayments = async (req, res) => {
   try {
     const { status, from, to, studentName, courseName } = req.query;
@@ -16,7 +30,8 @@ export const getAllPayments = async (req, res) => {
         ...(to ? { $lte: new Date(to) } : {}),
       };
     }
-    if (studentName) filter.studentName = { $regex: studentName, $options: "i" };
+    if (studentName)
+      filter.studentName = { $regex: studentName, $options: "i" };
     if (courseName) filter.courseName = { $regex: courseName, $options: "i" };
 
     const payments = await Payment.find(filter).sort({ createdAt: -1 });
@@ -27,16 +42,24 @@ export const getAllPayments = async (req, res) => {
   }
 };
 
-// POST /api/payments
+// POST payments
 export const addPayment = async (req, res) => {
   try {
-    // 🔍 Validate request body
+    // Validate 
     const { error } = paymentSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { studentName, courseName, amount, paymentType, paymentMethod, slipURL, cardDetails } = req.body;
+    const {
+      studentName,
+      courseName,
+      amount,
+      paymentType,
+      paymentMethod,
+      slipURL,
+      cardDetails,
+    } = req.body;
 
     let paymentData = {
       studentName,
@@ -61,7 +84,7 @@ export const addPayment = async (req, res) => {
     const payment = await Payment.create(paymentData);
     return res.status(201).json({ payment });
   } catch (err) {
-    console.error("❌ Error in addPayment:", err);
+    console.error(" Error in addPayment:", err);
     return res.status(500).json({ message: "Unable to add payment" });
   }
 };
@@ -78,21 +101,39 @@ export const getPaymentById = async (req, res) => {
   }
 };
 
-
 // PUT /api/payments/:id
 export const updatePayment = async (req, res) => {
   try {
-    // 🔍 Validate incoming data with Joi
+    //  Validate 
     const { error } = paymentSchema.validate(req.body, { allowUnknown: true });
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { amount, paymentType, paymentMethod, slipURL, adminComment, cardDetails, studentName, courseName } = req.body;
+    const {
+      amount,
+      paymentType,
+      paymentMethod,
+      slipURL,
+      adminComment,
+      cardDetails,
+      studentName,
+      courseName,
+      status,
+    } = req.body;
 
-    let updateData = { amount, paymentType, paymentMethod, slipURL, adminComment, studentName, courseName };
+    let updateData = {
+      amount,
+      paymentType,
+      paymentMethod,
+      slipURL,
+      adminComment,
+      studentName,
+      courseName,
+      status,
+    };
 
-    // If Card → simulate transaction
+    // If Card 
     if (paymentMethod === "Card" && cardDetails) {
       const result = await processCardPayment(cardDetails, amount);
       if (!result.success) {
@@ -107,10 +148,11 @@ export const updatePayment = async (req, res) => {
       runValidators: true,
     });
 
-    if (!payment) return res.status(404).json({ message: "Unable to update payment" });
+    if (!payment)
+      return res.status(404).json({ message: "Unable to update payment" });
     return res.status(200).json({ payment });
   } catch (err) {
-    console.error("❌ Error in updatePayment:", err);
+    console.error(" Error in updatePayment:", err);
     return res.status(400).json({ message: "Invalid data or ID" });
   }
 };
@@ -119,7 +161,8 @@ export const updatePayment = async (req, res) => {
 export const deletePayment = async (req, res) => {
   try {
     const payment = await Payment.findByIdAndDelete(req.params.id);
-    if (!payment) return res.status(404).json({ message: "Unable to delete payment" });
+    if (!payment)
+      return res.status(404).json({ message: "Unable to delete payment" });
     return res.status(200).json({ payment });
   } catch (err) {
     console.error(err);
