@@ -5,6 +5,45 @@ import Counter from "../models/Counter.js";
 import Student from "../models/StudentModel.js";
 import StudentCourse from "../models/StudentCourse.js";
 import { generateBookingPDF } from "../utils/pdfUtils.js";
+import { sendBookingEmail } from "../utils/sendBookingEmail.js"; 
+
+
+export const sendBookingEmailById = async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    console.log("📩 Sending email for bookingId:", bookingId);
+
+    const booking = await Booking.findOne({ bookingId })
+      .populate("student")
+      .populate("instructor")
+      .populate("vehicle");
+
+    if (!booking) {
+      console.error("❌ Booking not found:", bookingId);
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    console.log("✅ Booking found:", booking.bookingId);
+
+    const student = booking.student;
+    const instructor = booking.instructor;
+    const vehicle = booking.vehicle;
+
+    // Generate PDF
+    const pdfPath = await generateBookingPDF(booking, student, instructor, vehicle);
+    console.log("✅ PDF generated at:", pdfPath);
+
+    // Send email
+    await sendBookingEmail("codestack80@gmail.com", booking, pdfPath);
+    console.log("✅ Email sent");
+
+    res.json({ message: "Booking receipt emailed successfully" });
+  } catch (error) {
+    console.error("❌ Error sending booking email:", error);
+    res.status(500).json({ message: "Failed to send email", error: error.message });
+  }
+};
+
 
 // 🔹 Auto increment Booking ID
 const getNextBookingId = async () => {
@@ -15,24 +54,22 @@ const getNextBookingId = async () => {
   );
   return `B${counter.seq.toString().padStart(3, "0")}`;
 };
-
-// ✅ Create Booking
+//  Create Booking
 export const createBooking = async (req, res) => {
   try {
     const { instructorId, regNo, date, time, course } = req.body;
     const userId = req.user.userId; // e.g., "S003"
-    console.log(`User ID ${userId}`);
+
     // 🔹 Fetch student
     const student = await Student.findOne({ studentId: userId });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
-    // 🔹 Verify student is enrolled in requested course (string match)
+    // 🔹 Verify student is enrolled in requested course
     const enrolled = await StudentCourse.findOne({
-      student_id: student.studentId, // use studentId string
-      course_id: course, // e.g., "Motorcycle"
+      student_id: student.studentId,
+      course_id: course,
       status: "Active",
     });
-
     if (!enrolled) {
       return res
         .status(403)
@@ -65,39 +102,48 @@ export const createBooking = async (req, res) => {
       instructorId,
       vehicle: vehicle._id,
       regNo,
-      course, // store course name string
+      course,
       date,
       time,
       status: "booked",
     });
     await booking.save();
 
-    // THIS PART changes vehicle (and instructor) status
+    // 🔹 Update instructor & vehicle status
     instructor.status = "Active";
     await instructor.save();
 
-    vehicle.status = "Active"; //vehicle status is updated
+    vehicle.status = "Active";
     await vehicle.save();
 
-   const pdfPath = await generateBookingPDF(
-  booking,
-  student,
-  instructor,
-  vehicle
-);
+    // 🔹 Generate PDF
+    const pdfPath = await generateBookingPDF(
+      booking,
+      student,
+      instructor,
+      vehicle
+    );
 
-res.status(201).json({
-  message: "Booking created successfully",
-  booking,
-  pdf: `http://localhost:5000/uploads/booking_${booking.bookingId}.pdf`, // 👈
-});
+    // 🔹 Send PDF via email (to your personal inbox)
+    await sendBookingEmail(
+      "codestack80@gmail.com", 
+      booking,
+      pdfPath
+    );
 
+    //  Single response (cleaned)
+    res.status(201).json({
+      message: "Booking created successfully, PDF generated and emailed",
+      booking,
+      pdf: `http://localhost:5000/uploads/booking_${booking.bookingId}.pdf`, // direct download link
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(" Booking creation failed:", error);
+    res.status(500).json({ message: "Booking creation failed", error: error.message });
   }
 };
 
-// ✅ Get all bookings
+// Get all bookings
 export const getBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
@@ -109,7 +155,7 @@ export const getBookings = async (req, res) => {
   }
 };
 
-// ✅ Get booking by ID
+//  Get booking by ID
 export const getBookingById = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id)
@@ -123,7 +169,7 @@ export const getBookingById = async (req, res) => {
   }
 };
 
-// ✅ Update booking
+//  Update booking
 export const updateBooking = async (req, res) => {
   try {
     const { instructorId, regNo, date, time, course } = req.body;
@@ -322,3 +368,4 @@ export const getMyBookings = async (req, res) => {
     res.status(500).json({ message: "Error fetching instructor bookings" });
   }
 };
+
