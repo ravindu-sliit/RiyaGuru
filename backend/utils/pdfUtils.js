@@ -10,239 +10,229 @@ export const generateBookingPDF = (booking, student, instructor, vehicle) => {
 
       const filePath = path.join(uploadsDir, `booking_${booking.bookingId}.pdf`);
       const doc = new PDFDocument({
-        size: 'A4',
-        margin: 50,
+        size: "A4",
+        margin: 40,
         info: {
           Title: `Booking Confirmation - ${booking.bookingId}`,
-          Author: 'RiyaGuru Driving School',
-          Subject: 'Driving Lesson Booking Confirmation',
-          Creator: 'RiyaGuru.lk'
-        }
+          Author: "RiyaGuru.lk Driving School",
+          Subject: "Driving Lesson Booking Confirmation",
+          Creator: "RiyaGuru.lk",
+        },
       });
-      
+
       const stream = fs.createWriteStream(filePath);
       doc.pipe(stream);
 
-      // Define colors and styles
-      const primaryColor = '#2c3e50';
-      const secondaryColor = '#3498db';
-      const accentColor = '#e74c3c';
-      const lightGray = '#ecf0f1';
+      // Brand Colors
+      const colors = {
+        primary: "#F47C20",
+        darkNavy: "#0A1A2F",
+        white: "#FFFFFF",
+        lightGray: "#F5F6FA",
+        softBlue: "#2D74C4",
+        green: "#28A745",
+        red: "#DC3545",
+        yellow: "#FFC107",
+        textGray: "#6B7280",
+        borderGray: "#E5E7EB",
+      };
 
-      // Header Section with Company Branding
-      drawHeader(doc, primaryColor, secondaryColor);
-      
-      // Booking Status Badge
-      drawStatusBadge(doc, booking.status, accentColor);
-      
-      // Main Content Sections
-      drawBookingDetails(doc, booking, primaryColor, lightGray);
-      drawStudentDetails(doc, student, primaryColor, lightGray);
-      drawInstructorDetails(doc, instructor, primaryColor, lightGray);
-      drawVehicleDetails(doc, vehicle, primaryColor, lightGray);
-      
-      // Footer
-      drawFooter(doc, secondaryColor);
+      // Sections
+      drawHeader(doc, colors);
+      drawBookingOverview(doc, booking, colors);
+      drawInfoSection(doc, "STUDENT INFORMATION", [
+        { label: "Full Name", value: student.full_name },
+        { label: "NIC", value: student.nic },
+        { label: "Phone", value: student.phone },
+        { label: "Address", value: student.address || "Not provided" },
+      ], colors);
+
+      drawInfoSection(doc, "INSTRUCTOR INFORMATION", [
+        { label: "Name", value: instructor.name },
+        { label: "Phone", value: instructor.phone },
+        { label: "Specialization", value: instructor.specialization },
+        { label: "Experience", value: `${instructor.experienceYears || "N/A"} years` },
+      ], colors);
+
+      drawInfoSection(doc, "VEHICLE INFORMATION", [
+        { label: "Registration", value: vehicle.regNo },
+        { label: "Make & Model", value: `${vehicle.brand} ${vehicle.model}` },
+        { label: "Type", value: vehicle.type },
+        { label: "Fuel Type", value: vehicle.fuelType || "Not specified" },
+      ], colors);
+
+      drawImportantInformation(doc, colors);
+
+      // If footer would overflow, move it to a new page
+      if (doc.y > doc.page.height - 150) {
+        doc.addPage();
+      }
+      drawFooter(doc, colors);
 
       doc.end();
       stream.on("finish", () => resolve(filePath));
-      
     } catch (error) {
       reject(error);
     }
   });
 };
 
-// Header Section
-function drawHeader(doc, primaryColor, secondaryColor) {
-  doc.rect(50, 50, 60, 60)
-     .fillColor(secondaryColor)
-     .fill();
-  
-  doc.fillColor('#ffffff')
-     .fontSize(24)
-     .text('RG', 65, 75);
+/* ---------- HEADER ---------- */
+function drawHeader(doc, colors) {
+  doc.rect(0, 0, doc.page.width, 80).fill(colors.darkNavy);
 
-  doc.fillColor(primaryColor)
-     .fontSize(28)
-     .font('Helvetica-Bold')
-     .text('RiyaGuru Driving School', 130, 60);
-  
-  doc.fontSize(14)
-     .font('Helvetica')
-     .fillColor('#7f8c8d')
-     .text('Professional Driving Education', 130, 90);
+  doc.fillColor(colors.primary)
+    .fontSize(20)
+    .font("Helvetica-Bold")
+    .text("RiyaGuru.lk Driving School", 50, 30);
 
-  doc.strokeColor(secondaryColor)
-     .lineWidth(2)
-     .moveTo(50, 130)
-     .lineTo(545, 130)
-     .stroke();
+  doc.fillColor(colors.white)
+    .fontSize(11)
+    .text("Professional Driving Education", 50, 55);
 
-  doc.y = 150;
+  doc.fillColor(colors.white)
+    .fontSize(13)
+    .font("Helvetica-Bold")
+    .text("BOOKING CONFIRMATION", doc.page.width - 220, 35);
+
+  doc.fillColor(colors.lightGray)
+    .fontSize(10)
+    .text(new Date().toLocaleDateString(), doc.page.width - 220, 55);
+
+  doc.y = 100;
 }
 
-// Status Badge
-function drawStatusBadge(doc, status, accentColor) {
-  const statusColors = {
-    'confirmed': '#27ae60',
-    'pending': '#f39c12',
-    'cancelled': '#e74c3c',
-    'completed': '#8e44ad'
-  };
-
-  const badgeColor = statusColors[status.toLowerCase()] || accentColor;
-  const badgeText = status.toUpperCase();
-  
-  const badgeWidth = doc.widthOfString(badgeText) + 20;
-  const badgeX = 545 - badgeWidth;
-  
-  doc.rect(badgeX, doc.y, badgeWidth, 25)
-     .fillColor(badgeColor)
-     .fill();
-  
-  doc.fillColor('#ffffff')
-     .fontSize(10)
-     .font('Helvetica-Bold')
-     .text(badgeText, badgeX + 10, doc.y + 8);
-
-  doc.y += 40;
-}
-
-// Section Header Helper
-function drawSectionHeader(doc, title, primaryColor, lightGray) {
-  const sectionY = doc.y;
-  
-  doc.rect(50, sectionY, 495, 30)
-     .fillColor(lightGray)
-     .fill();
-  
-  doc.fillColor(primaryColor)
-     .fontSize(16)
-     .font('Helvetica-Bold')
-     .text(title, 60, sectionY + 8);
-  
-  doc.y = sectionY + 40;
-}
-
-// Booking Details Section
-function drawBookingDetails(doc, booking, primaryColor, lightGray) {
-  drawSectionHeader(doc, 'BOOKING DETAILS', primaryColor, lightGray);
-  
-  const bookingData = [
-    ['Booking ID:', booking.bookingId],
-    ['Date:', new Date(booking.date).toLocaleDateString()],
-    ['Time:', booking.time],
-    ['Status:', booking.status]
-  ];
-
-  drawDataTable(doc, bookingData, primaryColor);
-  doc.y += 15;
-}
-
-// Student Details Section
-function drawStudentDetails(doc, student, primaryColor, lightGray) {
-  drawSectionHeader(doc, 'STUDENT INFORMATION', primaryColor, lightGray);
-  
-  const studentData = [
-    ['Name:', student.full_name],
-    ['NIC:', student.nic],
-    ['Phone:', student.phone],
-    ['Address:', student.address]  // ✅ added address
-  ];
-
-  drawDataTable(doc, studentData, primaryColor);
-  doc.y += 15;
-}
-
-// Instructor Details Section
-function drawInstructorDetails(doc, instructor, primaryColor, lightGray) {
-  drawSectionHeader(doc, 'INSTRUCTOR INFORMATION', primaryColor, lightGray);
-  
-  const instructorData = [
-    ['Name:', instructor.name],
-    ['Phone:', instructor.phone],
-    ['Specialization:', instructor.specialization]
-  ];
-
-  drawDataTable(doc, instructorData, primaryColor);
-  doc.y += 15;
-}
-
-// Vehicle Details Section
-function drawVehicleDetails(doc, vehicle, primaryColor, lightGray) {
-  drawSectionHeader(doc, 'VEHICLE INFORMATION', primaryColor, lightGray);
-  
-  const vehicleData = [
-    ['Registration:', vehicle.regNo],
-    ['Vehicle:', `${vehicle.brand} ${vehicle.model}`],
-    ['Type:', vehicle.type]
-  ];
-
-  drawDataTable(doc, vehicleData, primaryColor);
-  doc.y += 15;
-}
-
-// Data Table Helper
-function drawDataTable(doc, data, primaryColor) {
+/* ---------- BOOKING OVERVIEW ---------- */
+function drawBookingOverview(doc, booking, colors) {
   const startY = doc.y;
-  const rowHeight = 18;
-  
-  data.forEach((row, index) => {
-    const currentY = startY + (index * rowHeight);
-    
-    if (index % 2 === 0) {
-      doc.rect(50, currentY - 2, 495, rowHeight)
-         .fillColor('#f8f9fa')
-         .fill();
-    }
-    
-    doc.fillColor(primaryColor)
-       .fontSize(11)
-       .font('Helvetica-Bold')
-       .text(row[0], 60, currentY);
-    
-    doc.fillColor('#2c3e50')
-       .fontSize(11)
-       .font('Helvetica')
-       .text(row[1], 180, currentY);
-  });
-  
-  doc.y = startY + (data.length * rowHeight);
+  doc.rect(40, startY, doc.page.width - 80, 70)
+    .fill(colors.white)
+    .stroke(colors.borderGray);
+
+  doc.fillColor(colors.darkNavy)
+    .fontSize(14)
+    .font("Helvetica-Bold")
+    .text(`Booking #${booking.bookingId}`, 60, startY + 20);
+
+  drawStatusBadge(doc, booking.status, colors, doc.page.width - 160, startY + 20);
+
+  doc.fillColor(colors.primary)
+    .fontSize(9)
+    .text("DATE", 60, startY + 40);
+
+  doc.fillColor(colors.darkNavy)
+    .fontSize(11)
+    .font("Helvetica-Bold")
+    .text(new Date(booking.date).toLocaleDateString("en-GB"), 60, startY + 52);
+
+  doc.fillColor(colors.primary)
+    .fontSize(9)
+    .text("TIME", 220, startY + 40);
+
+  doc.fillColor(colors.darkNavy)
+    .fontSize(11)
+    .text(booking.time, 220, startY + 52);
+
+  doc.y = startY + 90;
 }
 
-// Footer Section
-function drawFooter(doc, secondaryColor) {
-  doc.y = 750;
-  
-  doc.strokeColor(secondaryColor)
-     .lineWidth(1)
-     .moveTo(50, doc.y)
-     .lineTo(545, doc.y)
-     .stroke();
-  
-  doc.y += 10;
-  
-  doc.fillColor('#7f8c8d')
-     .fontSize(10)
-     .font('Helvetica')
-     .text('Important: Please arrive 10 minutes before your scheduled lesson time.', 50, doc.y);
-  
-  doc.y += 12;
-  doc.text('For any changes or cancellations, please contact us at least 24 hours in advance.', 50, doc.y);
-  
-  doc.y += 20;
-  
-  doc.fillColor(secondaryColor)
-     .fontSize(11)
-     .font('Helvetica-Bold')
-     .text('RiyaGuru Driving School', { align: 'center' });
-  
-  doc.fillColor('#7f8c8d')
-     .fontSize(10)
-     .font('Helvetica')
-     .text('Email: info@riyaguru.lk | Phone: +94 XX XXX XXXX | Web: www.riyaguru.lk', { align: 'center' });
-  
-  doc.y += 10;
-  doc.text(`Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, { align: 'center' });
+/* ---------- STATUS BADGE ---------- */
+function drawStatusBadge(doc, status, colors, x, y) {
+  const map = {
+    booked: { bg: colors.green, text: "CONFIRMED" },
+    confirmed: { bg: colors.green, text: "CONFIRMED" },
+    pending: { bg: colors.yellow, text: "PENDING" },
+    cancelled: { bg: colors.red, text: "CANCELLED" },
+    completed: { bg: colors.softBlue, text: "COMPLETED" },
+  };
+  const config = map[status.toLowerCase()] || map.booked;
+
+  const width = doc.widthOfString(config.text, { font: "Helvetica-Bold", size: 9 }) + 20;
+  doc.rect(x, y, width, 18).fill(config.bg);
+
+  doc.fillColor(colors.white)
+    .fontSize(9)
+    .font("Helvetica-Bold")
+    .text(config.text, x + 8, y + 5);
+}
+
+/* ---------- INFO SECTIONS ---------- */
+function drawInfoSection(doc, title, rows, colors) {
+  const margin = 40;
+
+  doc.rect(margin, doc.y, doc.page.width - margin * 2, 20)
+    .fill(colors.lightGray)
+    .stroke(colors.borderGray);
+
+  doc.fillColor(colors.darkNavy)
+    .fontSize(11)
+    .font("Helvetica-Bold")
+    .text(title, margin + 8, doc.y + 5);
+
+  const rowHeight = 16;
+  let currentY = doc.y + 25;
+
+  rows.forEach((row, i) => {
+    if (i % 2 === 0) {
+      doc.rect(margin, currentY - 3, doc.page.width - margin * 2, rowHeight)
+        .fill("#FAFBFC");
+    }
+    doc.fillColor(colors.textGray)
+      .fontSize(9)
+      .text(row.label + ":", margin + 8, currentY);
+
+    doc.fillColor(colors.darkNavy)
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .text(row.value, margin + 140, currentY);
+
+    currentY += rowHeight;
+  });
+
+  doc.y = currentY + 5;
+}
+
+/* ---------- IMPORTANT INFO ---------- */
+function drawImportantInformation(doc, colors) {
+  const margin = 40;
+
+  doc.fillColor(colors.primary)
+    .fontSize(11)
+    .font("Helvetica-Bold")
+    .text("IMPORTANT INFORMATION", margin, doc.y);
+
+  const items = [
+    "Arrive 15 minutes before your lesson.",
+    "Bring a valid photo ID.",
+    "Contact us 24 hours before for rescheduling.",
+    "Payment must be completed before lesson.",
+    "Follow instructor safety guidelines.",
+  ];
+
+  let currentY = doc.y + 18;
+  items.forEach((item) => {
+    doc.circle(margin + 5, currentY + 4, 2).fill(colors.primary);
+    doc.fillColor(colors.darkNavy)
+      .fontSize(9)
+      .text(item, margin + 15, currentY);
+    currentY += 12;
+  });
+
+  doc.y = currentY + 10;
+}
+
+/* ---------- FOOTER ---------- */
+function drawFooter(doc, colors) {
+  const footerY = doc.page.height - 90;
+
+  doc.rect(0, footerY, doc.page.width, 90).fill(colors.darkNavy);
+
+  doc.fillColor(colors.white)
+    .fontSize(12)
+    .font("Helvetica-Bold");
+   
+  doc.fillColor(colors.primary)
+    .fontSize(10)
+    .font("Helvetica-Bold")
+    .text("Thank you for choosing RiyaGuru.lk!", doc.page.width / 2 - 100, footerY + 35);
 }

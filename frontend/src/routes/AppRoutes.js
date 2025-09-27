@@ -59,6 +59,8 @@ import AdminPayments from "../pages/Payment/AdminPayments.jsx";
 import MyEnrollments from "../pages/Enrollment/MyEnrollments.jsx";
 import EnrollmentDetails from "../pages/Enrollment/EnrollmentDetails.jsx";
 
+import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
+
 export default function AppRoutes() {
   const EnrollRedirect = () => {
     const { id } = useParams();
@@ -68,6 +70,12 @@ export default function AppRoutes() {
   };
   return (
     <Routes>
+
+
+       {/* Student Password Change */}
+        <Route path="/student/:id/password" element={<StudentPasswordChange />} />
+
+
        {/* Instructor CRUD */}
       <Route path="instructors/list" element={<InstructorListPage />} />
       <Route path="instructors/:id" element={<InstructorDetailsPage />} />
