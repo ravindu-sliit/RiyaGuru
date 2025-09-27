@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { apiFetch, API_BASE } from "../../services/api";
+import "../../styles/student-password-change.css";
 
 export default function StudentPasswordChange() {
-  const { id } = useParams(); // studentId
+  const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem("rg_token");
 
@@ -32,7 +33,6 @@ export default function StudentPasswordChange() {
     load();
   }, [id]);
 
-  // 🔹 Password validation helper
   function validatePassword(pwd) {
     const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
@@ -60,18 +60,14 @@ export default function StudentPasswordChange() {
     }
 
     try {
-      // 1) Validate old password by trying to login
       const resLogin = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password: oldPwd }),
       });
 
-      if (!resLogin.ok) {
-        throw new Error("Old Password Incorrect");
-      }
+      if (!resLogin.ok) throw new Error("Old Password Incorrect");
 
-      // 2) Update password through StudentController
       await apiFetch(`/api/students/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -89,60 +85,81 @@ export default function StudentPasswordChange() {
     navigate("/login", { replace: true });
     return null;
   }
-  if (loading) return <div style={{ padding: 16 }}>Loading…</div>;
+  if (loading) return <div className="spc-loading">Loading…</div>;
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Change Password</h2>
-      <p>
-        <Link to={`/student/${id}/dashboard`}>&larr; Back to Dashboard</Link>
-      </p>
-
-      {err && <div style={{ color: "crimson", marginBottom: 8 }}>{err}</div>}
-      {ok && <div style={{ color: "green", marginBottom: 8 }}>{ok}</div>}
-
-      <form onSubmit={handleSubmit} style={{ maxWidth: 420 }}>
-        <div style={{ marginBottom: 10 }}>
-          <label>Email</label>
-          <input
-            value={email}
-            disabled
-            style={{ width: "100%", background: "#f7f7f7" }}
-          />
+    <div className="spc">
+      {/* Header styled like StudentDetailsEdit */}
+      <header className="spc-header">
+        <div className="spc-header-left">
+          <h1>Update Password</h1>
+          <p className="spc-subtitle">Change your password.</p>
         </div>
+        {/*<div className="spc-header-actions">
+          <Link to={`/student/${id}/dashboard`} className="btn btn-outline">
+            ← Back to Dashboard
+          </Link>
+        </div>*/}
+      </header>
 
-        <div style={{ marginBottom: 10 }}>
-          <label>Current Password</label>
-          <input
-            type="password"
-            value={oldPwd}
-            onChange={(e) => setOldPwd(e.target.value)}
-            style={{ width: "100%" }}
-          />
-        </div>
+      <div className="spc-messages">
+        {err && <div className="alert error">{err}</div>}
+        {ok && <div className="alert success">{ok}</div>}
+      </div>
 
-        <div style={{ marginBottom: 10 }}>
-          <label>New Password</label>
-          <input
-            type="password"
-            value={newPwd}
-            onChange={(e) => setNewPwd(e.target.value)}
-            style={{ width: "100%" }}
-          />
-        </div>
+      <section className="card spc-card">
+        <form onSubmit={handleSubmit} className="spc-form" noValidate>
+          <div className="form-row">
+            <label htmlFor="email">Email</label>
+            <input id="email" value={email} disabled className="is-disabled" />
+          </div>
 
-        <div style={{ marginBottom: 16 }}>
-          <label>Confirm New Password</label>
-          <input
-            type="password"
-            value={newPwd2}
-            onChange={(e) => setNewPwd2(e.target.value)}
-            style={{ width: "100%" }}
-          />
-        </div>
+          <div className="form-row">
+            <label htmlFor="oldPwd">Current Password</label>
+            <input
+              id="oldPwd"
+              type="password"
+              value={oldPwd}
+              onChange={(e) => setOldPwd(e.target.value)}
+              placeholder="Enter current password"
+            />
+          </div>
 
-        <button type="submit">Change Password</button>
-      </form>
+          <div className="form-row">
+            <label htmlFor="newPwd">New Password</label>
+            <input
+              id="newPwd"
+              type="password"
+              value={newPwd}
+              onChange={(e) => setNewPwd(e.target.value)}
+              placeholder="Enter new password"
+            />
+            <small className="help-text">
+              Min 6 chars with 1 uppercase, 1 lowercase, 1 number, 1 special character. 
+            </small>
+          </div>
+
+          <div className="form-row">
+            <label htmlFor="newPwd2">Confirm New Password</label>
+            <input
+              id="newPwd2"
+              type="password"
+              value={newPwd2}
+              onChange={(e) => setNewPwd2(e.target.value)}
+              placeholder="Re-enter new password"
+            />
+          </div>
+
+          <div className="spc-actions">
+            <button type="submit" className="btn btn-navy">
+              Change Password
+            </button>
+            <Link to={`/student`} className="btn btn-outline">
+              Cancel
+            </Link>
+          </div>
+        </form>
+      </section>
     </div>
   );
 }
