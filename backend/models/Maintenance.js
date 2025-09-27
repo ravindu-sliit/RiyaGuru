@@ -4,7 +4,7 @@ const maintenanceSchema = new mongoose.Schema(
   {
     vehicleId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Vehicle",
+      ref: "Vehicle",   // ✅ Reference to Vehicle model
       required: true,
     },
     serviceDate: {
