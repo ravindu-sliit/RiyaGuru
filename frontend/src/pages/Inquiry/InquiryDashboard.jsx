@@ -35,6 +35,9 @@ const InquiryDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
 
+  // 👇 NEW: sort state
+  const [sortDir, setSortDir] = useState("desc");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,7 +53,14 @@ const InquiryDashboard = () => {
     try {
       setLoading(true);
       const list = await getAllInquiries();
-      setInquiries(Array.isArray(list) ? list : []);
+
+      // ✅ Normalize createdAt so sorting always works
+      const normalized = (Array.isArray(list) ? list : []).map((x) => ({
+        ...x,
+        createdAt: x?.createdAt || x?.created || x?.date || x?.created_at || null,
+      }));
+
+      setInquiries(normalized);
     } catch (err) {
       showNotification("Error loading inquiries", "error");
     } finally {
@@ -124,6 +134,21 @@ const InquiryDashboard = () => {
     }
   };
 
+  // 👇 Memoized sorted inquiries
+  const sortedInquiries = React.useMemo(() => {
+    const arr = Array.isArray(inquiries) ? [...inquiries] : [];
+    arr.sort((a, b) => {
+      const da = new Date(a?.createdAt || 0).getTime();
+      const db = new Date(b?.createdAt || 0).getTime();
+      return sortDir === "asc" ? da - db : db - da;
+    });
+    return arr;
+  }, [inquiries, sortDir]);
+
+  // 👇 Toggle function
+  const toggleDateSort = () =>
+    setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+
   return (
     <div className="dashboard">
       {/* 🔹 Header */}
@@ -165,11 +190,13 @@ const InquiryDashboard = () => {
         {activeView === "list" && (
           <>
             <InquiryList
-              items={inquiries}
+              items={sortedInquiries} // ✅ sorted list
               loading={loading}
               onView={handleView}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              sortDir={sortDir} // ✅ pass sort direction
+              onToggleSort={toggleDateSort} // ✅ pass toggle handler
             />
 
             {/* Back button under table aligned left */}
