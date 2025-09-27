@@ -48,10 +48,17 @@ import AddBookingPage from "../pages/Booking/AddBookingPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
 import BookingEditPage from "../pages/Booking/BookingEditPage";
 
+import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
+
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Instructor CRUD */}
+
+       {/* Student Password Change */}
+        <Route path="/student/:id/password" element={<StudentPasswordChange />} />
+
+
+       {/* Instructor CRUD */}
       <Route path="instructors/list" element={<InstructorListPage />} />
       <Route path="instructors/:id" element={<InstructorDetailsPage />} />
       <Route path="instructors/add" element={<AddInstructorPage />} />

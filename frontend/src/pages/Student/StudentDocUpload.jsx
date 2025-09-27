@@ -2,19 +2,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { apiFetch, API_BASE } from "../../services/api";
+import "../../styles/student-doc-upload.css";
 
 export default function StudentDocUpload() {
   const { id } = useParams(); // studentId
   const navigate = useNavigate();
   const token = localStorage.getItem("rg_token");
 
-  // preference
   const [pref, setPref] = useState(null);
+  const [docs, setDocs] = useState([]); // [{docType, frontUrl, backUrl}]
   const [loading, setLoading] = useState(true);
 
-  // files
+  // NIC files
   const [nicFront, setNicFront] = useState(null);
   const [nicBack, setNicBack] = useState(null);
+
+  // Driver License files
   const [dlFront, setDlFront] = useState(null);
   const [dlBack, setDlBack] = useState(null);
 
@@ -24,10 +27,14 @@ export default function StudentDocUpload() {
   useEffect(() => {
     async function load() {
       setErr("");
+      setLoading(true);
       try {
-        // GET preference by studentId
-        const data = await apiFetch(`/api/preferences/${id}`);
-        setPref(data.preference);
+        const [prefRes, docsRes] = await Promise.all([
+          apiFetch(`/api/preferences/${id}`),
+          apiFetch(`/api/docs/student/${id}`).catch(() => ({ documents: [] })),
+        ]);
+        setPref(prefRes.preference);
+        setDocs(docsRes.documents || []);
       } catch (e) {
         setErr(e.message);
       } finally {
@@ -42,141 +49,260 @@ export default function StudentDocUpload() {
     return null;
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  const refreshDocs = async () => {
+    const docRes = await apiFetch(`/api/docs/student/${id}`).catch(() => ({ documents: [] }));
+    setDocs(docRes.documents || []);
+  };
+
+  const getDoc = (type) =>
+    docs.find((d) => String(d.docType).toLowerCase() === String(type).toLowerCase());
+
+  async function uploadNIC() {
     setErr("");
     setOk("");
-
-    const isLight = pref?.vehicleCategory === "Light";
-    const isHeavy = pref?.vehicleCategory === "Heavy";
-
-    // make sure the correct files are present before posting
-    if (isLight) {
-      if (!nicFront || !nicBack) {
-        setErr("For Light category, NIC front and back are required.");
-        return;
-      }
-    } else if (isHeavy) {
-      const hasNIC = nicFront || nicBack;
-      const hasDL = dlFront || dlBack;
-      if (!hasNIC && !hasDL) {
-        setErr("For Heavy category, upload NIC and/or Driver License.");
-        return;
-      }
-      if (hasNIC && (!nicFront || !nicBack)) {
-        setErr("If you upload NIC, both NIC front and back are required.");
-        return;
-      }
-      if (hasDL && (!dlFront || !dlBack)) {
-        setErr("If you upload Driver License, both front and back are required.");
-        return;
-      }
-    } else {
-      setErr("Preference not found. Please set your preference first.");
+    if (!nicFront || !nicBack) {
+      setErr("Please choose both NIC Front and NIC Back.");
       return;
     }
-
-    const form = new FormData();
-    form.append("studentId", id);
-    if (nicFront) form.append("nicFront", nicFront);
-    if (nicBack) form.append("nicBack", nicBack);
-    if (dlFront) form.append("dlFront", dlFront);
-    if (dlBack) form.append("dlBack", dlBack);
-
     try {
+      const form = new FormData();
+      form.append("studentId", id);
+      form.append("nicFront", nicFront);
+      form.append("nicBack", nicBack);
+
       const res = await fetch(`${API_BASE}/api/docs`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: form,
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body.message || "Upload failed");
+      if (!res.ok) throw new Error(body.message || "NIC upload failed");
 
-      setOk(body.message || "Uploaded");
-      // redirect back to dashboard after short delay
-      setTimeout(() => navigate(`/student/${id}/dashboard`, { replace: true }), 600);
+      setOk(body.message || "NIC uploaded.");
+      setNicFront(null);
+      setNicBack(null);
+      await refreshDocs();
     } catch (e) {
       setErr(e.message);
     }
   }
 
+  async function deleteNIC() {
+    setErr("");
+    setOk("");
+    try {
+      const res = await fetch(`${API_BASE}/api/docs/student/${id}/type/NIC`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.message || "Delete NIC failed");
+      setOk("NIC deleted.");
+      await refreshDocs();
+    } catch (e) {
+      setErr(e.message);
+    }
+  }
+
+  async function uploadDL() {
+    setErr("");
+    setOk("");
+    if (!dlFront || !dlBack) {
+      setErr("Please choose both License Front and License Back.");
+      return;
+    }
+    try {
+      const form = new FormData();
+      form.append("studentId", id);
+      form.append("dlFront", dlFront);
+      form.append("dlBack", dlBack);
+
+      const res = await fetch(`${API_BASE}/api/docs`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.message || "Driver License upload failed");
+
+      setOk(body.message || "Driver License uploaded.");
+      setDlFront(null);
+      setDlBack(null);
+      await refreshDocs();
+    } catch (e) {
+      setErr(e.message);
+    }
+  }
+
+  async function deleteDL() {
+    setErr("");
+    setOk("");
+    try {
+      const res = await fetch(`${API_BASE}/api/docs/student/${id}/type/Driver_License`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.message || "Delete Driver License failed");
+      setOk("Driver License deleted.");
+      await refreshDocs();
+    } catch (e) {
+      setErr(e.message);
+    }
+  }
+
+  const nicDoc = getDoc("NIC");
+  const dlDoc = getDoc("Driver_License");
+  const isLight = pref?.vehicleCategory === "Light";
+
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Upload Documents</h2>
-      <p>
-        <Link to={`/student/${id}/dashboard`}>&larr; Back to Dashboard</Link>
-      </p>
+    <div className="sdu">
+      {/* Header */}
+      <header className="sdu-header">
+        <div className="sdu-header-left">
+          <h1>My Documents</h1>
+          <p className="sdu-subtitle">
+            {pref?.vehicleCategory ? (
+              <>Vehicle Category: <b>{pref.vehicleCategory}</b></>
+            ) : (
+              "Set your preference to see required documents."
+            )}
+          </p>
+        </div>
+        <div className="sdu-header-actions">
+          <Link to={`/student`} className="btn btn-outline">
+            Back to Dashboard
+          </Link>
+        </div>
+      </header>
 
-      {loading && <div>Loading preference…</div>}
-      {err && <div style={{ color: "crimson", marginBottom: 8 }}>{err}</div>}
-      {ok && <div style={{ color: "green", marginBottom: 8 }}>{ok}</div>}
+      {/* Alerts */}
+      <div className="sdu-messages">
+        {loading && <div className="alert info">Loading…</div>}
+        {err && <div className="alert error" role="alert">{err}</div>}
+        {ok && <div className="alert success" role="status">{ok}</div>}
+      </div>
 
-      {pref && (
-        <>
-          <div style={{ marginBottom: 12 }}>
-            <b>Vehicle Category:</b> {pref.vehicleCategory}
+      {/* NIC Row */}
+      <section className="card sdu-row">
+        <div className="sdu-row-title">
+          <h3 className="card-title">NIC</h3>
+          {nicDoc && (
+            <button type="button" className="btn btn-danger" onClick={deleteNIC}>
+              Delete NIC
+            </button>
+          )}
+        </div>
+
+        <div className="sdu-row-grid">
+          {/* Left: preview slots */}
+          <div className="sdu-preview">
+            {/* Front slot */}
+            <div className="sdu-slot">
+              <div className="sdu-slot-label">Front</div>
+              {nicDoc?.frontUrl ? (
+                <img src={nicDoc.frontUrl} alt="NIC Front" />
+              ) : (
+                <div className="sdu-slot-empty">No image</div>
+              )}
+            </div>
+            {/* Back slot */}
+            <div className="sdu-slot">
+              <div className="sdu-slot-label">Back</div>
+              {nicDoc?.backUrl ? (
+                <img src={nicDoc.backUrl} alt="NIC Back" />
+              ) : (
+                <div className="sdu-slot-empty">No image</div>
+              )}
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            {/* NIC block */}
-            <fieldset style={{ marginBottom: 16 }}>
-              <legend>NIC (front & back)</legend>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <div>
-                  <label>NIC Front</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setNicFront(e.target.files?.[0] || null)}
-                  />
-                </div>
-                <div>
-                  <label>NIC Back</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setNicBack(e.target.files?.[0] || null)}
-                  />
-                </div>
-              </div>
-              {pref.vehicleCategory === "Light" && (
-                <p style={{ marginTop: 6, color: "#555" }}>
-                  Light category: only NIC is allowed.
-                </p>
-              )}
-            </fieldset>
+          {/* Right: file pickers + upload */}
+          <div className="sdu-controls">
+            <div className="input-block">
+              <label>NIC Front</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNicFront(e.target.files?.[0] || null)}
+              />
+            </div>
+            <div className="input-block">
+              <label>NIC Back</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNicBack(e.target.files?.[0] || null)}
+              />
+            </div>
+            <div className="sdu-actions-right">
+              <button type="button" className="btn btn-navy" onClick={uploadNIC}>
+                Upload NIC
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Driver License block (not shown as required for Light) */}
-            {pref.vehicleCategory === "Heavy" && (
-              <fieldset style={{ marginBottom: 16 }}>
-                <legend>Driver License (front & back)</legend>
-                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                  <div>
-                    <label>License Front</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setDlFront(e.target.files?.[0] || null)}
-                    />
-                  </div>
-                  <div>
-                    <label>License Back</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setDlBack(e.target.files?.[0] || null)}
-                    />
-                  </div>
-                </div>
-                <p style={{ marginTop: 6, color: "#555" }}>
-                  Heavy category: you can upload both NIC and Driver License, or add the License later.
-                </p>
-              </fieldset>
+      {/* Driver License Row (hidden for Light) */}
+      {!isLight && (
+        <section className="card sdu-row">
+          <div className="sdu-row-title">
+            <h3 className="card-title">DRIVING LICENCE</h3>
+            {dlDoc && (
+              <button type="button" className="btn btn-danger" onClick={deleteDL}>
+                Delete Licence
+              </button>
             )}
+          </div>
 
-            <button type="submit">Upload</button>
-          </form>
-        </>
+          <div className="sdu-row-grid">
+            {/* Left: preview slots */}
+            <div className="sdu-preview">
+              <div className="sdu-slot">
+                <div className="sdu-slot-label">Front</div>
+                {dlDoc?.frontUrl ? (
+                  <img src={dlDoc.frontUrl} alt="License Front" />
+                ) : (
+                  <div className="sdu-slot-empty">No image</div>
+                )}
+              </div>
+              <div className="sdu-slot">
+                <div className="sdu-slot-label">Back</div>
+                {dlDoc?.backUrl ? (
+                  <img src={dlDoc.backUrl} alt="License Back" />
+                ) : (
+                  <div className="sdu-slot-empty">No image</div>
+                )}
+              </div>
+            </div>
+
+            {/* Right: file pickers + upload */}
+            <div className="sdu-controls">
+              <div className="input-block">
+                <label>Licence Front</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setDlFront(e.target.files?.[0] || null)}
+                />
+              </div>
+              <div className="input-block">
+                <label>Licence Back</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setDlBack(e.target.files?.[0] || null)}
+                />
+              </div>
+              <div className="sdu-actions-right">
+                <button type="button" className="btn btn-navy" onClick={uploadDL}>
+                  Upload Licence
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );

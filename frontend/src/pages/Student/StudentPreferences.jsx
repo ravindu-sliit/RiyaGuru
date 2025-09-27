@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { API_BASE } from "../../services/api";
+import "../../styles/student-preferences.css";
 
 const VEHICLE_TYPES = ["Car", "Motorcycle", "ThreeWheeler"];
 const SCHEDULES = ["Weekday", "Weekend"];
@@ -22,6 +23,9 @@ export default function StudentPreferences() {
   const [prefExists, setPrefExists] = useState(false);
   const [error, setError] = useState("");
   const [ok, setOk] = useState("");
+
+  // success modal (like StudentDetailsEdit)
+  const [showSavedModal, setShowSavedModal] = useState(false);
 
   // Guard: must be a logged-in Student
   useEffect(() => {
@@ -136,147 +140,166 @@ export default function StudentPreferences() {
         setOk(body.message || "Preferences saved.");
       }
 
-      // Redirect to dashboard
-      setTimeout(() => {
-        navigate(`/student/${id}/dashboard`, { replace: true });
-      }, 600);
+      // Instead of auto-redirect, show success modal like other pages
+      setShowSavedModal(true);
     } catch (e) {
       setError(e.message || "Save failed");
     }
   }
 
-  if (loading) return <div style={{ padding: 16 }}>Loading…</div>;
+  if (loading) return <div className="spf-loading">Loading…</div>;
 
   return (
-    <div style={{ padding: 16, maxWidth: 720, margin: "0 auto" }}>
-      <h2>{prefExists ? "Edit Preferences" : "Select Preferences"}</h2>
-      <p>
-        <Link to={`/student/${id}/dashboard`}>&larr; Back to Dashboard</Link>
-      </p>
+    <div className="spf">
+      {/* Header — same pattern as other pages */}
+      <header className="spf-header">
+        <div className="spf-header-left">
+          <h1>{prefExists ? "Edit Preferences" : "Select Preferences"}</h1>
+          <p className="spf-subtitle">
+            Choose your vehicle category, types, and preferred schedule.
+          </p>
+        </div>
+      </header>
 
-      {error && <div style={{ color: "crimson", marginBottom: 8 }}>{error}</div>}
-      {ok && <div style={{ color: "seagreen", marginBottom: 8 }}>{ok}</div>}
-
-      {/* Summary if pref exists */}
-      {prefExists && (
-        <div
-          style={{
-            background: "#f7f7f7",
-            border: "1px solid #eee",
-            padding: 12,
-            borderRadius: 8,
-            marginBottom: 12,
-          }}
-        >
-          <b>Current Preference</b>
-          <div>Category: {vehicleCategory}</div>
-          <div>
-            Vehicle Type: {isHeavy ? "Heavy" : vehicleType.join(", ") || "-"}
+      {/* Alerts */}
+      <div className="spf-messages">
+        {error && (
+          <div className="alert error" role="alert" aria-live="assertive">
+            {error}
           </div>
-          <div>Schedule: {schedulePref}</div>
+        )}
+        {ok && (
+          <div className="alert success" role="status" aria-live="polite">
+            {ok}
+          </div>
+        )}
+      </div>
+
+      {/* Card */}
+      <section className="card spf-card">
+        {/* Current summary (if exists) */}
+        {prefExists && (
+          <div className="spf-summary">
+            <b>Current Preference</b>
+            <div>Category: {vehicleCategory}</div>
+            <div>
+              Vehicle Type: {isHeavy ? "Heavy" : vehicleType.join(", ") || "-"}
+            </div>
+            <div>Schedule: {schedulePref}</div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="spf-form" noValidate>
+          {/* Category (only when creating) */}
+          {!prefExists && (
+            <fieldset className="spf-fieldset">
+              <legend>Vehicle Category</legend>
+
+              <label className="spf-radio">
+                <input
+                  type="radio"
+                  name="vehicleCategory"
+                  value="Light"
+                  checked={vehicleCategory === "Light"}
+                  onChange={() => setVehicleCategory("Light")}
+                />
+                <span>Light</span>
+              </label>
+
+              <label className="spf-radio">
+                <input
+                  type="radio"
+                  name="vehicleCategory"
+                  value="Heavy"
+                  checked={vehicleCategory === "Heavy"}
+                  onChange={() => {
+                    setVehicleCategory("Heavy");
+                    setVehicleType([]);
+                  }}
+                />
+                <span>Heavy</span>
+              </label>
+            </fieldset>
+          )}
+
+          {/* Vehicle Types (Light only) */}
+          {vehicleCategory === "Light" && (
+            <fieldset className="spf-fieldset">
+              <legend>Vehicle Types (select one or more)</legend>
+              <div className="spf-checkboxes">
+                {VEHICLE_TYPES.map((t) => (
+                  <label key={t} className="spf-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={vehicleType.includes(t)}
+                      onChange={() => toggleType(t)}
+                    />
+                    <span>{t}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )}
+
+          {/* Schedule (always) */}
+          <fieldset className="spf-fieldset">
+            <legend>Preferred Schedule</legend>
+            <select
+              className="spf-select"
+              value={schedulePref}
+              onChange={(e) => setSchedulePref(e.target.value)}
+            >
+              {SCHEDULES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </fieldset>
+
+          <div className="spf-actions">
+            <button type="submit" className="btn btn-navy" disabled={!canSubmit}>
+              {prefExists ? "Update Preferences" : "Save Preferences"}
+            </button>
+            <Link to={`/student`} className="btn btn-outline">
+              Cancel
+            </Link>
+          </div>
+        </form>
+      </section>
+
+      {/* Save Success Modal — same look/feel as StudentDetailsEdit */}
+      {showSavedModal && (
+        <div className="spf-modal-overlay" role="dialog" aria-modal="true">
+          <div className="spf-modal spf-modal-success">
+            <div className="spf-check">
+              {/* inline SVG check inside a soft green ring */}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" className="ring" />
+                <path d="M7 12.5l3.2 3.2L17 9" className="tick" />
+              </svg>
+            </div>
+            <h4 className="spf-modal-title">Preferences Saved</h4>
+            <p className="spf-modal-text">
+              Your preferences have been updated successfully.
+            </p>
+            <button
+              type="button"
+              className="btn btn-success spf-modal-cta"
+              onClick={() => navigate(`/student`, { replace: true })}
+            >
+              Return to Dashboard
+            </button>
+            <button
+              type="button"
+              className="link-btn spf-modal-stay"
+              onClick={() => setShowSavedModal(false)}
+            >
+              Stay on this Page
+            </button>
+          </div>
         </div>
       )}
-
-      <form onSubmit={handleSubmit}>
-        {/* Category selection: only when creating */}
-        {!prefExists && (
-          <div
-            style={{
-              border: "1px solid #eee",
-              borderRadius: 8,
-              padding: 12,
-              marginBottom: 14,
-            }}
-          >
-            <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>
-              Vehicle Category
-            </label>
-
-            <label style={{ marginRight: 16 }}>
-              <input
-                type="radio"
-                name="vehicleCategory"
-                value="Light"
-                checked={vehicleCategory === "Light"}
-                onChange={() => setVehicleCategory("Light")}
-              />
-              <span style={{ marginLeft: 6 }}>Light</span>
-            </label>
-
-            <label>
-              <input
-                type="radio"
-                name="vehicleCategory"
-                value="Heavy"
-                checked={vehicleCategory === "Heavy"}
-                onChange={() => {
-                  setVehicleCategory("Heavy");
-                  setVehicleType([]);
-                }}
-              />
-              <span style={{ marginLeft: 6 }}>Heavy</span>
-            </label>
-          </div>
-        )}
-
-        {/* Vehicle types (Light only, and editable if Light) */}
-        {vehicleCategory === "Light" && (
-          <div
-            style={{
-              border: "1px solid #eee",
-              borderRadius: 8,
-              padding: 12,
-              marginBottom: 14,
-            }}
-          >
-            <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>
-              Vehicle Types (select one or more)
-            </label>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              {VEHICLE_TYPES.map((t) => (
-                <label key={t} style={{ minWidth: 160 }}>
-                  <input
-                    type="checkbox"
-                    checked={vehicleType.includes(t)}
-                    onChange={() => toggleType(t)}
-                    disabled={isHeavy} // lock if heavy
-                  />
-                  <span style={{ marginLeft: 6 }}>{t}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Schedule always editable */}
-        <div
-          style={{
-            border: "1px solid #eee",
-            borderRadius: 8,
-            padding: 12,
-            marginBottom: 14,
-          }}
-        >
-          <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>
-            Preferred Schedule
-          </label>
-          <select
-            value={schedulePref}
-            onChange={(e) => setSchedulePref(e.target.value)}
-            style={{ padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
-          >
-            {SCHEDULES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button type="submit" disabled={!canSubmit}>
-          {prefExists ? "Update Preferences" : "Save Preferences"}
-        </button>
-      </form>
     </div>
   );
 }
