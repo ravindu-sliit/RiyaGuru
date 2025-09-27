@@ -40,6 +40,7 @@ import AddVehicle from "../pages/Vehicle/AddVehicle";
 import EditVehicle from "../pages/Vehicle/EditVehicle";
 import VehicleDetails from "../pages/Vehicle/VehicleDetails";
 import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
+import Studentvehicle from "../pages/Vehicle/Studentvehicle.jsx";
 
 // Booking
 import BookingDashboard from "../pages/Booking/BookingDashboard";
@@ -90,6 +91,7 @@ export default function AppRoutes() {
       <Route path="/vehicles/:id" element={<VehicleDetails />} />
       <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
       <Route path="/dashboard" element={<VehicleDashboard />} />
+       <Route path="/StuVehicle" element={<Studentvehicle />} />
 
       {/* Booking */}
       <Route path="/bookings" element={<BookingDashboard />} />

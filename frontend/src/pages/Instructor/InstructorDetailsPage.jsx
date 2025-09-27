@@ -138,17 +138,12 @@ export default function InstructorDetailsPage() {
              Vehicles Management
           </Link>
           <Link
-            to="/instructors"
+            to="/Instructordashboard"
             className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
              Instructors Management
           </Link>
-          <Link
-            to="/students"
-            className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            Students
-          </Link>
+          
         </div>
       </nav>
 
@@ -374,10 +369,10 @@ export default function InstructorDetailsPage() {
               View Performance
             </Link>
             <Link
-              to="/instructors"
+              to="/Instructordashboard"
               className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
             >
-              ← Back to List
+              Back to List DashBoard
             </Link>
           </div>
         </div>
