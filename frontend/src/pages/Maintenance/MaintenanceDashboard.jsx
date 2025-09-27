@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Plus, FileDown, AlertCircle, CheckCircle } from "lucide-react";
+import { Plus, FileDown, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import MaintenanceList from "./MaintenanceList";
 import MaintenanceForm from "./MaintenanceForm";
 import MaintenanceView from "./MaintenanceView";
@@ -12,7 +13,7 @@ import {
   deleteMaintenance,
 } from "../../services/maintenanceAPI";
 
-import { API_BASE } from "../../services/api"; // ✅ added
+import { API_BASE } from "../../services/api";
 
 const MaintenanceDashboard = () => {
   const [activeView, setActiveView] = useState("list");
@@ -22,6 +23,8 @@ const MaintenanceDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const [search, setSearch] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadMaintenanceRecords();
@@ -37,7 +40,7 @@ const MaintenanceDashboard = () => {
     if (!q) return maintenanceRecords;
     return maintenanceRecords.filter((r) => {
       const id = String(r?.vehicleId?._id || "").toLowerCase();
-      const reg = String(r?.vehicleId?.regNumber || "").toLowerCase();
+      const reg = String(r?.vehicleId?.regNo ?? "").toLowerCase(); // ✅ FIXED
       const model = String(r?.vehicleId?.model || "").toLowerCase();
       return id.includes(q) || reg.includes(q) || model.includes(q);
     });
@@ -115,7 +118,6 @@ const MaintenanceDashboard = () => {
     }
   };
 
-  // ✅ PDF Export Handler (replaced with working version)
   const handleGeneratePDF = async () => {
     try {
       const token = localStorage.getItem("rg_token") || "";
@@ -158,6 +160,7 @@ const MaintenanceDashboard = () => {
 
   return (
     <div className="dashboard">
+      {/* 🔹 Header */}
       <div className="dashboard-header">
         <div className="header-content">
           <div className="header-info">
@@ -177,6 +180,7 @@ const MaintenanceDashboard = () => {
             <button
               onClick={handleCreate}
               className="btn btn-primary add-btn"
+              style={{ backgroundColor: "#F47C20", color: "#FFFFFF" }}
             >
               <Plus size={20} />
               Add Maintenance
@@ -184,6 +188,7 @@ const MaintenanceDashboard = () => {
             <button
               onClick={handleGeneratePDF}
               className="btn btn-secondary export-btn"
+              style={{ backgroundColor: "#2D74C4", color: "#FFFFFF" }}
             >
               <FileDown size={20} />
               Generate PDF
@@ -192,8 +197,19 @@ const MaintenanceDashboard = () => {
         </div>
       </div>
 
+      {/* 🔹 Notifications */}
       {notification && (
-        <div className={`notification ${notification.type}`}>
+        <div
+          className={`notification ${notification.type}`}
+          style={{
+            backgroundColor:
+              notification.type === "success" ? "#28A745" : "#DC3545",
+            color: "#FFFFFF",
+            padding: "10px",
+            borderRadius: "6px",
+            margin: "10px 0",
+          }}
+        >
           {notification.type === "success" ? (
             <CheckCircle size={20} />
           ) : (
@@ -203,6 +219,7 @@ const MaintenanceDashboard = () => {
         </div>
       )}
 
+      {/* 🔹 Content */}
       <div className="dashboard-content">
         {activeView === "list" && (
           <MaintenanceList
@@ -231,6 +248,27 @@ const MaintenanceDashboard = () => {
             onBack={() => setActiveView("list")}
           />
         )}
+
+        {/* 🔹 Back Button directly under table */}
+        <div className="mt-6">
+          <button
+            onClick={() => navigate("/home/admin")}
+            className="flex items-center gap-2 px-6 py-3 rounded-lg shadow-md font-semibold transition-all duration-300"
+            style={{
+              backgroundColor: "#F47C20",
+              color: "#FFFFFF",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#2D74C4")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#F47C20")
+            }
+          >
+            <ArrowLeft size={18} />
+            Back
+          </button>
+        </div>
       </div>
     </div>
   );
