@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ Import navigation hook
 import { validateInquiryForm } from "../../validation/inquiryValidation"; // ✅ Import central validator
-
-// statuses removed: form collects only userId, subject, message
 
 const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = false }) => {
   const [form, setForm] = useState({ userId: "", subject: "", message: "" });
-  const [userKey, setUserKey] = useState(""); // what the user types (ObjectId or code/email)
+  const [userKey, setUserKey] = useState(""); 
   const [errors, setErrors] = useState({});
   const [resolvedUserName, setResolvedUserName] = useState("");
-  const [userLookupStatus, setUserLookupStatus] = useState("idle"); // idle | resolving | resolved | not_found
+  const [userLookupStatus, setUserLookupStatus] = useState("idle");
+
+  const navigate = useNavigate(); // ✅ For Back button navigation
 
   useEffect(() => {
     if (item) {
@@ -26,7 +27,6 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
 
   const userOptions = useMemo(() => users || [], [users]);
 
-  // Prefer real name; fall back to username part of email; fall back to id
   const displayUserName = (u) => {
     if (!u) return "User";
     if (u.name && u.name.trim()) return u.name;
@@ -39,18 +39,14 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
     return u._id || "User";
   };
 
-  // Handle user key (ID/code/email) input edits
   const handleUserKeyChange = (val) => {
     setUserKey(val.trim());
-    // clear any stale error while we attempt a new resolution
     setErrors((prev) => ({ ...prev, userId: "" }));
     setUserLookupStatus("resolving");
   };
 
-  // Simple MongoDB ObjectId validation (24 hex chars)
   const isValidObjectId = (val) => /^[a-fA-F0-9]{24}$/.test(val);
 
-  // ✅ Updated validate function using central validator
   const validate = () => {
     const e = validateInquiryForm(form); 
     setErrors(e);
@@ -62,7 +58,6 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
     if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
   };
 
-  // Lookup helpers
   const fetchAllUsers = async () => {
     const res = await fetch(`/api/users`);
     const data = await res.json().catch(() => ({}));
@@ -75,7 +70,6 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
     const res = await fetch(`/api/students`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
-    // Accept shapes: [{...}], { data: [...] }
     const list = Array.isArray(data) ? data : data.data || data.students || [];
     return Array.isArray(list) ? list : [];
   };
@@ -84,8 +78,7 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
     try {
       const res = await fetch(`/api/students/${encodeURIComponent(code)}`);
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) return null; // controller returns { message } on 404
-      // shapes: { student } or { data }
+      if (!res.ok) return null; 
       const student = data?.student || data?.data || data;
       return student && (student.studentId || student.email) ? student : null;
     } catch {
@@ -93,22 +86,18 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
     }
   };
 
-  // Fetch a single user by ID if not found in preloaded users
   const fetchUserById = async (id) => {
     try {
       const res = await fetch(`/api/users/${id}`);
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
-      // Normalize potential shapes
       const user = data?.data || data?.user || data;
       return user && user._id ? user : null;
-    } catch (e) {
+    } catch {
       return null;
     }
   };
 
-  // Resolve and show user name whenever userId changes (from dropdown or manual input)
-  // Resolve the entered userKey to a real user _id and name
   useEffect(() => {
     let active = true;
     const run = async () => {
@@ -119,9 +108,7 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
         setUserLookupStatus("idle");
         return;
       }
-      // If it's a valid ObjectId, prefer that directly
       if (isValidObjectId(userKey)) {
-        // try local list first by _id
         const localId = userOptions.find((u) => u._id === userKey);
         if (localId) {
           active && setResolvedUserName(displayUserName(localId));
@@ -141,7 +128,6 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
         return;
       }
 
-      // Not an ObjectId: try resolving by common fields (code, email, username, name)
       let list = userOptions;
       if (!list || list.length === 0) {
         try { list = await fetchAllUsers(); } catch { list = []; }
@@ -157,9 +143,7 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
         setErrors((prev) => ({ ...prev, userId: "" }));
         active && setUserLookupStatus("resolved");
       } else {
-        // Try resolving as a Student ID or Student email
         let students = [];
-        // If key looks like a student code (e.g., S052), try targeted fetch first
         const looksLikeStudentCode = /^s\d+$/i.test(String(userKey).trim());
         if (looksLikeStudentCode) {
           const one = await fetchStudentByCode(userKey.trim());
@@ -173,12 +157,10 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
           return checks.some((v) => typeof v === "string" && v.trim().toLowerCase() === keyLower);
         });
         if (sFound) {
-          // We have a student; try to find a matching user by email
           let users = list;
           if (!users || users.length === 0) {
             try { users = await fetchAllUsers(); } catch { users = []; }
           }
-          // Prefer direct match by userId === studentId
           const userByUserId = (users || []).find((u) => typeof u.userId === "string" && u.userId.trim().toLowerCase() === String(sFound.studentId).trim().toLowerCase());
           const userByEmail = (users || []).find((u) => typeof u.email === "string" && u.email.trim().toLowerCase() === String(sFound.email).trim().toLowerCase());
           const resolvedUser = userByUserId || userByEmail || null;
@@ -218,10 +200,11 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
       </div>
       <div className="form-content">
         <div className="form-grid">
+          {/* Fields unchanged */}
           <div className="form-group">
             <label className="form-label">User ID or Code *</label>
             {(() => {
-              const showUserIdError = userLookupStatus === "not_found"; // only show when we definitively failed
+              const showUserIdError = userLookupStatus === "not_found"; 
               return (
                 <>
                   <input
@@ -258,10 +241,21 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
         </div>
 
         <div className="form-actions">
-          <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={loading}>{item ? "Update Inquiry" : "Create Inquiry"}</button>
+          <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
+            {item ? "Update Inquiry" : "Create Inquiry"}
+          </button>
           {!hideCancel && (
             <button type="button" className="btn btn-secondary" onClick={onCancel}>Cancel</button>
           )}
+
+          {/* 🔹 New Back Button */}
+          <button
+            type="button"
+            className="btn btn-warning"
+            onClick={() => navigate("/home/student")}
+          >
+            Back
+          </button>
         </div>
       </div>
     </div>
