@@ -79,19 +79,19 @@ export const createBooking = async (req, res) => {
     vehicle.status = "Active"; //vehicle status is updated
     await vehicle.save();
 
-    // 🔹 Generate PDF receipt
-    const pdfPath = await generateBookingPDF(
-      booking,
-      student,
-      instructor,
-      vehicle
-    );
+   const pdfPath = await generateBookingPDF(
+  booking,
+  student,
+  instructor,
+  vehicle
+);
 
-    res.status(201).json({
-      message: "Booking created successfully",
-      booking,
-      pdf: `http://localhost:5001/${pdfPath}`,
-    });
+res.status(201).json({
+  message: "Booking created successfully",
+  booking,
+  pdf: `http://localhost:5000/uploads/booking_${booking.bookingId}.pdf`, // 👈
+});
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

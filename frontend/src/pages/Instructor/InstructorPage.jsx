@@ -162,7 +162,7 @@ export default function InstructorPage() {
                 Availability
               </Link>
               <Link
-                to=""
+                to="/instructors/status"
                 className="bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-semibold border shadow-sm"
               >
                 Filter Status

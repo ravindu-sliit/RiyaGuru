@@ -1,4 +1,3 @@
-// src/routes/AppRoutes.js
 import { Routes, Route, Navigate } from "react-router-dom";
 
 // Core pages
@@ -9,21 +8,21 @@ import StudentHome from "../pages/Home/StudentHome";
 import InstructorHome from "../pages/Home/InstructorHome";
 import AdminHome from "../pages/Home/AdminHome";
 
-import AdminViewStudents from "../pages/Admin/AdminViewStudents"; //View All Students
+import AdminViewStudents from "../pages/Admin/AdminViewStudents";
+
 // Maintenance
 import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
-
-// Student
-import StudentRoutes from "./studentRoutes"; 
-
-// Student Registration
-import RegisterStudent from "../pages/Registration/RegisterStudent";
-import OtpRequest from "../pages/Registration/OtpRequest";
-
 
 // Inquiry
 import InquiryDashboard from "../pages/Inquiry/InquiryDashboard";
 import StudentInquiry from "../pages/Inquiry/StudentInquiry";
+
+// Student
+import StudentRoutes from "./studentRoutes";
+
+// Student Registration
+import RegisterStudent from "../pages/Registration/RegisterStudent";
+import OtpRequest from "../pages/Registration/OtpRequest";
 
 // Instructor
 import InstructorRoutes from "./instructorRoutes";
@@ -35,13 +34,13 @@ import EditInstructorPage from "../pages/Instructor/EditInstructorPage";
 import AvailabilityPage from "../pages/Instructor/AvailabilityPage";
 import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 
-
 // Vehicles
 import VehicleList from "../pages/Vehicle/VehicleList";
 import AddVehicle from "../pages/Vehicle/AddVehicle";
 import EditVehicle from "../pages/Vehicle/EditVehicle";
 import VehicleDetails from "../pages/Vehicle/VehicleDetails";
 import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
+import Studentvehicle from "../pages/Vehicle/Studentvehicle.jsx";
 
 // Booking
 import BookingDashboard from "../pages/Booking/BookingDashboard";
@@ -70,32 +69,28 @@ export default function AppRoutes() {
       {/* Public */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/landing" element={<DriveManagerLanding />} />
-      <Route path="/home/student" element={<StudentHome />} /> 
+      <Route path="/home/student" element={<StudentHome />} />
       <Route path="/home/instructor" element={<InstructorHome />} />
       <Route path="/home/admin" element={<AdminHome />} />
 
-      {/* Students (all under sidebar layout) */}
+      {/* Students */}
       <Route path="/student/*" element={<StudentRoutes />} />
 
       {/* Admin */}
       <Route path="/admin/*" element={<AdminDashboard />} />
+      <Route path="/admin/students" element={<AdminViewStudents />} />
 
       {/* Register & OTP */}
       <Route path="/register" element={<RegisterStudent />} />
       <Route path="/otp-request" element={<OtpRequest />} />
 
-
-
-      <Route path="/admin/students" element={<AdminViewStudents />} /> 
-
-      {/* Inquiry (⭐ added before catch-all) */}
+      {/* Inquiry */}
       <Route path="/inquiries" element={<InquiryDashboard />} />
       <Route path="/inquiry" element={<StudentInquiry />} />
 
-
       {/* Instructors */}
       <Route path="/instructor/*" element={<InstructorRoutes />} />
-       <Route path="Instructordashboard" element={<InstructorPage />} />
+      <Route path="Instructordashboard" element={<InstructorPage />} />
 
       {/* Vehicles */}
       <Route path="/vehicles" element={<VehicleList />} />
@@ -103,6 +98,7 @@ export default function AppRoutes() {
       <Route path="/vehicles/:id" element={<VehicleDetails />} />
       <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
       <Route path="/dashboard" element={<VehicleDashboard />} />
+       <Route path="/StuVehicle" element={<Studentvehicle />} />
 
       {/* Booking */}
       <Route path="/bookings" element={<BookingDashboard />} />

@@ -16,16 +16,19 @@ const router = express.Router();
 // Create booking
 router.post("/", protect, createBooking);
 
-// Get logged-in user's bookings
+// Logged-in student's bookings
 router.get("/my", protect, getMyBookings);
+
+// Logged-in student's courses
+router.get("/my-courses", protect, getMyCourses);
 
 // Get all bookings
 router.get("/", protect, getBookings);
 
-// Get booking by ID
+// Get booking by ID (⚠️ keep last to avoid conflicts)
 router.get("/:id", protect, getBookingById);
 
-// ✅ Update booking (date/time/etc.)
+// Update booking (date/time/etc.)
 router.put("/:id", protect, updateBooking);
 
 // Update booking status
@@ -33,9 +36,5 @@ router.put("/:id/status", protect, updateBookingStatus);
 
 // Delete booking
 router.delete("/:id", protect, deleteBooking);
-
-router.put("/:id", protect, updateBooking);
-
-router.get("/my-courses", protect, getMyCourses);
 
 export default router;

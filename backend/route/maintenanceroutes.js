@@ -5,7 +5,7 @@ import {
   getMaintenanceById,
   updateMaintenance,
   deleteMaintenance,
-} from "../controllers/maintenanceController.js"; // ✅ only CRUD here
+} from "../controllers/maintenancecontroller.js"; // ✅ only CRUD here
 
 import { generateMaintenancePDF } from "../controllers/maintenancepdfController.js"; // ✅ PDF export here
 
