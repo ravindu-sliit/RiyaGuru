@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
 import { apiFetch, API_BASE } from "../../services/api";
-import "../../styles/student-dashboard.css"; // <-- ensure this path exists
+import "../../styles/student-dashboard.css";
 
 export default function StudentDashboard() {
   const { id } = useParams();
@@ -11,7 +11,6 @@ export default function StudentDashboard() {
   const role = localStorage.getItem("rg_role");
 
   const [student, setStudent] = useState(null);
-  const [file, setFile] = useState(null);
   const [err, setErr] = useState("");
   const [ok, setOk] = useState("");
   const [docs, setDocs] = useState([]);
@@ -41,36 +40,6 @@ export default function StudentDashboard() {
 
   if (!token) return <Navigate to="/login" replace />;
   if (role !== "Student") return <Navigate to="/home" replace />;
-
-  async function uploadPic(e) {
-    e.preventDefault();
-    setErr("");
-    setOk("");
-    if (!file) {
-      setErr("Please select an image file.");
-      return;
-    }
-
-    const form = new FormData();
-    form.append("profilePic", file);
-
-    try {
-      const res = await fetch(`${API_BASE}/api/students/${id}`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
-        body: form,
-      });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body.message || "Upload failed");
-
-      setOk("Profile picture updated.");
-      setFile(null);
-      const data = await apiFetch(`/api/students/${id}`);
-      setStudent(data.student);
-    } catch (e) {
-      setErr(e.message);
-    }
-  }
 
   async function deleteDoc(type) {
     setErr("");
@@ -106,7 +75,7 @@ export default function StudentDashboard() {
 
   return (
     <div className="student-dashboard">
-      {/* Header: avatar ABOVE details, all centered */}
+      {/* Header */}
       <header className="sd-header">
         <img
           src={avatarSrc}
@@ -115,10 +84,9 @@ export default function StudentDashboard() {
           loading="lazy"
           decoding="async"
         />
-
         <h1 className="sd-greet">Hello {firstName}!</h1>
 
-        {/* Student key details (slightly larger, centered) */}
+        {/* Student key details */}
         <ul className="sd-details">
           <li><b>Student ID:</b> {student.studentId}</li>
           <li><b>Name:</b> {student.full_name}</li>
@@ -127,7 +95,7 @@ export default function StudentDashboard() {
           <li><b>Email:</b> {student.email}</li>
         </ul>
 
-        {/* Primary actions directly beneath details */}
+        {/* Primary actions */}
         <div className="sd-actions">
           <button
             className="btn btn-soft"
@@ -162,31 +130,6 @@ export default function StudentDashboard() {
 
       {/* Content grid */}
       <main className="sd-grid">
-        {/* Profile Picture (upload/replace preview) */}
-        <section className="card sd-card">
-          <h3 className="card-title">Profile Picture</h3>
-
-          <div className="sd-upload-preview">
-            <img
-              src={avatarSrc}
-              alt="Current avatar"
-              className="sd-avatar-sm"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="text-muted">Replace your profile picture:</div>
-          </div>
-
-          <form onSubmit={uploadPic} className="sd-upload">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-            />
-            <button className="btn btn-primary" type="submit">Upload</button>
-          </form>
-        </section>
-
         {/* Documents */}
         <section className="card sd-card">
           <div className="card-header">
@@ -219,7 +162,7 @@ export default function StudentDashboard() {
           )}
         </section>
 
-        {/* Full info (kept for completeness) */}
+        {/* Full info */}
         <section className="card sd-card">
           <h3 className="card-title">My Info</h3>
           <ul className="sd-info-list">
