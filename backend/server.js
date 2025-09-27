@@ -28,6 +28,7 @@ import certificateRoutes from "./route/certificateRoutes.js";
 import docRoutes from "./route/DocRoute.js";
 
 import adminPaymentRoutes from "./route/adminPaymentRoutes.js";
+import adminInstallmentRoutes from "./route/adminInstallmentRoutes.js";
 import adminRoutes from "./route/AdminRoutes.js"; 
 
 // -----------------------------
@@ -41,9 +42,6 @@ import progressReportRoutes from "./route/progressReportRoutes.js";
 dotenv.config();
 
 const app = express();
-
-
-app.use(cors());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,20 +73,7 @@ app.use(
 // -----------------------------
 // Serve static uploads
 // -----------------------------
-// serve uploads folder
-app.use("/uploads", express.static("uploads"));
-
-// ✅ Add a force-download route
-app.get("/download/:file", (req, res) => {
-  const file = path.join("uploads", req.params.file);
-  res.download(file, (err) => {
-    if (err) {
-      console.error("Download error:", err);
-      res.status(404).send("File not found");
-    }
-  });
-});
-
+app.use("/uploads", express.static(uploadsDir));
 app.use("/uploads/receipts", express.static(path.join(uploadsDir, "receipts")));
 
 // -----------------------------
@@ -126,6 +111,7 @@ app.use("/api/certificates", certificateRoutes);
 
 
 app.use("/api/admin/payments", adminPaymentRoutes);
+app.use("/api/admin/installments", adminInstallmentRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/admins", adminRoutes);
 

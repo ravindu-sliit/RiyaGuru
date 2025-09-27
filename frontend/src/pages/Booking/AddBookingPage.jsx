@@ -6,6 +6,8 @@ import { StudentCourseAPI } from "../../api/studentCourseApi";
 import { useNavigate } from "react-router-dom";
 
 const AddBookingPage = () => {
+  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  const UPLOADS_BASE = API_BASE.replace(/\/api$/, "") + "/uploads";
   const navigate = useNavigate();
   const [instructors, setInstructors] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -129,6 +131,17 @@ const AddBookingPage = () => {
     );
     setAvailableTimeSlots(availability ? availability.timeSlots : []);
   };
+  const downloadReceipt = (bookingId) => {
+    const receiptUrl = `${UPLOADS_BASE}/receipts/${bookingId}.pdf`;
+
+    // Create a temporary anchor element and trigger download
+    const link = document.createElement("a");
+    link.href = receiptUrl;
+    link.download = `receipt_${bookingId}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleSubmit = async () => {
     // Validate all fields
@@ -151,16 +164,10 @@ const AddBookingPage = () => {
         regNo: formData.vehicleRegNo,
       };
 
-      // 🔹 Create booking
-      const bookingRes = await BookingAPI.create(payload);
-      
-      const bookingId = booking.bookingId;
-     const { booking, pdf } = bookingRes;
-
-      alert("Booking created successfully! " + booking.bookingId);
-
-        window.open(pdf, "_blank");
-
+      const booking = await BookingAPI.create(payload);
+      const bookingId = booking.booking.bookingId;
+      alert("Booking created successfully! " + bookingId);
+      downloadReceipt(bookingId);
       // Reset form
       setFormData({
         courseName: "",
@@ -173,7 +180,7 @@ const AddBookingPage = () => {
       setAvailableTimeSlots([]);
       setAvailableDates([]);
 
-      // navigate("/my-bookings"); // optional redirect
+      //navigate("/my-bookings");
     } catch (error) {
       alert("Failed to create booking. Please try again.");
     } finally {

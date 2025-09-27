@@ -4,6 +4,8 @@ const { Schema } = mongoose;
 const paymentSchema = new Schema(
   {
     studentName: { type: String, required: true },
+    studentId: { type: String },
+    studentEmail: { type: String },
     courseName: { 
       type: String, 
       enum: ["Car", "Van", "Heavy Vehicle", "Light Vehicle", "Motor Bicycle", "Three Wheeler"],

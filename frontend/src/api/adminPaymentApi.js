@@ -10,31 +10,26 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
-export const CourseAPI = {
-  // Add a new course
-  add: async (data) => {
+export const AdminPaymentAPI = {
+  approve: async (id) => {
     try {
-      const res = await client.post("/courses", data);
+      const res = await client.patch(`/admin/payments/${id}/approve`);
       return res.data;
     } catch (err) {
       throw err;
     }
   },
-
-  // Get all courses
-  getAll: async () => {
+  reject: async (id) => {
     try {
-      const res = await client.get("/courses");
+      const res = await client.patch(`/admin/payments/${id}/reject`);
       return res.data;
     } catch (err) {
       throw err;
     }
   },
-
-  // Get course by id
-  getById: async (id) => {
+  runReminders: async () => {
     try {
-      const res = await client.get(`/courses/${id}`);
+      const res = await client.post("/admin/payments/reminders/run");
       return res.data;
     } catch (err) {
       throw err;

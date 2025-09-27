@@ -3,16 +3,17 @@ import React from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { BookOpen, Calendar, Car, CreditCard, User, LogOut } from "lucide-react";
 
-export default function StudentLayout() {
+export default function StudentLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const studentId = localStorage.getItem("rg_id");
 
   const navItems = [
-    { to: `/student/progress`, label: "Dashboard", icon: <BookOpen size={18} /> },
+    { to: "/home/student", label: "Dashboard", icon: <BookOpen size={18} /> },
     { to: "/student/bookings", label: "Bookings", icon: <Calendar size={18} /> },
-    { to: "/StuVehicle", label: "Vehicles", icon: <Car size={18} /> },
-    { to: "/payments", label: "Payments", icon: <CreditCard size={18} /> },
+    { to: "/vehicles", label: "Vehicles", icon: <Car size={18} /> },
+    { to: "/my-enrollments", label: "My Enrollments", icon: <BookOpen size={18} /> },
+    { to: "/my-payments", label: "Payments", icon: <CreditCard size={18} /> },
     { to: `/student/${studentId}/profile`, label: "Profile", icon: <User size={18} /> },
   ];
 
@@ -74,7 +75,7 @@ export default function StudentLayout() {
 
       {/* Main Content */}
       <main className="flex-1 p-6">
-        <Outlet />
+        {children ? children : <Outlet />}
       </main>
     </div>
   );
