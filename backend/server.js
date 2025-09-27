@@ -42,6 +42,9 @@ dotenv.config();
 
 const app = express();
 
+
+app.use(cors());
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -72,7 +75,20 @@ app.use(
 // -----------------------------
 // Serve static uploads
 // -----------------------------
-app.use("/uploads", express.static(uploadsDir));
+// serve uploads folder
+app.use("/uploads", express.static("uploads"));
+
+// ✅ Add a force-download route
+app.get("/download/:file", (req, res) => {
+  const file = path.join("uploads", req.params.file);
+  res.download(file, (err) => {
+    if (err) {
+      console.error("Download error:", err);
+      res.status(404).send("File not found");
+    }
+  });
+});
+
 app.use("/uploads/receipts", express.static(path.join(uploadsDir, "receipts")));
 
 // -----------------------------

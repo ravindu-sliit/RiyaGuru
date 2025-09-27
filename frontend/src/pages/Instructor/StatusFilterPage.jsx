@@ -86,7 +86,7 @@ export default function StatusFilterPage() {
 
           <div className="flex items-center gap-3">
             <Link
-              to="/instructors"
+              to="/Instructordashboard"
               className="flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
             >
               ← Back to All Instructors

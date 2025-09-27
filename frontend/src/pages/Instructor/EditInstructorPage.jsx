@@ -141,7 +141,7 @@ export default function EditInstructorPage() {
       {/* Navbar */}
       <nav className="flex justify-between items-center bg-white px-8 py-4 border-b shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
-          <span className="text-orange-500 text-2xl">🎯</span>
+          <span className="text-orange-500 text-2xl"></span>
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
@@ -151,12 +151,12 @@ export default function EditInstructorPage() {
           <Link to="/instructors" className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium">
              Instructors Management
           </Link>
-          <Link to="/students" className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 font-medium">
-            👨‍🎓 Students
+          <Link to="/Instructordashboard" className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 font-medium">
+            DashBoard
           </Link>
         </div>
       </nav>
-
+           
       <div className="max-w-6xl mx-auto px-8 py-8">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
@@ -166,7 +166,6 @@ export default function EditInstructorPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link to={`/instructors/${id}`} className="bg-white border px-6 py-3 rounded-lg hover:bg-slate-50">← Back to Profile</Link>
-            <Link to="/instructors" className="bg-white border px-6 py-3 rounded-lg hover:bg-slate-50">All Instructors</Link>
           </div>
         </div>
 

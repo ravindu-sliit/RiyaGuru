@@ -129,17 +129,6 @@ const AddBookingPage = () => {
     );
     setAvailableTimeSlots(availability ? availability.timeSlots : []);
   };
-  const downloadReceipt = (bookingId) => {
-    const receiptUrl = `http://localhost:5001/uploads/receipts/${bookingId}.pdf`;
-
-    // Create a temporary anchor element and trigger download
-    const link = document.createElement("a");
-    link.href = receiptUrl;
-    link.download = `receipt_${bookingId}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const handleSubmit = async () => {
     // Validate all fields
@@ -162,10 +151,16 @@ const AddBookingPage = () => {
         regNo: formData.vehicleRegNo,
       };
 
-      const booking = await BookingAPI.create(payload);
-      const bookingId = booking.booking.bookingId;
-      alert("Booking created successfully! " + bookingId);
-      downloadReceipt(bookingId);
+      // 🔹 Create booking
+      const bookingRes = await BookingAPI.create(payload);
+      
+      const bookingId = booking.bookingId;
+     const { booking, pdf } = bookingRes;
+
+      alert("Booking created successfully! " + booking.bookingId);
+
+        window.open(pdf, "_blank");
+
       // Reset form
       setFormData({
         courseName: "",
@@ -178,7 +173,7 @@ const AddBookingPage = () => {
       setAvailableTimeSlots([]);
       setAvailableDates([]);
 
-      //navigate("/my-bookings");
+      // navigate("/my-bookings"); // optional redirect
     } catch (error) {
       alert("Failed to create booking. Please try again.");
     } finally {
