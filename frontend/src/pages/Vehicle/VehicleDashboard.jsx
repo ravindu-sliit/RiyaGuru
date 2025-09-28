@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {  ArrowLeft } from "lucide-react";
 import { vehicleService } from "../../services/vehicleService";
 import {
   Car,
@@ -9,9 +11,11 @@ import {
   Plus,
   TrendingUp,
   Calendar,
-  Filter,
+
 } from "lucide-react";
 import { toast } from "react-toastify";
+
+
 
 const VehicleDashboard = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -62,6 +66,7 @@ const VehicleDashboard = () => {
         return "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600";
     }
   };
+ const navigate = useNavigate();
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -88,27 +93,34 @@ const VehicleDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <div className="flex justify-between items-center bg-white px-6 py-4 border-b shadow sticky top-0 z-50">
-        <div className="flex items-center gap-2 font-bold text-lg text-gray-900">
-          <Car className="text-orange-500 w-7 h-7" />
-          RiyaGuru.lk
-        </div>
-        <div className="flex items-center gap-4">
-          
-           
-          <Link
-            to="/admin/vehicles"
-            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-orange-500 hover:bg-orange-50"
-          >
-            <Car size={16} /> All Vehicles
-          </Link>
-          <Link
-            to="/admin/vehicles/add"
-            className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
-          >
-            <Plus size={16} /> Add Vehicle
-          </Link>
-          
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
+        <div className="px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* 🔙 Back Button */}
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-2 rounded-lg transition-all font-medium"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Vehicle Management</h1>
+                <p className="text-orange-100">Monitor and manage all Vehicles</p>
+              </div>
+              
+            </div>
+            
+            <div className="flex items-center gap-3">
+             
+              
+            </div>
+          </div>
         </div>
       </div>
 
@@ -123,15 +135,19 @@ const VehicleDashboard = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="w-10 h-10 flex items-center justify-center border rounded-md text-gray-500 hover:text-orange-500 hover:border-orange-500">
-            <Filter size={16} />
-          </button>
+            <Link
+            to="/admin/vehicles"
+            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-orange-500 hover:bg-orange-50"
+          >
+            <Car size={16} /> All Vehicles
+          </Link>
           <Link
             to="/admin/vehicles/add"
             className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
           >
             <Plus size={16} /> Add Vehicle
           </Link>
+          
         </div>
       </div>
 
