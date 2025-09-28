@@ -8,13 +8,13 @@ export default function AdminLayout({ children }) {
   const navigate = useNavigate();
 
   const nav = [
-    { to: "/home/admin", label: "Dashboard", icon: <BookOpen size={18} /> },
+    { to: "/admin", label: "Dashboard", icon: <BookOpen size={18} /> },
     { to: "/admin/students", label: "Students", icon: <Users size={18} /> },
-    { to: "/vehicles", label: "Vehicles", icon: <Car size={18} /> },
-    { to: "/instructors/list", label: "Instructors", icon: <ClipboardList size={18} /> },
-    { to: "/admin-payments", label: "Payments", icon: <CreditCard size={18} /> },
-    { to: "/bookings", label: "Bookings", icon: <Calendar size={18} /> },
-    { to: "/admin-installments", label: "Installments", icon: <Layers size={18} /> },
+    { to: "/admin/vehicles", label: "Vehicles", icon: <Car size={18} /> },
+    { to: "/admin/instructors/list", label: "Instructors", icon: <ClipboardList size={18} /> },
+    { to: "/admin/payments", label: "Payments", icon: <CreditCard size={18} /> },
+    { to: "/admin/bookings", label: "Bookings", icon: <Calendar size={18} /> },
+    { to: "/admin/installments", label: "Installments", icon: <Layers size={18} /> },
   ];
 
   const handleSignOut = () => {

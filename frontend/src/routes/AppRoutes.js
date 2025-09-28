@@ -4,17 +4,18 @@ import { Routes, Route, Navigate, useParams, useLocation } from "react-router-do
 // Core pages
 import DriveManagerLanding from "../pages/DriveManagerLanding";
 import LoginPage from "../pages/Auth/LoginPage";
-import AdminDashboard from "../pages/Admin/AdminDashboard";
+// Admin (nested in AdminRoutes)
 import StudentHome from "../pages/Home/StudentHome";
 import InstructorHome from "../pages/Home/InstructorHome";
 import AdminHome from "../pages/Home/AdminHome";
 
-import AdminViewStudents from "../pages/Admin/AdminViewStudents"; //View All Students
+// Admin student pages are nested under AdminRoutes now
 // Maintenance
 import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
 
 // Student
 import StudentRoutes from "./studentRoutes"; 
+import AdminRoutes from "./adminRoutes";
 
 // Student Registration
 import RegisterStudent from "../pages/Registration/RegisterStudent";
@@ -37,26 +38,18 @@ import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 
 
 // Vehicles
-import VehicleList from "../pages/Vehicle/VehicleList";
 import AddVehicle from "../pages/Vehicle/AddVehicle";
 import EditVehicle from "../pages/Vehicle/EditVehicle";
 import VehicleDetails from "../pages/Vehicle/VehicleDetails";
 import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
 
 // Booking
-import BookingDashboard from "../pages/Booking/BookingDashboard";
 import BookingDetails from "../pages/Booking/BookingDetails";
 import BookingEditPage from "../pages/Booking/BookingEditPage";
 //Payments
 import MakePayment from "../pages/Payment/MakePayment.jsx";
 import PaymentList from "../pages/Payment/PaymentList.jsx";
 import CreatePayment from "../pages/Payment/CreatePayment.jsx";
-import PaymentsHub from "../pages/Payment/PaymentsHub.jsx";
-import MyInstallments from "../pages/Payment/MyInstallments.jsx";
-import AdminInstallments from "../pages/Payment/AdminInstallments.jsx";
-import AdminPayments from "../pages/Payment/AdminPayments.jsx";
-import MyEnrollments from "../pages/Enrollment/MyEnrollments.jsx";
-import EnrollmentDetails from "../pages/Enrollment/EnrollmentDetails.jsx";
 
 import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
 
@@ -93,16 +86,13 @@ export default function AppRoutes() {
       {/* Students (all under sidebar layout) */}
       <Route path="/student/*" element={<StudentRoutes />} />
 
-      {/* Admin */}
-      <Route path="/admin/*" element={<AdminDashboard />} />
+      {/* Admin (nested under AdminLayout with sidebar) */}
+      <Route path="/admin/*" element={<AdminRoutes />} />
 
       {/* Register & OTP */}
       <Route path="/register" element={<RegisterStudent />} />
       <Route path="/otp-request" element={<OtpRequest />} />
 
-
-
-      <Route path="/admin/students" element={<AdminViewStudents />} /> 
 
       {/* Inquiry (⭐ added before catch-all) */}
       <Route path="/inquiries" element={<InquiryDashboard />} />
@@ -111,17 +101,17 @@ export default function AppRoutes() {
 
       {/* Instructors */}
       <Route path="/instructor/*" element={<InstructorRoutes />} />
-       <Route path="Instructordashboard" element={<InstructorPage />} />
+      <Route path="Instructordashboard" element={<InstructorPage />} />
 
-      {/* Vehicles */}
-      <Route path="/vehicles" element={<VehicleList />} />
+      {/* Vehicles (redirect to admin nested for sidebar) */}
+      <Route path="/vehicles" element={<Navigate to="/admin/vehicles" replace />} />
       <Route path="/vehicles/add" element={<AddVehicle />} />
       <Route path="/vehicles/:id" element={<VehicleDetails />} />
       <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
       <Route path="/dashboard" element={<VehicleDashboard />} />
 
-      {/* Booking */}
-      <Route path="/bookings" element={<BookingDashboard />} />
+      {/* Booking (redirect to admin nested for sidebar) */}
+      <Route path="/bookings" element={<Navigate to="/admin/bookings" replace />} />
       <Route path="/bookings/:id" element={<BookingDetails />} />
       <Route path="/bookings/:id/edit" element={<BookingEditPage />} />
 
@@ -136,8 +126,12 @@ export default function AppRoutes() {
       <Route path="/my-payments" element={<Navigate to="/student/my-payments" replace />} />
       <Route path="/payments" element={<Navigate to="/student/my-payments" replace />} />
       <Route path="/my-installments" element={<Navigate to="/student/my-payments?tab=installment" replace />} />
-      <Route path="/admin-installments" element={<AdminInstallments />} />
-      <Route path="/admin-payments" element={<AdminPayments />} />
+      {/* Redirect admin payment pages to admin nested paths for sidebar */}
+      <Route path="/admin-installments" element={<Navigate to="/admin/installments" replace />} />
+      <Route path="/admin-payments" element={<Navigate to="/admin/payments" replace />} />
+
+      {/* Redirect instructors list to admin nested for sidebar */}
+      <Route path="/instructors/list" element={<Navigate to="/admin/instructors/list" replace />} />
 
  
       {/* Maintenance */}
