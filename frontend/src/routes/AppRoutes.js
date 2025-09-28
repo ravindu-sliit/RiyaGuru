@@ -9,6 +9,7 @@ import StudentHome from "../pages/Home/StudentHome";
 import InstructorHome from "../pages/Home/InstructorHome";
 import AdminHome from "../pages/Home/AdminHome";
 
+
 // Admin student pages are nested under AdminRoutes now
 // Maintenance
 import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
@@ -72,6 +73,7 @@ export default function AppRoutes() {
       <Route path="/home/student" element={<StudentHome />} /> 
       <Route path="/home/instructor" element={<InstructorHome />} />
       <Route path="/home/admin" element={<AdminHome />} />
+   
 
       {/* Students (all under sidebar layout) */}
       <Route path="/student/*" element={<StudentRoutes />} />

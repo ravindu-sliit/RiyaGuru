@@ -14,6 +14,7 @@ import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
 import MyEnrollments from "../pages/Enrollment/MyEnrollments";
 import PaymentsHub from "../pages/Payment/PaymentsHub";
 import EnrollmentDetails from "../pages/Enrollment/EnrollmentDetails";
+import Studentvehicle from "../pages/Vehicle/Studentvehicle.jsx"
 
 
 export default function StudentRoutes() {
@@ -27,6 +28,7 @@ export default function StudentRoutes() {
         <Route path="progress" element={<StudentProgressPage />} />
 
         <Route path=":id/docs/upload" element={<StudentDocUpload />} />
+        <Route path="/studVehicle" element={<Studentvehicle />} />
 
         
 
