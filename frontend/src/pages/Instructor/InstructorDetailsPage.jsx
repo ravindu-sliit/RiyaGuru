@@ -1,5 +1,5 @@
 // src/pages/Instructor/InstructorDetailsPage.jsx
-//profile
+//profile sankalpa
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { StarIcon } from "@heroicons/react/24/solid";
@@ -182,14 +182,13 @@ export default function InstructorDetailsPage() {
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-6">
                   <div className="w-48 h-48 rounded-full bg-orange-500 p-1 shadow-lg">
-                    <img
-                      src={imageUrl}
-                      alt={rec.name}
-                      className="w-full h-full object-cover rounded-full border-4 border-white"
-                      onError={(e) => {
-                        e.currentTarget.src = "/avatar.png";
-                      }}
+                   <img
+                     src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${rec.image}`}
+                    alt={rec.name}
+                    className="w-full h-full object-cover rounded-full border-4 border-white"
+                    onError={(e) => (e.currentTarget.src = "/avatar.png")}
                     />
+                    
                   </div>
                   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
                     <span
@@ -369,10 +368,10 @@ export default function InstructorDetailsPage() {
               View Performance
             </Link>
             <Link
-              to="/Instructordashboard"
+              to="/instructors/list"
               className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
             >
-              Back to List DashBoard
+              Back to List
             </Link>
           </div>
         </div>

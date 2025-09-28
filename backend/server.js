@@ -74,7 +74,10 @@ app.use(
 // Serve static uploads
 // -----------------------------
 app.use("/uploads", express.static(uploadsDir));
+
 app.use("/uploads/receipts", express.static(path.join(uploadsDir, "receipts")));
+const vehicleDir = path.join(uploadsDir, "vehicles");
+fs.mkdirSync(vehicleDir, { recursive: true });
 
 // -----------------------------
 // Health route

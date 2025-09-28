@@ -116,34 +116,40 @@ const EditVehicle = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) {
-      toast.error("Please fix the errors in the form");
-      return;
-    }
-    setLoading(true);
-    try {
-      const updateData = {};
-      Object.keys(formData).forEach((key) => {
-        if (
-          formData[key] !== null &&
-          formData[key] !== undefined &&
-          formData[key] !== ""
-        ) {
-          updateData[key] = formData[key];
-        }
-      });
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) {
+    toast.error("Please fix the errors in the form");
+    return;
+  }
+  setLoading(true);
+  try {
+    const form = new FormData();
 
-      await vehicleService.updateVehicle(id, updateData);
-      toast.success("Vehicle updated successfully!");
-      navigate("/vehicles");
-    } catch (error) {
-      toast.error(error.message || "Failed to update vehicle");
-    } finally {
-      setLoading(false);
-    }
-  };
+    Object.keys(formData).forEach((key) => {
+      if (key === "image") {
+        if (formData[key] instanceof File) {
+          form.append("image", formData[key]); // only append if it's a new file
+        }
+      } else if (
+        formData[key] !== null &&
+        formData[key] !== undefined &&
+        formData[key] !== ""
+      ) {
+        form.append(key, formData[key]);
+      }
+    });
+
+    await vehicleService.updateVehicle(id, form); // ✅ send FormData
+    toast.success("Vehicle updated successfully!");
+    navigate("/vehicles");
+  } catch (error) {
+    toast.error(error.message || "Failed to update vehicle");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (initialLoading) {
     return (
@@ -401,78 +407,84 @@ const EditVehicle = () => {
 
           {/* Image Sidebar */}
           <div className="p-6 bg-gray-50 flex flex-col">
-            <div className="mb-6 flex-1">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">
-                Vehicle Image
-              </h3>
-              {imagePreview ? (
-                <div className="relative border rounded-md overflow-hidden">
-                  <img
-                    src={imagePreview}
-                    alt="Vehicle preview"
-                    className="h-48 w-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-black/90"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ) : (
-                <div
-                  onClick={() => document.getElementById("image").click()}
-                  className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:border-orange-500 hover:bg-orange-50"
-                >
-                  <Upload className="mx-auto text-gray-400 w-10 h-10 mb-2" />
-                  <p className="text-sm text-gray-500">
-                    <span className="text-orange-500 font-medium">
-                      Click to upload
-                    </span>{" "}
-                    or drag and drop
-                  </p>
-                  <p className="text-xs text-gray-400">PNG, JPG, GIF up to 5MB</p>
-                </div>
-              )}
-              <input
-                type="file"
-                id="image"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </div>
+  <div className="mb-6 flex-1">
+    <h3 className="text-sm font-semibold text-gray-900 mb-2">
+      Vehicle Image
+    </h3>
+    {imagePreview || formData.image ? (
+      <div className="relative border rounded-md overflow-hidden">
+        <img
+          src={
+            imagePreview
+              ? imagePreview
+              : `${process.env.REACT_APP_PUBLIC_URL || "http://localhost:5000"}${formData.image}`
+          }
+          alt="Vehicle preview"
+          className="h-48 w-full object-cover"
+          onError={(e) => {
+            e.currentTarget.src = "/placeholder-car.jpeg"; // fallback
+          }}
+        />
+        <button
+          type="button"
+          onClick={removeImage}
+          className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-black/90"
+        >
+          <X size={16} />
+        </button>
+      </div>
+    ) : (
+      <div
+        onClick={() => document.getElementById("image").click()}
+        className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:border-orange-500 hover:bg-orange-50"
+      >
+        <Upload className="mx-auto text-gray-400 w-10 h-10 mb-2" />
+        <p className="text-sm text-gray-500">
+          <span className="text-orange-500 font-medium">Click to upload</span>{" "}
+          or drag and drop
+        </p>
+        <p className="text-xs text-gray-400">PNG, JPG, GIF up to 5MB</p>
+      </div>
+    )}
+    <input
+      type="file"
+      id="image"
+      accept="image/*"
+      onChange={handleImageChange}
+      className="hidden"
+    />
+  </div>
 
-            {/* Actions */}
-            <div className="space-y-3">
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex items-center justify-center gap-2 w-full py-2 px-4 rounded-md bg-orange-500 text-white font-medium text-sm hover:bg-orange-600 disabled:opacity-60"
-              >
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
-                    Updating Vehicle...
-                  </>
-                ) : (
-                  <>
-                    <Save size={16} />
-                    Update Vehicle
-                  </>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate("/vehicles")}
-                disabled={loading}
-                className="w-full py-2 px-4 rounded-md border border-gray-300 bg-white text-gray-600 font-medium text-sm hover:bg-gray-50 disabled:opacity-60"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+  {/* Actions */}
+  <div className="space-y-3">
+    <button
+      type="submit"
+      disabled={loading}
+      className="flex items-center justify-center gap-2 w-full py-2 px-4 rounded-md bg-orange-500 text-white font-medium text-sm hover:bg-orange-600 disabled:opacity-60"
+    >
+      {loading ? (
+        <>
+          <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
+          Updating Vehicle...
+        </>
+      ) : (
+        <>
+          <Save size={16} />
+          Update Vehicle
+        </>
+      )}
+    </button>
+    <button
+      type="button"
+      onClick={() => navigate("/vehicles")}
+      disabled={loading}
+      className="w-full py-2 px-4 rounded-md border border-gray-300 bg-white text-gray-600 font-medium text-sm hover:bg-gray-50 disabled:opacity-60"
+    >
+      Cancel
+    </button>
+  </div>
+</div>
+
         </form>
       </div>
     </div>

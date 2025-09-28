@@ -3,13 +3,12 @@ import * as vehicleService from "../services/vehicleService.js";
 // ✅ Create vehicle
 export const createVehicle = async (req, res) => {
   try {
-    // Handle uploaded image
     const image = req.file ? `/uploads/vehicles/${req.file.filename}` : null;
 
     const vehicleData = {
       ...req.body,
       image,
-      assignedInstructor: req.body.assignedInstructor || null, // prevent empty string errors
+      assignedInstructor: req.body.assignedInstructor || null,
     };
 
     const vehicle = await vehicleService.createVehicle(vehicleData);
@@ -19,6 +18,7 @@ export const createVehicle = async (req, res) => {
     res.status(500).json({ message: error.message || "Failed to create vehicle" });
   }
 };
+
 
 // ✅ Get all vehicles
 export const getVehicles = async (req, res) => {
@@ -45,27 +45,26 @@ export const getVehicleById = async (req, res) => {
   }
 };
 
-// ✅ Update vehicle
 export const updateVehicle = async (req, res) => {
   try {
     const image = req.file ? `/uploads/vehicles/${req.file.filename}` : undefined;
 
     const updateData = {
       ...req.body,
-      ...(image && { image }), // only update if new image is uploaded
-      assignedInstructor: req.body.assignedInstructor || null,
+      ...(image && { image }), // only overwrite if new image uploaded
     };
 
     const updated = await vehicleService.updateVehicle(req.params.id, updateData);
-    if (!updated) {
-      return res.status(404).json({ message: "Vehicle not found" });
-    }
-    res.json({ message: "Vehicle updated successfully", updated });
-  } catch (error) {
-    console.error("❌ Error updating vehicle:", error);
-    res.status(500).json({ message: error.message || "Failed to update vehicle" });
+
+    if (!updated) return res.status(404).json({ message: "Vehicle not found" });
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Failed to update vehicle" });
   }
 };
+
+
 
 // ✅ Delete vehicle
 export const deleteVehicle = async (req, res) => {

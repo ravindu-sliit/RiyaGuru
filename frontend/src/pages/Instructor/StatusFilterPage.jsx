@@ -210,40 +210,47 @@ export default function StatusFilterPage() {
                   <div className="flex items-center justify-between">
                     {/* Info */}
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                        {r.name?.charAt(0)?.toUpperCase() || "?"}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <h4 className="text-lg font-semibold text-slate-800">
-                            {r.name}
-                          </h4>
-                          <span className="font-mono text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                            {r.instructorId}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-slate-600">
-                          <div className="flex items-center gap-1">
-                            <span>
-                              {getSpecializationIcon(r.specialization)}
-                            </span>
-                            <span>{r.specialization}</span>
-                          </div>
-                          {r.email && (
-                            <div className="flex items-center gap-1">
-                              <span></span>
-                              <span>{r.email}</span>
-                            </div>
-                          )}
-                          {r.phone && (
-                            <div className="flex items-center gap-1">
-                              <span></span>
-                              <span>{r.phone}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+  {/* Instructor Photo */}
+  <div className="w-12 h-12 rounded-full overflow-hidden shadow-sm bg-orange-500 flex items-center justify-center text-white font-bold text-lg">
+    {r.image ? (
+      <img
+        src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${r.image}`}
+        alt={r.name}
+        className="w-full h-full object-cover"
+        onError={(e) => (e.currentTarget.src = "/avatar.png")}
+      />
+    ) : (
+      r.name?.charAt(0)?.toUpperCase() || "?"
+    )}
+  </div>
+
+  {/* Instructor Details */}
+  <div className="flex-1">
+    <div className="flex items-center gap-3 mb-1">
+      <h4 className="text-lg font-semibold text-slate-800">{r.name}</h4>
+      <span className="font-mono text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">
+        {r.instructorId}
+      </span>
+    </div>
+    <div className="flex items-center gap-4 text-sm text-slate-600">
+      <div className="flex items-center gap-1">
+        <span>{getSpecializationIcon(r.specialization)}</span>
+        <span>{r.specialization}</span>
+      </div>
+      {r.email && (
+        <div className="flex items-center gap-1">
+          <span>{r.email}</span>
+        </div>
+      )}
+      {r.phone && (
+        <div className="flex items-center gap-1">
+          <span>{r.phone}</span>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
 
                     {/* Status */}
                     <div className="flex items-center gap-4">

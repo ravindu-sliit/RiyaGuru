@@ -297,15 +297,27 @@ export default function InstructorListPage() {
                     </span>
                   </div>
 
-                  {/* Name */}
-                  <div className="col-span-2 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                      {r.name?.charAt(0)?.toUpperCase() || "?"}
-                    </div>
-                    <div>
-                      <div className="font-medium text-slate-800">{r.name}</div>
-                    </div>
-                  </div>
+                 {/* Name + Photo */}
+            <div className="col-span-2 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-orange-500 text-white font-bold text-sm">
+            {r.image ? (
+            <img
+             src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${r.image}`}
+            alt={r.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+            e.currentTarget.src = "/avatar.png"; // fallback image
+               }}
+               />
+               ) : (
+              r.name?.charAt(0)?.toUpperCase() || "?"
+             )}
+          </div>
+
+  <div>
+    <div className="font-medium text-slate-800">{r.name}</div>
+  </div>
+</div>
 
                   {/* Email */}
                   <div className="col-span-2 flex items-center text-sm text-slate-600 truncate">
