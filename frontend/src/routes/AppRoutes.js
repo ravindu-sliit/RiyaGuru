@@ -19,6 +19,8 @@ import StudentInquiry from "../pages/Inquiry/StudentInquiry";
 
 // Student
 import StudentRoutes from "./studentRoutes";
+//import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
+import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
 
 // Student Registration
 import RegisterStudent from "../pages/Registration/RegisterStudent";
@@ -48,14 +50,16 @@ import AddBookingPage from "../pages/Booking/AddBookingPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
 import BookingEditPage from "../pages/Booking/BookingEditPage";
 
-import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
+
+
+
 
 export default function AppRoutes() {
   return (
     <Routes>
 
-       {/* Student Password Change */}
-        <Route path="/student/:id/password" element={<StudentPasswordChange />} />
+       {/* Student Routes*/}
+      <Route path="/student/*" element={<StudentRoutes />} />
 
 
        {/* Instructor CRUD */}
@@ -76,6 +80,8 @@ export default function AppRoutes() {
       {/* Students */}
       <Route path="/student/*" element={<StudentRoutes />} />
 
+      <Route path="/student/:id/edit" element={<StudentDetailsEdit />} />
+
       {/* Admin */}
       <Route path="/admin/*" element={<AdminDashboard />} />
       <Route path="/admin/students" element={<AdminViewStudents />} />
@@ -87,7 +93,7 @@ export default function AppRoutes() {
       {/* Inquiry */}
       <Route path="/inquiries" element={<InquiryDashboard />} />
       <Route path="/inquiry" element={<StudentInquiry />} />
-
+      
       {/* Instructors */}
       <Route path="/instructor/*" element={<InstructorRoutes />} />
       <Route path="Instructordashboard" element={<InstructorPage />} />

@@ -73,6 +73,8 @@ export default function AdminHome() {
       borderColor: "border-green-100",
       hoverColor: "hover:bg-green-100"
     },
+    
+    /*
     {
       title: "Manage Students",
       description: "View and manage student accounts",
@@ -82,6 +84,9 @@ export default function AdminHome() {
       borderColor: "border-blue-100",
       hoverColor: "hover:bg-blue-100"
     },
+    
+    */
+    
     // ✅ NEW Inquiry Dashboard
     {
       title: "Inquiries",

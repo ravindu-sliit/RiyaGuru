@@ -252,7 +252,7 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
           <button
             type="button"
             className="btn btn-warning"
-            onClick={() => navigate("/home/student")}
+            onClick={() => navigate("/student")}
           >
             Back
           </button>
