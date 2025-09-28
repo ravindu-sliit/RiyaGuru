@@ -346,13 +346,13 @@ export default function InstructorListPage() {
                   {/* Actions */}
                   <div className="col-span-3 flex items-center gap-2">
                     <button
-                      onClick={() => nav(`/instructors/${r._id || r.id}`)}
+                      onClick={() => nav(`/admin/instructors/${r._id || r.id}`)}
                       className="px-3 py-2 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100"
                     >
                       View
                     </button>
                     <button
-                      onClick={() => nav(`/instructors/${r._id || r.id}/edit`)}
+                      onClick={() => nav(`/admin/instructors/${r._id || r.id}/edit`)}
                       className="px-3 py-2 text-xs font-medium bg-slate-50 text-slate-700 rounded-lg hover:bg-slate-100"
                     >
                       Edit
