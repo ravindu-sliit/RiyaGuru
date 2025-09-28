@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Users, Car, ClipboardList, CreditCard, Layers } from "lucide-react";
+import { Users, Car, ClipboardList, CreditCard, Layers, Calendar } from "lucide-react";
 
 const Card = ({ to, title, desc, icon: Icon, color }) => (
   <Link
@@ -30,6 +30,7 @@ const AdminQuickActions = () => {
         <Card to="/vehicles" title="Vehicles" desc="Manage vehicles" icon={Car} color="#F59E0B" />
         <Card to="/instructors/list" title="Instructors" desc="Manage instructors" icon={ClipboardList} color="#10B981" />
         <Card to="/admin-payments" title="Payments" desc="Oversee transactions" icon={CreditCard} color="#EF4444" />
+        <Card to="/bookings" title="Bookings" desc="Manage scheduling system" icon={Calendar} color="#7C3AED" />
         <Card to="/admin-installments" title="Installments" desc="Approve plans" icon={Layers} color="#8B5CF6" />
       </div>
     </div>
