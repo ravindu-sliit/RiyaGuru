@@ -28,18 +28,17 @@ export default function DriveManagerLanding() {
     }
 
     function handleNavbarScroll() {
-  const navbar = document.querySelector(".navbar");
-  if (!navbar) return; // ✅ skip if navbar not found
+      const navbar = document.querySelector(".navbar");
+      if (!navbar) return;
 
-  if (window.scrollY > 100) {
-    navbar.style.background = "rgba(255, 255, 255, 0.95)";
-    navbar.style.backdropFilter = "blur(10px)";
-  } else {
-    navbar.style.background = "#FFFFFF";
-    navbar.style.backdropFilter = "none";
-  }
-}
-
+      if (window.scrollY > 100) {
+        navbar.style.background = "rgba(109, 97, 166, 0.95)";
+        navbar.style.backdropFilter = "blur(10px)";
+      } else {
+        navbar.style.background = "rgba(109, 97, 166, 1)";
+        navbar.style.backdropFilter = "none";
+      }
+    }
 
     function setupSmoothScrolling() {
       document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
@@ -51,39 +50,6 @@ export default function DriveManagerLanding() {
           }
         });
       });
-    }
-
-    function animateCounters() {
-      const counters = document.querySelectorAll(".stat-item h3");
-      counters.forEach((counter) => {
-        const target = parseInt(counter.textContent.replace(/[^0-9]/g, ""));
-        let current = 0;
-        const increment = target / 50;
-        const suffix = counter.textContent.replace(/[0-9]/g, "");
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            counter.textContent = target + suffix;
-            clearInterval(timer);
-          } else {
-            counter.textContent = Math.floor(current) + suffix;
-          }
-        }, 40);
-      });
-    }
-
-    const statsSection = document.querySelector(".stats");
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          animateCounters();
-          observer.unobserve(entry.target);
-        }
-      });
-    });
-
-    if (statsSection) {
-      observer.observe(statsSection);
     }
 
     // Init
@@ -109,159 +75,201 @@ export default function DriveManagerLanding() {
       <nav className="navbar">
         <div className="nav-container">
           <div className="logo">
-            Riya<span>Guru</span>.lk
+            <img src="/images/logo.png" alt="RiyaGuru" className="logo-img" />
           </div>
           <ul className="nav-links">
-            <li><a href="#features">Lesson Progress</a></li>
-            <li><a href="#tracking">Progress Tracking</a></li>
-            <li><a href="#payments">Payments</a></li>
-            <li><a href="#vehicles">Vehicles</a></li>
-            <li><a href="#dashboard">Student Dashboard</a></li>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#program">Program</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
           </ul>
-          <a href="/login" className="login-btn">Log In</a>
+          <a href="#contact" className="contact-btn">CONTACT US</a>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="hero">
+      <section className="hero" id="home">
+        <div className="hero-background">
+          <img src="/images/hero/instructor-student.jpg" alt="RiyaGuru Driving Instructor with Student" className="hero-image" />
+          <div className="hero-overlay"></div>
+        </div>
         <div className="hero-container">
-          <h1 className="fade-in">
-            Manage Lessons, Track Progress, Empower Students
-          </h1>
-          <p className="fade-in">
-            The complete driving school management system that streamlines
-            lesson scheduling, progress tracking, and certificate management
-            for instructors and students.
-          </p>
-          <div className="fade-in">
-            <a href="#get-started" className="cta-button">Get Started Free</a>
-            <a href="#demo" className="cta-secondary">Watch Demo</a>
+          <div className="hero-content fade-in">
+            <h1>RiyaGuru Driving School – Master the Road with Confidence</h1>
+            <p>
+              At RiyaGuru Driving School, we provide expert training with
+              personalized guidance to help you master the road. Our certified
+              instructors ensure you gain the skills, confidence, and knowledge to
+              become a responsible driver for life.
+            </p>
+            <div className="hero-buttons">
+              <a href="#program" className="cta-button">EXPLORE MORE →</a>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="features" id="features">
+      {/* Programs Section */}
+      <section className="programs" id="program">
         <div className="container">
           <div className="section-header fade-in">
-            <h2>Everything You Need to Run Your Driving School</h2>
-            <p>
-              Comprehensive tools designed for modern driving instructors and
-              their students
-            </p>
+            <span className="section-subtitle">OUR PROGRAMS</span>
+            <h2>what we offer</h2>
           </div>
-          <div className="features-grid">
-            <div className="feature-card fade-in">
-              <div className="feature-icon">📚</div>
-              <h3>Lesson Management</h3>
-              <p>
-                Schedule, track, and manage driving lessons with ease.
-                Real-time updates and automated notifications keep everyone
-                informed.
-              </p>
+          <div className="programs-grid">
+            <div className="program-card fade-in">
+              <div className="program-image">
+                <img src="/images/programs/graduation1.jpg" alt="Driving Course Completion" />
+              </div>
+              <div className="program-content">
+                <h3>Complete Driving Course</h3>
+                <p>Comprehensive training program covering all aspects of safe driving with certified instructors.</p>
+              </div>
             </div>
-            <div className="feature-card fade-in">
-              <div className="feature-icon">📊</div>
-              <h3>Progress Tracking</h3>
-              <p>
-                Monitor student progress with detailed analytics, skill
-                assessments, and milestone tracking throughout their learning
-                journey.
-              </p>
+            <div className="program-card fade-in">
+              <div className="program-image">
+                <img src="/images/programs/graduation2.jpg" alt="Advanced Driving Skills" />
+              </div>
+              <div className="program-content">
+                <h3>Advanced Skills Training</h3>
+                <p>Master advanced driving techniques and defensive driving strategies for confident road navigation.</p>
+              </div>
             </div>
-            <div className="feature-card fade-in">
-              <div className="feature-icon">💳</div>
-              <h3>Payment Management</h3>
-              <p>
-                Handle payments, invoicing, and financial records seamlessly
-                with integrated payment processing and reporting tools.
-              </p>
-            </div>
-            <div className="feature-card fade-in">
-              <div className="feature-icon">🏆</div>
-              <h3>Certificate Issuance</h3>
-              <p>
-                Generate and issue certificates automatically upon course
-                completion with customizable templates and digital verification.
-              </p>
+            <div className="program-card fade-in">
+              <div className="program-image">
+                <img src="/images/programs/graduation3.jpg" alt="License Preparation" />
+              </div>
+              <div className="program-content">
+                <h3>License Test Preparation</h3>
+                <p>Focused preparation for your driving license test with mock tests and practical guidance.</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="stats">
-        <div className="container stats-container">
-          <div className="stats-grid">
-            <div className="stat-item fade-in">
-              <h3>500+</h3>
-              <p>Students Enrolled</p>
+      {/* About Section */}
+      <section className="about" id="about">
+        <div className="container">
+          <div className="about-content">
+            <div className="about-text fade-in">
+              <span className="section-subtitle">ABOUT RIYAGURU.LK</span>
+              <h2>Shaping Safer Drivers for Tomorrow</h2>
+              
+              <div className="about-points">
+                <div className="about-point">
+                  <div className="point-line"></div>
+                  <p>Welcome to RiyaGuru.lk — Sri Lanka's modern driving school management system. We provide a complete platform for students to register online, book lessons, and access digital learning resources with ease.</p>
+                </div>
+                
+                <div className="about-point">
+                  <div className="point-line"></div>
+                  <p>With expert instructors, well-maintained vehicles, and real-time scheduling, we ensure every learner receives practical, flexible, and safe training. Our mission is to empower drivers with knowledge, confidence, and road safety awareness.</p>
+                </div>
+                
+                <div className="about-point">
+                  <div className="point-line"></div>
+                  <p>At RiyaGuru, technology meets training — helping you track your progress, receive instant feedback, and achieve your driving license faster and smarter.</p>
+                </div>
+              </div>
             </div>
-            <div className="stat-item fade-in">
-              <h3>1,000+</h3>
-              <p>Lessons Completed</p>
-            </div>
-            <div className="stat-item fade-in">
-              <h3>200+</h3>
-              <p>Certificates Issued</p>
-            </div>
-            <div className="stat-item fade-in">
-              <h3>98%</h3>
-              <p>Success Rate</p>
+            <div className="about-image fade-in">
+              <img src="/images/about/student-learning.jpg" alt="Student Learning at RiyaGuru" />
+              <div className="play-button">
+                <div className="play-icon">▶</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="how-it-works">
+      {/* Testimonials Section */}
+      <section className="testimonials" id="testimonials">
         <div className="container">
           <div className="section-header fade-in">
-            <h2>How It Works</h2>
-            <p>Simple, efficient workflow that works for everyone</p>
+            <span className="section-subtitle">TESTIMONIALS</span>
+            <h2>What student says</h2>
           </div>
-          <div className="steps-grid">
-            <div className="step-card fade-in">
-              <div className="step-number">1</div>
-              <h3>Instructors Log Lessons</h3>
-              <p>
-                Instructors easily record lesson details, student performance,
-                and progress notes through our intuitive interface.
-              </p>
+          
+          <div className="testimonials-container">
+            <button className="testimonial-nav prev">‹</button>
+            
+            <div className="testimonials-grid">
+              <div className="testimonial-card fade-in">
+                <div className="testimonial-header">
+                  <img src="/images/testimonials/pasindu.jpg" alt="Pasindu Sankalpa" className="testimonial-avatar" />
+                  <div className="testimonial-info">
+                    <h4>Pasindu Sankalpa</h4>
+                    <p>SLIIT, SRI LANKA</p>
+                  </div>
+                </div>
+                <div className="testimonial-content">
+                  <p>"Edusify feels like home! I love the big classrooms, friendly teachers, and playing with my friends after learning fun things every day."</p>
+                </div>
+              </div>
+              
+              <div className="testimonial-card fade-in">
+                <div className="testimonial-header">
+                  <img src="/images/testimonials/sandani.jpg" alt="sandani chamoda" className="testimonial-avatar" />
+                  <div className="testimonial-info">
+                    <h4>Sandani Chamoda</h4>
+                    <p>SLIIT, SRI LANKA</p>
+                  </div>
+                </div>
+                <div className="testimonial-content">
+                  <p>"I like Edusify because I learn new things and the teachers are really kind."</p>
+                </div>
+              </div>
             </div>
-            <div className="step-card fade-in">
-              <div className="step-number">2</div>
-              <h3>Students View Progress</h3>
-              <p>
-                Students access their personalized dashboard to track progress,
-                view upcoming lessons, and monitor skill development.
-              </p>
-            </div>
-            <div className="step-card fade-in">
-              <div className="step-number">3</div>
-              <h3>Admins Issue Certificates</h3>
-              <p>
-                Upon completion, administrators can instantly generate and
-                issue official certificates with full audit trails.
-              </p>
-            </div>
+            
+            <button className="testimonial-nav next">›</button>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="cta-banner">
+      {/* Contact Section */}
+      <section className="contact" id="contact">
         <div className="container">
-          <div className="cta-content fade-in">
-            <h2>Ready to Transform Your Driving School?</h2>
-            <p>
-              Join hundreds of driving instructors who are already using
-              RiyaGuru.lk to streamline their operations and enhance
-              student learning.
-            </p>
-            <a href="#get-started" className="cta-button">
-              Start Free Trial
-            </a>
+          <div className="section-header fade-in">
+            <span className="section-subtitle">CONTACT US</span>
+            <h2>Get in Touch</h2>
+          </div>
+          
+          <div className="contact-content">
+            <div className="contact-info fade-in">
+              <div className="contact-item">
+                <div className="contact-icon">📧</div>
+                <div>
+                  <h4>Contact RiyaGuru.lk</h4>
+                  <p>Have a question about lessons, bookings, or payments? Our team is ready to assist you in starting your driving journey with confidence.</p>
+                </div>
+              </div>
+              
+              <div className="contact-details">
+                <div className="detail-item">
+                  <span className="detail-icon">📧</span>
+                  <span>support@riyaguru.lk</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-icon">📞</span>
+                  <span>+94 71 234 5678</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-icon">📍</span>
+                  <span>No. 25, Main Road, Kandy, Sri Lanka</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="contact-form fade-in">
+              <h4>Send Us a Message</h4>
+              <form>
+                <input type="text" placeholder="Your Full Name" required />
+                <input type="tel" placeholder="Your Phone Number" required />
+                <textarea placeholder="Write your message here..." rows="4" required></textarea>
+                <button type="submit" className="send-btn">Send Message</button>
+              </form>
+            </div>
           </div>
         </div>
       </section>
@@ -270,45 +278,54 @@ export default function DriveManagerLanding() {
       <footer className="footer">
         <div className="container">
           <div className="footer-content">
-            <div className="footer-section">
-              <h3>Product</h3>
-              <ul>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#demo">Demo</a></li>
-                <li><a href="#integrations">Integrations</a></li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h3>Support</h3>
-              <ul>
-                <li><a href="#help">Help Center</a></li>
-                <li><a href="#contact">Contact Us</a></li>
-                <li><a href="#training">Training</a></li>
-                <li><a href="#api">API Docs</a></li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h3>Company</h3>
-              <ul>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#careers">Careers</a></li>
-                <li><a href="#blog">Blog</a></li>
-                <li><a href="#news">News</a></li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h3>Legal</h3>
-              <ul>
-                <li><a href="#privacy">Privacy Policy</a></li>
-                <li><a href="#terms">Terms of Service</a></li>
-                <li><a href="#security">Security</a></li>
-                <li><a href="#compliance">Compliance</a></li>
-              </ul>
+            <div className="footer-main">
+              <div className="footer-brand">
+                <h3>RiyaGuru.lk</h3>
+                <p>Simplifying driving school management with online booking, digital learning, and real-time progress tracking for safer drivers in Sri Lanka.</p>
+                <div className="social-links">
+                  <a href="#" className="social-link">📘</a>
+                  <a href="#" className="social-link">📷</a>
+                  <a href="#" className="social-link">🐦</a>
+                  <a href="#" className="social-link">📺</a>
+                </div>
+              </div>
+              
+              <div className="footer-links">
+                <div className="footer-section">
+                  <h4>Quick Links</h4>
+                  <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#program">Driving Lessons</a></li>
+                    <li><a href="#instructors">Instructors</a></li>
+                    <li><a href="#vehicles">Vehicles</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                  </ul>
+                </div>
+                
+                <div className="footer-section">
+                  <h4>Support</h4>
+                  <ul>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#portal">Student Portal</a></li>
+                    <li><a href="#payment">Payment Support</a></li>
+                    <li><a href="#faq">FAQs</a></li>
+                  </ul>
+                </div>
+                
+                <div className="footer-section">
+                  <h4>Contact Info</h4>
+                  <div className="contact-info">
+                    <p>No. 25, Main Road, Kandy</p>
+                    <p>+94 71 234 5678</p>
+                    <p>support@riyaguru.lk</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          
           <div className="footer-bottom">
-            <p>&copy; 2025 RiyaGuru.lk. All rights reserved.</p>
+            <p>© 2025 RiyaGuru.lk. All rights reserved.</p>
           </div>
         </div>
       </footer>
