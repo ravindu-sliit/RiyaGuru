@@ -21,7 +21,8 @@ export default function StudentLayout({ children }) {
     { to: `/student`, label: "Dashboard", icon: <LayoutDashboardIcon size={18} /> },
     { to: `/student/progress`, label: "Progress", icon: <BookOpen size={18} /> },
     { to: "/student/bookings", label: "Bookings", icon: <Calendar size={18} /> },
-    { to: "/StuVehicle", label: "Vehicles", icon: <Car size={18} /> },
+    { to: "/student/studVehicle", label: "Vehicles", icon: <Car size={18} /> },
+    { to: "/student/studinstructors", label: "Instructors", icon: <Car size={18} /> },
     { to: "/payments", label: "Payments", icon: <CreditCard size={18} /> },
     { to: `/student/${studentId}/dashboard`, label: "Profile", icon: <User size={18} /> },
 
