@@ -149,14 +149,21 @@ const VehicleDetails = () => {
           <div className="details-card">
             <h2 className="card-title">Vehicle Image</h2>
             <div className="vehicle-image-container">
-              <img
-                src={vehicle.image ? `${API_URL}${vehicle.image}` : "/placeholder-car.png"}
-                alt={`${vehicle.brand} ${vehicle.model}`}
-                className="vehicle-image"
-                onError={(e) => {
-                  e.currentTarget.src = "/placeholder-car.png";
-                }}
-              />
+            <img
+  src={
+    vehicle?.image
+      ? `${process.env.REACT_APP_PUBLIC_URL || "http://localhost:5000"}${vehicle.image}`
+      : "/placeholder-car.jpeg"   // ✅ must be inside your React /public folder
+  }
+  alt={`${vehicle?.brand || "Unknown"} ${vehicle?.model || ""}`}
+  className="vehicle-image"
+  onError={(e) => {
+    e.currentTarget.onerror = null; // prevent infinite loop
+    e.currentTarget.src = "/placeholder-car.jpeg"; // fallback
+  }}
+/>
+
+
             </div>
           </div>
         </div>
