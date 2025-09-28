@@ -14,8 +14,14 @@ import AdminHome from "../pages/Home/AdminHome";
 import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
 
 // Student
-import StudentRoutes from "./studentRoutes"; 
+
+import StudentRoutes from "./studentRoutes";
+//import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
+import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
+
+
 import AdminRoutes from "./adminRoutes";
+
 
 // Student Registration
 import RegisterStudent from "../pages/Registration/RegisterStudent";
@@ -51,7 +57,9 @@ import MakePayment from "../pages/Payment/MakePayment.jsx";
 import PaymentList from "../pages/Payment/PaymentList.jsx";
 import CreatePayment from "../pages/Payment/CreatePayment.jsx";
 
-import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
+
+
+
 
 export default function AppRoutes() {
   const EnrollRedirect = () => {
@@ -64,8 +72,8 @@ export default function AppRoutes() {
     <Routes>
 
 
-       {/* Student Password Change */}
-        <Route path="/student/:id/password" element={<StudentPasswordChange />} />
+       {/* Student Routes*/}
+      <Route path="/student/*" element={<StudentRoutes />} />
 
 
        {/* Instructor CRUD */}
@@ -86,8 +94,18 @@ export default function AppRoutes() {
       {/* Students (all under sidebar layout) */}
       <Route path="/student/*" element={<StudentRoutes />} />
 
+
+      <Route path="/student/:id/edit" element={<StudentDetailsEdit />} />
+
+      {/* Admin */}
+      {/*
+      <Route path="/admin/*" element={<AdminDashboard />} />
+      <Route path="/admin/students" element={<AdminViewStudents />} />
+      */}
+
       {/* Admin (nested under AdminLayout with sidebar) */}
       <Route path="/admin/*" element={<AdminRoutes />} />
+
 
       {/* Register & OTP */}
       <Route path="/register" element={<RegisterStudent />} />
@@ -97,7 +115,6 @@ export default function AppRoutes() {
       {/* Inquiry (⭐ added before catch-all) */}
       <Route path="/inquiries" element={<InquiryDashboard />} />
       <Route path="/inquiry" element={<StudentInquiry />} />
-
 
       {/* Instructors */}
       <Route path="/instructor/*" element={<InstructorRoutes />} />

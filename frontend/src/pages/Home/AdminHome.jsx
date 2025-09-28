@@ -8,14 +8,105 @@ export default function AdminHome() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const quickLinks = [
-    { title: "Students", description: "View and manage student records", icon: <Users className="w-8 h-8 text-blue-600" />, path: "/admin/students", bgColor: "bg-blue-50", borderColor: "border-blue-100", hoverColor: "hover:bg-blue-100" },
-    { title: "Vehicles", description: "Manage the driving school fleet", icon: <Car className="w-8 h-8 text-orange-600" />, path: "/dashboard", bgColor: "bg-orange-50", borderColor: "border-orange-100", hoverColor: "hover:bg-orange-100" },
-    { title: "Instructors", description: "Manage instructor profiles and schedules", icon: <Users className="w-8 h-8 text-green-600" />, path: "/Instructordashboard", bgColor: "bg-green-50", borderColor: "border-green-100", hoverColor: "hover:bg-green-100" },
-    { title: "Payments", description: "Oversee transactions and fees", icon: <CreditCard className="w-8 h-8 text-pink-600" />, path: "/admin-payments", bgColor: "bg-pink-50", borderColor: "border-pink-100", hoverColor: "hover:bg-pink-100" },
-    { title: "Bookings", description: "Manage scheduling system", icon: <Calendar className="w-8 h-8 text-purple-600" />, path: "/bookings", bgColor: "bg-purple-50", borderColor: "border-purple-100", hoverColor: "hover:bg-purple-100" },
-    { title: "Installments", description: "Review and approve installment plans", icon: <CreditCard className="w-8 h-8 text-orange-600" />, path: "/admin-installments", bgColor: "bg-orange-50", borderColor: "border-orange-100", hoverColor: "hover:bg-orange-100" },
-    { title: "Lesson Tracking", description: "Track lesson progress across students", icon: <BookOpen className="w-8 h-8 text-green-600" />, path: "/lesson-progress", bgColor: "bg-green-50", borderColor: "border-green-100", hoverColor: "hover:bg-green-100" },
-    { title: "Manage Students", description: "View and manage student accounts", icon: <Users className="w-8 h-8 text-blue-600" />, path: "/admin/students", bgColor: "bg-blue-50", borderColor: "border-blue-100", hoverColor: "hover:bg-blue-100" },
+
+    {
+      title: "Students",
+      description: "View and manage student records",
+      icon: <Users className="w-8 h-8 text-blue-600" />,
+      path: "/admin/students",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-100",
+      hoverColor: "hover:bg-blue-100"
+    },
+    {
+      title: "Vehicles",
+      description: "Manage the driving school fleet",
+      icon: <Car className="w-8 h-8 text-orange-600" />,
+      path: "/dashboard",
+      bgColor: "bg-orange-50",
+      borderColor: "border-orange-100",
+      hoverColor: "hover:bg-orange-100"
+    },
+    {
+      title: "Instructors",
+      description: "Manage instructor profiles and schedules",
+      icon: <Users className="w-8 h-8 text-green-600" />,
+      path: "/Instructordashboard",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-100",
+      hoverColor: "hover:bg-green-100"
+    },
+    {
+      title: "Payments",
+      description: "Oversee transactions and fees",
+      icon: <CreditCard className="w-8 h-8 text-pink-600" />,
+      path: "/admin-payments",
+      bgColor: "bg-pink-50",
+      borderColor: "border-pink-100",
+      hoverColor: "hover:bg-pink-100"
+    },
+    {
+      title: "Bookings",
+      description: "Manage scheduling system",
+      icon: <Calendar className="w-8 h-8 text-purple-600" />,
+      path: "/bookings",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-100",
+      hoverColor: "hover:bg-purple-100"
+    },
+    {
+      title: "Lesson Tracking",
+      description: "Track lesson progress across students",
+      icon: <BookOpen className="w-8 h-8 text-green-600" />,
+      path: "/lesson-progress",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-100",
+      hoverColor: "hover:bg-green-100"
+    },
+    
+    /*
+    {
+      title: "Manage Students",
+      description: "View and manage student accounts",
+      icon: <Users className="w-8 h-8 text-blue-600" />,
+      path: "/admin/students",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-100",
+      hoverColor: "hover:bg-blue-100"
+    },
+    
+    */
+    
+    // ✅ NEW Inquiry Dashboard
+    {
+      title: "Inquiries",
+      description: "Manage and respond to student inquiries",
+      icon: <MessageSquare className="w-8 h-8 text-indigo-600" />,
+      path: "/inquiries",
+      bgColor: "bg-indigo-50",
+      borderColor: "border-indigo-100",
+      hoverColor: "hover:bg-indigo-100"
+    },
+    // ✅ NEW Maintenance Dashboard
+    {
+      title: "Maintenance",
+      description: "Track and manage vehicle maintenance",
+      icon: <Wrench className="w-8 h-8 text-red-600" />,
+      path: "/maintenance",
+      bgColor: "bg-red-50",
+      borderColor: "border-red-100",
+      hoverColor: "hover:bg-red-100"
+    }
+
+    //{ title: "Students", description: "View and manage student records", icon: <Users className="w-8 h-8 text-blue-600" />, path: "/admin/students", bgColor: "bg-blue-50", borderColor: "border-blue-100", hoverColor: "hover:bg-blue-100" },
+    //{ title: "Vehicles", description: "Manage the driving school fleet", icon: <Car className="w-8 h-8 text-orange-600" />, path: "/dashboard", bgColor: "bg-orange-50", borderColor: "border-orange-100", hoverColor: "hover:bg-orange-100" },
+    //{ title: "Instructors", description: "Manage instructor profiles and schedules", icon: <Users className="w-8 h-8 text-green-600" />, path: "/Instructordashboard", bgColor: "bg-green-50", borderColor: "border-green-100", hoverColor: "hover:bg-green-100" },
+    //{ title: "Payments", description: "Oversee transactions and fees", icon: <CreditCard className="w-8 h-8 text-pink-600" />, path: "/admin-payments", bgColor: "bg-pink-50", borderColor: "border-pink-100", hoverColor: "hover:bg-pink-100" },
+    //{ title: "Bookings", description: "Manage scheduling system", icon: <Calendar className="w-8 h-8 text-purple-600" />, path: "/bookings", bgColor: "bg-purple-50", borderColor: "border-purple-100", hoverColor: "hover:bg-purple-100" },
+    //{ title: "Installments", description: "Review and approve installment plans", icon: <CreditCard className="w-8 h-8 text-orange-600" />, path: "/admin-installments", bgColor: "bg-orange-50", borderColor: "border-orange-100", hoverColor: "hover:bg-orange-100" },
+    //{ title: "Lesson Tracking", description: "Track lesson progress across students", icon: <BookOpen className="w-8 h-8 text-green-600" />, path: "/lesson-progress", bgColor: "bg-green-50", borderColor: "border-green-100", hoverColor: "hover:bg-green-100" },
+    //{ title: "Manage Students", description: "View and manage student accounts", icon: <Users className="w-8 h-8 text-blue-600" />, path: "/admin/students", bgColor: "bg-blue-50", borderColor: "border-blue-100", hoverColor: "hover:bg-blue-100" },
+
   ];
 
   const handleLogout = () => {

@@ -97,7 +97,7 @@ export default function StudentDashboard() {
               className="btn btn-soft"
               onClick={() => navigate(`/student/${id}/edit`)}
             >
-              Edit Details
+              Edit Profile
             </button>
            {/* <button
               className="btn btn-soft"

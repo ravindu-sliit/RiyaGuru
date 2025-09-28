@@ -57,10 +57,10 @@ export default function StudentHome() {
       path: "/my-payments",
     },
     {
-      title: "Profile & Dashboard",
+      title: "Profile",
       description: "Update details and view student dashboard",
       icon: <User className="w-6 h-6 text-green-600" />,
-      path: `/student/${studentId}/dashboard`, // 👈 go to student dashboard (profile inside it)
+      path: `/student/${studentId}/dashboard`,
     },
     {
       title: "My Documents",
