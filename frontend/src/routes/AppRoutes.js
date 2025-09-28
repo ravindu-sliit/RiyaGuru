@@ -32,22 +32,10 @@ import OtpRequest from "../pages/Registration/OtpRequest";
 import InquiryDashboard from "../pages/Inquiry/InquiryDashboard";
 import StudentInquiry from "../pages/Inquiry/StudentInquiry";
 
-// Instructor
-import InstructorRoutes from "./instructorRoutes";
-import InstructorPage from "../pages/Instructor/InstructorPage";
-import InstructorListPage from "../pages/Instructor/InstructorListPage";
-import InstructorDetailsPage from "../pages/Instructor/InstructorDetailsPage";
-import AddInstructorPage from "../pages/Instructor/AddInstructorPage";
-import EditInstructorPage from "../pages/Instructor/EditInstructorPage";
-import AvailabilityPage from "../pages/Instructor/AvailabilityPage";
-import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 
 
-// Vehicles
-import AddVehicle from "../pages/Vehicle/AddVehicle";
-import EditVehicle from "../pages/Vehicle/EditVehicle";
-import VehicleDetails from "../pages/Vehicle/VehicleDetails";
-import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
+
+
 
 // Booking
 import BookingDetails from "../pages/Booking/BookingDetails";
@@ -76,13 +64,7 @@ export default function AppRoutes() {
       <Route path="/student/*" element={<StudentRoutes />} />
 
 
-       {/* Instructor CRUD */}
-      <Route path="instructors/list" element={<InstructorListPage />} />
-      <Route path="instructors/:id" element={<InstructorDetailsPage />} />
-      <Route path="instructors/add" element={<AddInstructorPage />} />
-      <Route path="instructors/:id/edit" element={<EditInstructorPage />} />
-      <Route path="instructors/availability" element={<AvailabilityPage />} />
-      <Route path="instructors/status" element={<StatusFilterPage />} />
+
 
       {/* Public */}
       <Route path="/login" element={<LoginPage />} />
@@ -116,16 +98,9 @@ export default function AppRoutes() {
       <Route path="/inquiries" element={<InquiryDashboard />} />
       <Route path="/inquiry" element={<StudentInquiry />} />
 
-      {/* Instructors */}
-      <Route path="/instructor/*" element={<InstructorRoutes />} />
-      <Route path="Instructordashboard" element={<InstructorPage />} />
 
-      {/* Vehicles (redirect to admin nested for sidebar) */}
-      <Route path="/vehicles" element={<Navigate to="/admin/vehicles" replace />} />
-      <Route path="/vehicles/add" element={<AddVehicle />} />
-      <Route path="/vehicles/:id" element={<VehicleDetails />} />
-      <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
-      <Route path="/dashboard" element={<VehicleDashboard />} />
+
+      
 
       {/* Booking (redirect to admin nested for sidebar) */}
       <Route path="/bookings" element={<Navigate to="/admin/bookings" replace />} />

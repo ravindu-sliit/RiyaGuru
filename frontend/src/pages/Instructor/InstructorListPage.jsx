@@ -146,24 +146,14 @@ export default function InstructorListPage() {
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
+          
           <Link
-            to="/dashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            Vehicles Management
-          </Link>
-          <Link
-            to="/Instructordashboard"
+            to="/admin/Instructordashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
-             Instructors Management
+             Instructors DashBoard
           </Link>
-          <Link
-            to="/Instructordashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-             Back
-          </Link>
+          
         </div>
       </nav>
 
@@ -181,7 +171,7 @@ export default function InstructorListPage() {
 
           <div className="flex flex-wrap gap-3">
             <Link
-              to="/instructors/add"
+              to="/admin/instructors/add"
               className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
             >
               <span className="text-lg">+</span>

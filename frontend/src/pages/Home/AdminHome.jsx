@@ -21,7 +21,7 @@ export default function AdminHome() {
       title: "Vehicles",
       description: "Manage the driving school fleet",
       icon: <Car className="w-8 h-8 text-orange-600" />,
-      path: "/dashboard",
+      path: "/admin/vehicledashboard",
       bgColor: "bg-orange-50",
       borderColor: "border-orange-100",
       hoverColor: "hover:bg-orange-100"
@@ -30,7 +30,7 @@ export default function AdminHome() {
       title: "Instructors",
       description: "Manage instructor profiles and schedules",
       icon: <Users className="w-8 h-8 text-green-600" />,
-      path: "/Instructordashboard",
+      path: "/admin/Instructordashboard",
       bgColor: "bg-green-50",
       borderColor: "border-green-100",
       hoverColor: "hover:bg-green-100"
@@ -159,7 +159,7 @@ export default function AdminHome() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs text-gray-500">Total Students</div>
-                <div className="text-2xl font-bold text-gray-900">248</div>
+                <div className="text-2xl font-bold text-gray-900">12</div>
               </div>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600">
                 <Users className="w-5 h-5" />
@@ -172,7 +172,7 @@ export default function AdminHome() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs text-gray-500">Active Vehicles</div>
-                <div className="text-2xl font-bold text-gray-900">12</div>
+                <div className="text-2xl font-bold text-gray-900">5</div>
               </div>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-orange-50 text-orange-600">
                 <Car className="w-5 h-5" />
@@ -185,7 +185,7 @@ export default function AdminHome() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs text-gray-500">This Month</div>
-                <div className="text-2xl font-bold text-gray-900">₹1,24,500</div>
+                <div className="text-2xl font-bold text-gray-900">RS 1,24,500</div>
               </div>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-600">
                 <CreditCard className="w-5 h-5" />
@@ -198,7 +198,7 @@ export default function AdminHome() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs text-gray-500">Today's Lessons</div>
-                <div className="text-2xl font-bold text-gray-900">18</div>
+                <div className="text-2xl font-bold text-gray-900">2</div>
               </div>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-violet-50 text-violet-600">
                 <Calendar className="w-5 h-5" />

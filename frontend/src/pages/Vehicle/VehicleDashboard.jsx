@@ -94,31 +94,21 @@ const VehicleDashboard = () => {
           RiyaGuru.lk
         </div>
         <div className="flex items-center gap-4">
+          
+           
           <Link
-            to="/Instructordashboard"
-            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-orange-500 bg-orange-50"
-          >
-            Instructors Dashboard
-          </Link>
-          <Link
-            to="/vehicles"
+            to="/admin/vehicles"
             className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-orange-500 hover:bg-orange-50"
           >
             <Car size={16} /> All Vehicles
           </Link>
           <Link
-            to="/vehicles/add"
+            to="/admin/vehicles/add"
             className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
           >
             <Plus size={16} /> Add Vehicle
           </Link>
-          {/* 🔙 Back Button to Admin */}
-          <Link
-            to="/home/admin"
-            className="px-4 py-2 rounded-lg text-slate-600 hover:text-red-500 hover:bg-red-50 transition-all font-medium"
-          >
-            ⬅ Back
-          </Link>
+          
         </div>
       </div>
 
@@ -137,7 +127,7 @@ const VehicleDashboard = () => {
             <Filter size={16} />
           </button>
           <Link
-            to="/vehicles/add"
+            to="/admin/vehicles/add"
             className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white hover:bg-orange-600"
           >
             <Plus size={16} /> Add Vehicle
@@ -258,10 +248,10 @@ const VehicleDashboard = () => {
           </div>
           <div className="p-6 grid gap-3">
             {[
-              { to: "/vehicles", icon: <Car size={18} />, text: "View All Vehicles" },
-              { to: "/vehicles/add", icon: <Plus size={18} />, text: "Add New Vehicle" },
-              { to: "/vehicles?status=Active", icon: <CheckCircle size={18} />, text: "View Active Vehicles" },
-              { to: "/vehicles?status=Maintenance", icon: <AlertTriangle size={18} />, text: "Vehicles in Maintenance" },
+              { to: "/admin/vehicles", icon: <Car size={18} />, text: "View All Vehicles" },
+              { to: "/admin/vehicles/add", icon: <Plus size={18} />, text: "Add New Vehicle" },
+              { to: "/admin/vehicles?status=Active", icon: <CheckCircle size={18} />, text: "View Active Vehicles" },
+              { to: "/admin/vehicles?status=Maintenance", icon: <AlertTriangle size={18} />, text: "Vehicles in Maintenance" },
             ].map((action, idx) => (
               <Link
                 key={idx}

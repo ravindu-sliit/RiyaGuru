@@ -59,7 +59,7 @@ const EditVehicle = () => {
       }
     } catch (error) {
       toast.error("Failed to fetch vehicle details");
-      navigate("/vehicles");
+      navigate("/admin/vehicles");
     } finally {
       setInitialLoading(false);
     }
@@ -142,7 +142,7 @@ const handleSubmit = async (e) => {
 
     await vehicleService.updateVehicle(id, form); // ✅ send FormData
     toast.success("Vehicle updated successfully!");
-    navigate("/vehicles");
+    navigate("/admin/vehicles");
   } catch (error) {
     toast.error(error.message || "Failed to update vehicle");
   } finally {
@@ -165,7 +165,7 @@ const handleSubmit = async (e) => {
       {/* Header */}
       <div className="max-w-6xl mx-auto px-6 py-6">
         <button
-          onClick={() => navigate("/vehicles")}
+          onClick={() => navigate("/admin/vehicles")}
           className="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-gray-600 hover:border-orange-500 hover:text-orange-500 transition mb-4"
         >
           <ArrowLeft size={16} /> Back to Vehicles
