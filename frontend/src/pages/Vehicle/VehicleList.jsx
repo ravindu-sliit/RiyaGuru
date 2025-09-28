@@ -145,7 +145,7 @@ const VehicleList = () => {
         </div>
         <div className="flex gap-2">
           <Link
-            to="/vehicles/add"
+            to="/admin/vehicles/add"
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-medium px-4 py-2 rounded-md shadow-sm transition"
           >
             <Plus size={18} />
@@ -158,13 +158,6 @@ const VehicleList = () => {
            Download PDF
             </button>
           {/* ✅ Dashboard button in header */}
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-800 text-white font-medium px-4 py-2 rounded-md shadow-sm transition"
-          >
-            <LayoutDashboard size={18} />
-            Dashboard
-          </button>
         </div>
       </div>
 
@@ -271,10 +264,10 @@ const VehicleList = () => {
                 )}
 
                 <div className="flex gap-2 mt-auto pt-2 border-t">
-                  <Link to={`/vehicles/${vehicle._id}`} className="flex-1 text-center text-xs px-2 py-1 border rounded hover:bg-gray-50">
+                  <Link to={`/admin/vehicles/${vehicle._id}`} className="flex-1 text-center text-xs px-2 py-1 border rounded hover:bg-gray-50">
                     <Eye size={14} className="inline mr-1" /> View
                   </Link>
-                  <Link to={`/vehicles/${vehicle._id}/edit`} className="flex-1 text-center text-xs px-2 py-1 border rounded hover:bg-gray-50">
+                  <Link to={`/admin/vehicles/${vehicle._id}/edit`} className="flex-1 text-center text-xs px-2 py-1 border rounded hover:bg-gray-50">
                     <Edit size={14} className="inline mr-1" /> Edit
                   </Link>
                   <button

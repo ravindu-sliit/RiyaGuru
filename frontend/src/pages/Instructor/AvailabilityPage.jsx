@@ -69,23 +69,13 @@ export default function AvailabilityPage() {
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
+        
+          
           <Link
-            to="/dashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-             vehicle Management
-          </Link>
-          <Link
-            to="/Instructordashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-             Instructors Management
-          </Link>
-          <Link
-            to="/instructors/availability"
+            to="/admin/Instructordashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
-            Instructors Availability
+            Instructors DashBoard
           </Link>
         </div>
       </nav>
@@ -104,7 +94,7 @@ export default function AvailabilityPage() {
 
           <div className="flex items-center gap-3">
             <Link
-              to="/Instructordashboard"
+              to="/admin/Instructordashboard"
               className="flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
             >
               ← Back

@@ -51,23 +51,12 @@ export default function StatusFilterPage() {
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
+    
           <Link
-            to="/dashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            Vehicle Management
-          </Link>
-          <Link
-            to="/Instructordashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            Instructor Management
-          </Link>
-          <Link
-            to="/instructor/filter"
+            to="/admin/Instructordashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
-             Filter Status
+             Instructor DashBoard
           </Link>
         </div>
       </nav>
@@ -86,7 +75,7 @@ export default function StatusFilterPage() {
 
           <div className="flex items-center gap-3">
             <Link
-              to="/Instructordashboard"
+              to="/admin/Instructordashboard"
               className="flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
             >
               ← Back to All Instructors
@@ -268,7 +257,7 @@ export default function StatusFilterPage() {
                         
               
                         <Link
-                          to={`/instructors/${r._id || r.id}/edit`}
+                          to={`/admin/instructors/${r._id || r.id}/edit`}
                           className="px-3 py-2 text-xs font-medium bg-slate-50 text-slate-700 rounded-lg hover:bg-slate-100"
                         >
                           Edit

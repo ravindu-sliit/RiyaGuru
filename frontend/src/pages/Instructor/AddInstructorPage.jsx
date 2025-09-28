@@ -150,7 +150,7 @@ export default function AddInstructorPage() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      navigate("/instructors/list");
+      navigate("/admin/instructors/list");
     } catch (err) {
       setError(err?.response?.data?.message || err.message);
     } finally {
@@ -165,8 +165,8 @@ export default function AddInstructorPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <h1 className="text-xl font-bold">Instructor Management</h1>
           <nav className="hidden md:flex space-x-2">
-            <a href="/dashboard" className="px-3 py-2 text-slate-600 hover:text-orange-500">Vehicle Dashboard</a>
-            <a href="/Instructordashboard" className="px-3 py-2 text-orange-500 bg-orange-50 rounded-lg">Instructors Dashboard</a>
+            
+            <a href="/admin/Instructordashboard" className="px-3 py-2 text-orange-500 bg-orange-50 rounded-lg">Instructors Dashboard</a>
           </nav>
         </div>
       </div>
