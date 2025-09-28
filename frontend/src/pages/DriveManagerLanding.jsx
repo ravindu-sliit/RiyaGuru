@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./DriveManagerLanding.css";
+import { Link } from "react-router-dom";
 
 export default function DriveManagerLanding() {
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function DriveManagerLanding() {
           (window.innerHeight || document.documentElement.clientHeight) &&
         rect.right <= (window.innerWidth || document.documentElement.clientWidth)
       );
-    };
+    }
 
     function handleScrollAnimations() {
       const elements = document.querySelectorAll(".fade-in");
@@ -33,10 +33,10 @@ export default function DriveManagerLanding() {
       if (!navbar) return;
 
       if (window.scrollY > 100) {
-        navbar.style.background = "rgba(109, 97, 166, 0.95)";
+        navbar.style.background = "rgba(26, 31, 58, 0.95)";
         navbar.style.backdropFilter = "blur(10px)";
       } else {
-        navbar.style.background = "rgba(109, 97, 166, 1)";
+        navbar.style.background = "rgba(26, 31, 58, 1)";
         navbar.style.backdropFilter = "none";
       }
     }
@@ -88,6 +88,7 @@ export default function DriveManagerLanding() {
           <a href="#contact" className="contact-btn">CONTACT US</a>
         </div>
       </nav>
+
       {/* Hero Section */}
       <section className="hero" id="home">
         <div className="hero-background">
@@ -211,7 +212,7 @@ export default function DriveManagerLanding() {
               
               <div className="testimonial-card fade-in">
                 <div className="testimonial-header">
-                  <img src="/images/testimonials/sandani.jpg" alt="sandani chamoda" className="testimonial-avatar" />
+                  <img src="/images/testimonials/sandani.jpg" alt="Sandani Chamoda" className="testimonial-avatar" />
                   <div className="testimonial-info">
                     <h4>Sandani Chamoda</h4>
                     <p>SLIIT, SRI LANKA</p>
