@@ -30,4 +30,14 @@ export const CourseAPI = {
       throw err;
     }
   },
+
+  // Get course by id
+  getById: async (id) => {
+    try {
+      const res = await client.get(`/courses/${id}`);
+      return res.data;
+    } catch (err) {
+      throw err;
+    }
+  },
 };

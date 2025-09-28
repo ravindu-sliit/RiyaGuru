@@ -42,13 +42,19 @@ export default function StudentHome() {
       title: "Vehicles",
       description: "See available training vehicles",
       icon: <Car className="w-6 h-6 text-orange-600" />,
-      path: "/StuVehicle",
+      path: "/vehicles",
     },
     {
-      title: "Payments",
-      description: "View history and manage fees",
+      title: "My Enrollments",
+      description: "View enrolled courses and pay fees",
+      icon: <BookOpen className="w-6 h-6 text-blue-600" />,
+      path: "/my-enrollments",
+    },
+    {
+      title: "My Payments",
+      description: "See your payment history and receipts",
       icon: <CreditCard className="w-6 h-6 text-pink-600" />,
-      path: "/payments",
+      path: "/my-payments",
     },
     {
       title: "Profile",

@@ -16,7 +16,6 @@ const InstallmentItemSchema = new Schema(
     },
     paymentMethod: { type: String, enum: ["Card", "Bank", "Cash"] },
     slipURL: { type: String },
-    receiptURL: { type: String }  // for mini-receipts if needed
   },
   { _id: false } // don’t create a new _id for each item
 );
@@ -31,11 +30,14 @@ const InstallmentPlanSchema = new Schema(
     remainingAmount: { type: Number, required: true, min: 0 },
     totalInstallments: { type: Number, required: true, min: 1 },
     startDate: { type: Date, required: true },
+    // Business flags
+    adminApproved: { type: Boolean, default: false },
+    downPaymentPaid: { type: Boolean, default: false },
+    adminComment: { type: String },
+    rejectionReason: { type: String },
     schedule: { type: [InstallmentItemSchema], required: true } // generated array
   },
   { timestamps: true }
 );
-
-// Prevent OverwriteModelError in dev
 const InstallmentPlan = mongoose.models.InstallmentPlan || mongoose.model("InstallmentPlan", InstallmentPlanSchema);
 export default InstallmentPlan;

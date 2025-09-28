@@ -11,18 +11,20 @@ import {
   LayoutDashboardIcon,
 } from "lucide-react";
 
-export default function StudentLayout() {
+export default function StudentLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const studentId = localStorage.getItem("rg_id");
 
   const navItems = [
+
     { to: `/student`, label: "Dashboard", icon: <LayoutDashboardIcon size={18} /> },
     { to: `/student/progress`, label: "Progress", icon: <BookOpen size={18} /> },
     { to: "/student/bookings", label: "Bookings", icon: <Calendar size={18} /> },
     { to: "/StuVehicle", label: "Vehicles", icon: <Car size={18} /> },
     { to: "/payments", label: "Payments", icon: <CreditCard size={18} /> },
     { to: `/student/${studentId}/dashboard`, label: "Profile", icon: <User size={18} /> },
+
   ];
 
   const handleSignOut = () => {

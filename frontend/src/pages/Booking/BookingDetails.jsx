@@ -16,6 +16,7 @@ import {
   X,
   CheckCircle,
   AlertCircle,
+  Send ,
   MapPin
 } from "lucide-react";
 
@@ -240,9 +241,33 @@ const BookingDetails = () => {
 
   const handleDownloadReceipt = (bookingId) => {
     const fileName = `booking_${bookingId}.pdf`;
-    const downloadUrl = `http://localhost:5000/download/${fileName}`;
+    const downloadUrl = `http://localhost:5000/uploads/${fileName}`;
     window.open(downloadUrl, "_blank");
   };
+
+  // ✅ Send booking PDF email
+const handleSendEmail = async (bookingId) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/send-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("rg_token")}`, // 👈 if you're using JWT
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send email");
+    }
+
+    alert("Email sent successfully!");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    alert("Failed to send email. Please try again.");
+  }
+};
+
+
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -433,6 +458,13 @@ const BookingDetails = () => {
                             <Download className="w-4 h-4" />
                             Receipt
                           </button>
+                          <button
+                            onClick={() => handleSendEmail(booking.bookingId)}
+                             className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                             >
+                           <Send className="w-4 h-4" />
+                           Send Email
+                           </button>
                           <button
                             onClick={() => openModal("edit", booking)}
                             className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"

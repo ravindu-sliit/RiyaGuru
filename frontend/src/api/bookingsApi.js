@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000/api/bookings";
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 const client = axios.create({ baseURL: API_BASE });
 
@@ -61,20 +61,10 @@ export const BookingAPI = {
     }
   },
 
-  // Update booking by ID (general update)
+  // Update booking by ID
   update: async (id, data) => {
     try {
       const res = await client.put(`/bookings/${id}`, data);
-      return res.data;
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  // Update ONLY booking status (specific endpoint if backend supports it)
-  updateStatus: async (id, status) => {
-    try {
-      const res = await client.patch(`/bookings/${id}/status`, { status });
       return res.data;
     } catch (err) {
       throw err;
@@ -85,6 +75,14 @@ export const BookingAPI = {
   remove: async (id) => {
     try {
       const res = await client.delete(`/bookings/${id}`);
+      return res.data;
+    } catch (err) {
+      throw err;
+    }
+  },
+  updateStatus: async (id, status) => {
+    try {
+      const res = await client.patch(`/bookings/${id}/status`, { status });
       return res.data;
     } catch (err) {
       throw err;
