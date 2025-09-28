@@ -27,13 +27,13 @@ export default function StudentLayout({ children }) {
     { to: "/student/bookings", label: "Bookings", icon: <Calendar size={18} /> },
     { to: "/student/student-instructors", label: "Instructors", icon: <Car size={18} /> },
     { to: "/student/studVehicle", label: "Vehicles", icon: <Car size={18} /> },
-    { to: `/student/${studentId}/dashboard`, label: "Profile", icon: <User size={18} /> },
     { to: "/student/my-enrollments", label: "My Enrollments", icon: <ClipboardList size={18} /> },
     { to: "/student/my-payments", label: "My Payments", icon: <CreditCard size={18} /> },
     { to: `/student/${studentId}/docs/upload`, label: "My Documents", icon: <FileText size={18} /> },
     { to: `/student/${studentId}/preferences`, label: "Preferences", icon: <Settings size={18} /> },
     { to: `/student/${studentId}/password`, label: "Change Password", icon: <Lock size={18} /> },
     { to: "/inquiry", label: "Inquiries", icon: <HelpCircle size={18} /> },
+    { to: `/student/${studentId}/dashboard`, label: "Profile", icon: <User size={18} /> },
   ];
 
   const handleSignOut = () => {
