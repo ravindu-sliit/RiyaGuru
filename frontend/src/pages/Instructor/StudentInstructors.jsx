@@ -62,44 +62,23 @@ export default function AvailabilityPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Navigation */}
+      {/* Student Navigation */}
       <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
-          <span className="text-orange-500 text-2xl"></span>
-          Instructor Management
-        </div>
-        <div className="flex items-center gap-6">
-        
-          
-          <Link
-            to="/admin/Instructordashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
-          >
-            Instructors DashBoard
-          </Link>
+          <span className="text-orange-500 text-2xl">🚘</span>
+          Instructor Availability
         </div>
       </nav>
 
       <div className="max-w-7xl mx-auto px-8 py-8">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Instructor Availability
-            </h1>
-            <p className="text-slate-600 text-lg">
-              Find available instructors for specific dates and time slots
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              to="/admin/Instructordashboard"
-              className="flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
-            >
-              ← Back
-            </Link>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Find Your Instructor
+          </h1>
+          <p className="text-slate-600 text-lg">
+            Search for instructors available on specific dates and times
+          </p>
         </div>
 
         {/* Search Filters */}
@@ -115,7 +94,7 @@ export default function AvailabilityPage() {
             {/* Date Filter */}
             <div className="flex-1">
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                 Select Date
+                Select Date
               </label>
               <div className="flex gap-2">
                 <input
@@ -136,7 +115,7 @@ export default function AvailabilityPage() {
             {/* Time Filter */}
             <div className="flex-1">
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                 Time Range (Optional)
+                Time Range (Optional)
               </label>
               <input
                 type="text"
@@ -179,7 +158,7 @@ export default function AvailabilityPage() {
               <div className="flex items-center gap-2 text-blue-700 text-sm">
                 <span>🔍</span>
                 <span>
-                  Searching for instructors
+                  Showing availability
                   {date && (
                     <span className="font-medium">
                       {" "}
@@ -197,27 +176,21 @@ export default function AvailabilityPage() {
 
         {/* Results */}
         {loading ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16">
-            <div className="flex flex-col items-center justify-center py-8">
-              <div className="w-12 h-12 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mb-4"></div>
-              <p className="text-slate-600 font-medium">
-                Searching for available instructors...
-              </p>
-              <p className="text-sm text-slate-500 mt-1">
-                Please wait while we check their schedules
-              </p>
-            </div>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16 text-center">
+            <div className="w-12 h-12 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-600 font-medium">
+              Checking available instructors...
+            </p>
+            <p className="text-sm text-slate-500 mt-1">
+              Please wait while we fetch schedules
+            </p>
           </div>
         ) : (
           <div>
-            {/* Results Header */}
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <span className="text-orange-500 text-lg"></span>
-                <h3 className="text-xl font-semibold text-slate-800">
-                  Available Instructors ({rows.length})
-                </h3>
-              </div>
+              <h3 className="text-xl font-semibold text-slate-800">
+                Available Instructors ({rows.length})
+              </h3>
               {rows.length > 0 && (
                 <div className="text-sm text-slate-600">
                   Last updated: {new Date().toLocaleTimeString()}
@@ -225,7 +198,6 @@ export default function AvailabilityPage() {
               )}
             </div>
 
-            {/* Results Grid */}
             {rows.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {rows.map((r) => (
@@ -233,33 +205,34 @@ export default function AvailabilityPage() {
                     key={r.instructorId}
                     className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-all duration-200 group"
                   >
-                    {/* Instructor Header */}
                     {/* Name + Photo */}
-<div className="col-span-2 flex items-center gap-3">
-  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-orange-500 text-white font-bold text-sm">
-    {r.image ? (
-      <img
-        src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${r.image}`}
-        alt={r.name}
-        className="w-full h-full object-cover"
-        onError={(e) => {
-          e.currentTarget.src = "/avatar.png"; // fallback image
-        }}
-      />
-    ) : (
-      r.name?.charAt(0)?.toUpperCase() || "?"
-    )}
-  </div>
+                    <div className="col-span-2 flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-orange-500 text-white font-bold text-sm">
+                        {r.image ? (
+                          <img
+                            src={`${process.env.REACT_APP_API_URL.replace(
+                              "/api",
+                              ""
+                            )}${r.image}`}
+                            alt={r.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "/avatar.png";
+                            }}
+                          />
+                        ) : (
+                          r.name?.charAt(0)?.toUpperCase() || "?"
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-medium text-slate-800">
+                          {r.name}
+                        </div>
+                      </div>
+                    </div>
 
-  <div>
-    <div className="font-medium text-slate-800">{r.name}</div>
-  </div>
-</div>
-
-
-                    {/* Instructor Details */}
+                    {/* Details */}
                     <div className="space-y-3 mb-4">
-                      {/* Specialization */}
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-slate-600">
                           Specialization:
@@ -274,7 +247,6 @@ export default function AvailabilityPage() {
                         </div>
                       </div>
 
-                      {/* Phone */}
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-slate-600">Phone:</span>
                         <span className="text-sm font-medium text-slate-800">
@@ -282,7 +254,6 @@ export default function AvailabilityPage() {
                         </span>
                       </div>
 
-                      {/* Status */}
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-slate-600">Status:</span>
                         <span
@@ -298,60 +269,32 @@ export default function AvailabilityPage() {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
+                    {/* Student Actions */}
                     <div className="flex gap-2 pt-4 border-t border-slate-100">
                       <Link
-                        to={``}
-                        className="flex-1 px-3 py-2 text-sm font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-center"
-                      >
-                         View Profile
-                      </Link>
-                      <Link
-                        to={``}
+                        to={`/student/bookings/${r.instructorId}`}
                         className="flex-1 px-3 py-2 text-sm font-medium bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors text-center"
                       >
-                         Schedule
+                        Book Schedule
                       </Link>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16">
-                <div className="text-center">
-                  <div className="text-6xl mb-4"></div>
-                  <h3 className="text-xl font-semibold text-slate-700 mb-2">
-                    No Available Instructors
-                  </h3>
-                  <p className="text-slate-500 mb-6">
-                    {date || time
-                      ? "No instructors are available for the selected date and time."
-                      : "Search for instructors by selecting a date or time range above."}
-                  </p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                    {(date || time) && (
-                      <button
-                        onClick={clearFilters}
-                        className="px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                      >
-                        Clear Filters
-                      </button>
-                    )}
-                    <Link
-                      to="/admin/instructors/add"
-                      className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
-                    >
-                      + Add New Instructor
-                    </Link>
-                  </div>
-                </div>
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16 text-center">
+                <h3 className="text-xl font-semibold text-slate-700 mb-2">
+                  No Available Instructors
+                </h3>
+                <p className="text-slate-500">
+                  {date || time
+                    ? "No instructors are available for the selected date and time."
+                    : "Please search by selecting a date or time range above."}
+                </p>
               </div>
             )}
           </div>
         )}
-
-       
-        
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ export default function StudentHome() {
       title: "Instructors",
       description: "See available training vehicles",
       icon: <User className="w-6 h-6 text-green-600" />,
-      path: "/student/studinstructors",
+      path: "/student/student-instructors",
     },
     {
       title: "Vehicles",
