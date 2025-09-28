@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CourseAPI } from "../../api/courseApi";
-import { AlertCircle, BookOpen, Loader2, DollarSign } from "lucide-react";
+import { AlertCircle, BookOpen, Loader2, DollarSign, Clock, Users, Award } from "lucide-react";
 import { StudentCourseAPI } from "../../api/studentCourseApi";
 
 const EnrollmentDetails = () => {
@@ -12,6 +12,19 @@ const EnrollmentDetails = () => {
   const [course, setCourse] = useState(null);
   const [fallbackName, setFallbackName] = useState("");
   const [resolvedPrice, setResolvedPrice] = useState(null);
+
+  // Function to get course image based on course name/id
+  const getCourseImage = (courseName, courseId) => {
+    const name = (courseName || courseId || '').toLowerCase();
+    if (name.includes('van')) {
+      return '/images/courses/van.jpeg';
+    } else if (name.includes('car')) {
+      return '/images/courses/car.jpeg';
+    } else if (name.includes('motorcycle') || name.includes('bike')) {
+      return '/images/courses/motorcycle.jpeg';
+    }
+    return '/images/courses/car.jpeg'; // default fallback
+  };
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -124,10 +137,10 @@ const EnrollmentDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-10 h-10 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading course details...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-700 font-medium">Loading course details...</p>
         </div>
       </div>
     );
@@ -135,8 +148,8 @@ const EnrollmentDetails = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center border border-gray-200">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-900 mb-2">Error</h3>
           <p className="text-gray-600 mb-6">{error}</p>
@@ -150,59 +163,148 @@ const EnrollmentDetails = () => {
   const category = course?.category || course?.type || "General";
   const description = course?.description || "This course provides comprehensive training to help you master safe driving skills and prepare for licensing.";
   const duration = course?.duration || "Flexible schedule";
-  const requirements = course?.requirements || ["Valid NIC", "Minimum age as per category", "Basic literacy"];
+  const requirements = course?.requirements || ["You must meet the minimum age requirement (usually 16–18).", "You need to provide valid documents such as an ID card, birth certificate, or passport along with proof of address.", "A medical or vision test is required to ensure you are physically fit to drive safely.","You must pass a written or computer-based theory test that covers road signs, traffic rules, and safe driving practices."];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-3xl mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <div className="flex items-center gap-3 mb-4">
-            <BookOpen className="w-8 h-8" style={{ color: "#2D74C4" }} />
-            <h1 className="text-3xl font-bold" style={{ color: "#0A1A2F" }}>{courseName}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="px-6 py-8">
+        {/* Header Section with Image */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-gray-200 mb-8">
+          <div className="relative">
+            <div className="h-64 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
+              <img 
+                src={getCourseImage(courseName, id)}
+                alt={courseName}
+                className="w-full h-full object-cover opacity-80"
+                onError={(e) => {
+                  e.target.src = '/images/courses/car.jpeg'; // fallback image
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 left-6 text-white">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                    <BookOpen className="w-8 h-8" />
+                  </div>
+                  <h1 className="text-4xl font-bold drop-shadow-lg">{courseName}</h1>
+                </div>
+                <p className="text-white/90 text-lg">Course ID: {id} • Category: {category}</p>
+              </div>
+            </div>
           </div>
-          <div className="text-sm text-gray-600 mb-6">Course ID: {id} • Category: {category}</div>
+        </div>
 
-          <div className="space-y-6">
-            <section>
-              <h2 className="text-lg font-semibold mb-2" style={{ color: "#0A1A2F" }}>About this course</h2>
-              <p className="text-gray-700">{description}</p>
-            </section>
+        {/* Main Content */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Course Information */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* About Section */}
+            <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-blue-100 rounded-xl p-3">
+                  <BookOpen className="w-6 h-6 text-blue-600" />
+                </div>
+                <h2 className="text-2xl font-bold" style={{ color: "#0A1A2F" }}>About this course</h2>
+              </div>
+              <p className="text-gray-700 leading-relaxed text-lg">{description}</p>
+            </div>
 
-            <section className="grid md:grid-cols-2 gap-4">
-              <div className="bg-gray-50 rounded-xl p-4">
-                <div className="text-gray-500 text-sm">Duration</div>
-                <div className="text-lg font-semibold" style={{ color: "#0A1A2F" }}>{duration}</div>
+            {/* Requirements Section */}
+            <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-green-100 rounded-xl p-3">
+                  <Award className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="text-2xl font-bold" style={{ color: "#0A1A2F" }}>Requirements</h3>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4">
-                <div className="text-gray-500 text-sm">Price</div>
-                <div className="text-lg font-semibold" style={{ color: "#F47C20" }}>
-                {toCurrency(price)}
-              </div>
-              </div>
-            </section>
-
-            <section>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: "#0A1A2F" }}>Requirements</h3>
-              <ul className="list-disc pl-6 text-gray-700 space-y-1">
+              <div className="grid md:grid-cols-2 gap-4">
                 {Array.isArray(requirements) ? requirements.map((r, i) => (
-                  <li key={i}>{r}</li>
+                  <div key={i} className="flex items-center gap-3 bg-gray-50 rounded-lg p-4">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-gray-700">{r}</span>
+                  </div>
                 )) : (
-                  <li>{requirements}</li>
+                  <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-4">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-gray-700">{requirements}</span>
+                  </div>
                 )}
-              </ul>
-            </section>
+              </div>
+            </div>
+
+            {/* Why Choose Us Section - moved here */}
+            <div className="bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-200 rounded-2xl shadow-lg p-6">
+              <h4 className="text-lg font-bold mb-3 text-orange-800">Why Choose Us?</h4>
+              <div className="grid md:grid-cols-2 gap-3">
+                <div className="flex items-center gap-2 text-orange-700">
+                  <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                  <span className="text-sm">Professional instructors</span>
+                </div>
+                <div className="flex items-center gap-2 text-orange-700">
+                  <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                  <span className="text-sm">Modern training vehicles</span>
+                </div>
+                <div className="flex items-center gap-2 text-orange-700">
+                  <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                  <span className="text-sm">Flexible scheduling</span>
+                </div>
+                <div className="flex items-center gap-2 text-orange-700">
+                  <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                  <span className="text-sm">High success rate</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-8 flex justify-end">
-            <button
-              onClick={() => {
-                navigate(`/create-payment?totalAmount=${price}&courseName=${encodeURIComponent(courseName)}&courseId=${id}`);
-              }}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center gap-2"
-            >
-              <DollarSign className="w-4 h-4" />
-              Pay Now
-            </button>
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Course Stats */}
+            <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 p-6">
+              <h3 className="text-xl font-bold mb-6" style={{ color: "#0A1A2F" }}>Course Details</h3>
+              
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Clock className="w-5 h-5 text-blue-600" />
+                    <span className="text-blue-700 font-medium">Duration</span>
+                  </div>
+                  <div className="text-lg font-bold text-blue-800">{duration}</div>
+                </div>
+
+                <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <DollarSign className="w-5 h-5 text-green-600" />
+                    <span className="text-green-700 font-medium">Price</span>
+                  </div>
+                  <div className="text-2xl font-bold text-green-800">{toCurrency(price)}</div>
+                </div>
+
+                <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Users className="w-5 h-5 text-purple-600" />
+                    <span className="text-purple-700 font-medium">Category</span>
+                  </div>
+                  <div className="text-lg font-bold text-purple-800">{category}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Button */}
+            <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 p-6">
+              <div className="text-center mb-4">
+                <h4 className="text-lg font-bold mb-2" style={{ color: "#0A1A2F" }}>Ready to Start?</h4>
+                <p className="text-gray-600">Complete your payment to begin this course</p>
+              </div>
+              <button
+                onClick={() => {
+                  navigate(`/create-payment?totalAmount=${price}&courseName=${encodeURIComponent(courseName)}&courseId=${id}`);
+                }}
+                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <DollarSign className="w-5 h-5" />
+                Pay Now - {toCurrency(price)}
+              </button>
+            </div>
           </div>
         </div>
       </div>
