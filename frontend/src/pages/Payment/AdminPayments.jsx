@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { PaymentAPI } from "../../api/paymentApi";
-import AdminLayout from "../../layouts/AdminLayout";
 import {
   Loader2,
   AlertCircle,
@@ -250,7 +249,6 @@ const AdminPayments = () => {
   }
 
   return (
-    <AdminLayout>
       <div className="px-6 py-6">
         {/* Header */}
         <div className="mb-6">
@@ -549,7 +547,6 @@ const AdminPayments = () => {
           />
         )}
       </div>
-    </AdminLayout>
   );
 };
 

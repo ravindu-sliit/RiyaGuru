@@ -10,7 +10,6 @@ import {
   FileText,
 } from "lucide-react";
 import { getAllPlans, adminApprovePlan, adminRejectPlan } from "../../api/installmentApi";
-import AdminLayout from "../../layouts/AdminLayout";
 
 const AdminInstallments = () => {
   const [plans, setPlans] = useState([]);
@@ -220,7 +219,7 @@ const AdminInstallments = () => {
   }
 
   return (
-    <AdminLayout>
+    <>
       <div className="px-6 py-6">
         {/* Header */}
         <div className="mb-6">
@@ -463,7 +462,7 @@ const AdminInstallments = () => {
           saving={savingId === selectedPlan?._id}
         />
       )}
-    </AdminLayout>
+    </>
   );
 };
 
