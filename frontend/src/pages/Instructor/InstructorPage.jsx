@@ -1,10 +1,12 @@
 // src/pages/Instructor/InstructorPage.jsx
 
 //sankalpa instructor landin dashBoard
+import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import InstructorAPI from "../../api/instructorApi";
-import { Car } from "lucide-react";
+import { Calendar, ArrowLeft } from "lucide-react";
+
 
 export default function InstructorPage() {
   const [stats, setStats] = useState({
@@ -51,7 +53,7 @@ export default function InstructorPage() {
       }
     })();
   }, []);
-
+  const navigate = useNavigate();
   const cards = useMemo(
     () => [
       {
@@ -101,22 +103,33 @@ export default function InstructorPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Navigation */}
-      <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
-          RiyaGuru.lk
+    
+       <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
+          <div className="px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* 🔙 Back Button */}
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-2 rounded-lg transition-all font-medium"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Instructor Management</h1>
+                <p className="text-orange-100">Monitor and manage all driving Instructor </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-6">
-          <Link
-            to="/admin/Instructordashboard"
-            className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
-          >
-            Instructors Management
-          </Link>
-          
-          
-        </div>
-      </nav>
+      </div>
 
       {/* Page Wrapper */}
       <div className="max-w-7xl mx-auto px-8 py-10">
