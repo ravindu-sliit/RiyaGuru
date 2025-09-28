@@ -219,17 +219,8 @@ const AdminInstallments = () => {
   }
 
   return (
-    <>
       <div className="px-6 py-6">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Admin Installment Plans
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Review student installment plans and approve or reject with a comment. After approval, students can pay the down payment first.
-          </p>
-        </div>
+        {/* Page Content */}
 
         {/* Success Toast */}
         {successMessage && (
@@ -369,100 +360,67 @@ const AdminInstallments = () => {
                                 Review
                               </button>
                             )}
-                          </div>
-                        </td>
-                      </tr>
+                        </div>
+                      </td>
+                    </tr>
 
-                      {/* Schedule Details (Collapsible later if needed) */}
-                      <tr>
-                        <td colSpan="7" className="px-6 py-2 bg-gray-50">
-                          <div className="border-t pt-4">
-                            <h4 className="text-sm font-medium text-gray-700 mb-3">
-                              Installment Schedule
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                              {plan.schedule.map((item) => (
-                                <div
-                                  key={item.installmentNumber}
-                                  className="bg-white p-3 rounded border text-center text-xs"
-                                >
-                                  <div className="font-medium">
-                                    #{item.installmentNumber}
-                                  </div>
-                                  <div className="text-gray-700">
-                                    {formatCurrency(item.amount)}
-                                  </div>
-                                  <div className="text-gray-500 mt-1">
-                                    {formatDate(item.dueDate)}
-                                  </div>
-                                  <div className="mt-2">
-                                    {getStatusBadge(item.status)}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                    {/* Schedule Details (Collapsible later if needed) */}
+                    <tr>
+                      <td colSpan="7" className="px-6 py-2 bg-gray-50">
+                        <div className="border-t pt-4">
+                          <h4 className="text-sm font-medium text-gray-700 mb-3">Installment Schedule</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                            {plan.schedule.map((item) => (
+                              <div key={item.installmentNumber} className="bg-white p-3 rounded border text-center text-xs">
+                                <div className="font-medium">#{item.installmentNumber}</div>
+                                <div className="text-gray-700">{formatCurrency(item.amount)}</div>
+                                <div className="text-gray-500 mt-1">{formatDate(item.dueDate)}</div>
+                                <div className="mt-2">{getStatusBadge(item.status)}</div>
+                              </div>
+                            ))}
                           </div>
-                        </td>
-                      </tr>
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Stats */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-2xl font-bold text-gray-900">
-              {plans.length}
-            </div>
-            <div className="text-gray-600">Total Plans</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-2xl font-bold text-green-600">
-              {
-                plans.filter((p) => getPlanStatus(p.schedule) === "Completed")
-                  .length
-              }
-            </div>
-            <div className="text-gray-600">Completed</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-2xl font-bold text-red-600">
-              {
-                plans.filter((p) => getPlanStatus(p.schedule) === "Overdue")
-                  .length
-              }
-            </div>
-            <div className="text-gray-600">Overdue</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-2xl font-bold text-blue-600">
-              {
-                plans.filter((p) => getPlanStatus(p.schedule) === "Active")
-                  .length
-              }
-            </div>
-            <div className="text-gray-600">Active</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
-
-      {/* Review Modal */}
-      {reviewOpen && (
-        <ReviewInstallmentModal
-          plan={selectedPlan}
-          onClose={closeReview}
-          onApprove={approveFromModal}
-          onReject={rejectFromModal}
-          comment={reviewComment}
-          setComment={setReviewComment}
-          saving={savingId === selectedPlan?._id}
-        />
       )}
-    </>
+
+      {/* Stats */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-4 border border-gray-100">
+          <div className="text-2xl font-bold text-gray-900">{plans.length}</div>
+          <div className="text-gray-600">Total Plans</div>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-100">
+          <div className="text-2xl font-bold text-green-600">{plans.filter((p) => getPlanStatus(p.schedule) === "Completed").length}</div>
+          <div className="text-gray-600">Completed</div>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-100">
+          <div className="text-2xl font-bold text-red-600">{plans.filter((p) => getPlanStatus(p.schedule) === "Overdue").length}</div>
+          <div className="text-gray-600">Overdue</div>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-100">
+          <div className="text-2xl font-bold text-blue-600">{plans.filter((p) => getPlanStatus(p.schedule) === "Active").length}</div>
+          <div className="text-gray-600">Active</div>
+        </div>
+      </div>
+      {reviewOpen && (
+      <ReviewInstallmentModal
+        plan={selectedPlan}
+        onClose={closeReview}
+        onApprove={approveFromModal}
+        onReject={rejectFromModal}
+        comment={reviewComment}
+        setComment={setReviewComment}
+        saving={savingId === selectedPlan?._id}
+      />
+      )}
+    </div>
   );
 };
 
