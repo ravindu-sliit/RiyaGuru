@@ -69,23 +69,13 @@ export default function AvailabilityPage() {
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
+        
+          
           <Link
-            to="/dashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-             vehicle Management
-          </Link>
-          <Link
-            to="/Instructordashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-             Instructors Management
-          </Link>
-          <Link
-            to="/instructors/availability"
+            to="/admin/Instructordashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
-            Instructors Availability
+            Instructors DashBoard
           </Link>
         </div>
       </nav>
@@ -104,7 +94,7 @@ export default function AvailabilityPage() {
 
           <div className="flex items-center gap-3">
             <Link
-              to="/Instructordashboard"
+              to="/admin/Instructordashboard"
               className="flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
             >
               ← Back
@@ -244,19 +234,28 @@ export default function AvailabilityPage() {
                     className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-all duration-200 group"
                   >
                     {/* Instructor Header */}
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                        {r.name?.charAt(0)?.toUpperCase() || "?"}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-1">
-                          {r.name}
-                        </h4>
-                        <span className="font-mono text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                          {r.instructorId}
-                        </span>
-                      </div>
-                    </div>
+                    {/* Name + Photo */}
+<div className="col-span-2 flex items-center gap-3">
+  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-orange-500 text-white font-bold text-sm">
+    {r.image ? (
+      <img
+        src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${r.image}`}
+        alt={r.name}
+        className="w-full h-full object-cover"
+        onError={(e) => {
+          e.currentTarget.src = "/avatar.png"; // fallback image
+        }}
+      />
+    ) : (
+      r.name?.charAt(0)?.toUpperCase() || "?"
+    )}
+  </div>
+
+  <div>
+    <div className="font-medium text-slate-800">{r.name}</div>
+  </div>
+</div>
+
 
                     {/* Instructor Details */}
                     <div className="space-y-3 mb-4">
@@ -302,13 +301,13 @@ export default function AvailabilityPage() {
                     {/* Action Buttons */}
                     <div className="flex gap-2 pt-4 border-t border-slate-100">
                       <Link
-                        to={`/instructors/${r._id || r.id}`}
+                        to={``}
                         className="flex-1 px-3 py-2 text-sm font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-center"
                       >
                          View Profile
                       </Link>
                       <Link
-                        to={`/instructors/${r._id || r.id}/schedule`}
+                        to={``}
                         className="flex-1 px-3 py-2 text-sm font-medium bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors text-center"
                       >
                          Schedule
@@ -339,7 +338,7 @@ export default function AvailabilityPage() {
                       </button>
                     )}
                     <Link
-                      to="/instructors/add"
+                      to="/admin/instructors/add"
                       className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
                     >
                       + Add New Instructor

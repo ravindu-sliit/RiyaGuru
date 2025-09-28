@@ -146,24 +146,14 @@ export default function InstructorListPage() {
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
+          
           <Link
-            to="/dashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            Vehicles Management
-          </Link>
-          <Link
-            to="/Instructordashboard"
+            to="/admin/Instructordashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
-             Instructors Management
+             Instructors DashBoard
           </Link>
-          <Link
-            to="/Instructordashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-             Back
-          </Link>
+          
         </div>
       </nav>
 
@@ -181,7 +171,7 @@ export default function InstructorListPage() {
 
           <div className="flex flex-wrap gap-3">
             <Link
-              to="/instructors/add"
+              to="/admin/instructors/add"
               className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
             >
               <span className="text-lg">+</span>
@@ -297,15 +287,27 @@ export default function InstructorListPage() {
                     </span>
                   </div>
 
-                  {/* Name */}
-                  <div className="col-span-2 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                      {r.name?.charAt(0)?.toUpperCase() || "?"}
-                    </div>
-                    <div>
-                      <div className="font-medium text-slate-800">{r.name}</div>
-                    </div>
-                  </div>
+                 {/* Name + Photo */}
+            <div className="col-span-2 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-orange-500 text-white font-bold text-sm">
+            {r.image ? (
+            <img
+             src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${r.image}`}
+            alt={r.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+            e.currentTarget.src = "/avatar.png"; // fallback image
+               }}
+               />
+               ) : (
+              r.name?.charAt(0)?.toUpperCase() || "?"
+             )}
+          </div>
+
+  <div>
+    <div className="font-medium text-slate-800">{r.name}</div>
+  </div>
+</div>
 
                   {/* Email */}
                   <div className="col-span-2 flex items-center text-sm text-slate-600 truncate">
@@ -344,13 +346,13 @@ export default function InstructorListPage() {
                   {/* Actions */}
                   <div className="col-span-3 flex items-center gap-2">
                     <button
-                      onClick={() => nav(`/instructors/${r._id || r.id}`)}
+                      onClick={() => nav(`/admin/instructors/${r._id || r.id}`)}
                       className="px-3 py-2 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100"
                     >
                       View
                     </button>
                     <button
-                      onClick={() => nav(`/instructors/${r._id || r.id}/edit`)}
+                      onClick={() => nav(`/admin/instructors/${r._id || r.id}/edit`)}
                       className="px-3 py-2 text-xs font-medium bg-slate-50 text-slate-700 rounded-lg hover:bg-slate-100"
                     >
                       Edit

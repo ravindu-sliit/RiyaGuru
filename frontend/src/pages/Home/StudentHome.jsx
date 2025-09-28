@@ -39,10 +39,16 @@ export default function StudentHome() {
       path: "/student/bookings",
     },
     {
+      title: "Instructors",
+      description: "See available training vehicles",
+      icon: <User className="w-6 h-6 text-green-600" />,
+      path: "/student/student-instructors",
+    },
+    {
       title: "Vehicles",
       description: "See available training vehicles",
       icon: <Car className="w-6 h-6 text-orange-600" />,
-      path: "/vehicles",
+      path: "/student/studVehicle",
     },
     {
       title: "My Enrollments",

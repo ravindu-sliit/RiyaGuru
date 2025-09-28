@@ -81,7 +81,7 @@ export default function LoginPage() {
       else if (data.role === "Instructor")
         navigate("/instructor", { replace: true });
       else if (data.role === "Admin")
-        navigate("/home/admin", { replace: true });
+        navigate("/admin/home/admin", { replace: true });
       else navigate("/landing", { replace: true });
     } catch (err) {
       setGeneralError(err.message || "Something went wrong. Please try again.");

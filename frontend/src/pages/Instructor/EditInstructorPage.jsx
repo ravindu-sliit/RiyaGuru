@@ -109,7 +109,7 @@ export default function EditInstructorPage() {
         payload = { ...form, availability: form.availability || [] };
       }
       await InstructorAPI.update(id, payload);
-      nav(`/instructors/${id}`);
+      nav(`/admin/instructors/${id}`);
     } catch (err) {
       setError(err?.response?.data?.message || err.message);
     } finally {
@@ -145,14 +145,10 @@ export default function EditInstructorPage() {
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
-          <Link to="/dashboard" className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 font-medium">
-             Vehicle Management
-          </Link>
-          <Link to="/instructors" className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium">
-             Instructors Management
-          </Link>
-          <Link to="/Instructordashboard" className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 font-medium">
-            DashBoard
+          
+          
+          <Link to="/admin/Instructordashboard" className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 font-medium">
+           Instructor DashBoard
           </Link>
         </div>
       </nav>
@@ -165,7 +161,7 @@ export default function EditInstructorPage() {
             <p className="text-slate-600 text-lg">Update instructor profile and availability</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link to={`/instructors/${id}`} className="bg-white border px-6 py-3 rounded-lg hover:bg-slate-50">← Back to Profile</Link>
+            <Link to={`/admin/instructors/${id}`} className="bg-white border px-6 py-3 rounded-lg hover:bg-slate-50">← Back to Profile</Link>
           </div>
         </div>
 
@@ -246,7 +242,7 @@ export default function EditInstructorPage() {
 
           {/* Footer */}
           <div className="bg-slate-50 border-t px-8 py-6 flex justify-end gap-3">
-            <Link to={`/instructors/${id}`} className="px-6 py-3 bg-white border rounded-lg">Cancel</Link>
+            <Link to={`/admin/instructors/${id}`} className="px-6 py-3 bg-white border rounded-lg">Cancel</Link>
             <button type="submit" disabled={saving} className="px-8 py-3 bg-orange-500 text-white rounded-lg">
               {saving ? "Saving..." : "Save Changes"}
             </button>

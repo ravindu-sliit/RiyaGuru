@@ -1,5 +1,5 @@
 // src/pages/Instructor/InstructorDetailsPage.jsx
-//profile
+//profile sankalpa
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { StarIcon } from "@heroicons/react/24/solid";
@@ -106,7 +106,7 @@ export default function InstructorDetailsPage() {
             removed.
           </p>
           <Link
-            to="/instructors"
+            to="/admin/instructors/list"
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
           >
             ← Back to Instructors
@@ -131,17 +131,12 @@ export default function InstructorDetailsPage() {
           Instructor Management
         </div>
         <div className="flex items-center gap-6">
+          
           <Link
-            to="/dashboard"
-            className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-             Vehicles Management
-          </Link>
-          <Link
-            to="/Instructordashboard"
+            to="/admin/Instructordashboard"
             className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
-             Instructors Management
+             Instructors DashBoard
           </Link>
           
         </div>
@@ -160,7 +155,7 @@ export default function InstructorDetailsPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              to={`/instructors/${id}/edit`}
+              to={`/admin/instructors/${id}/edit`}
               className="bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
             >
                Edit Profile
@@ -182,14 +177,13 @@ export default function InstructorDetailsPage() {
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-6">
                   <div className="w-48 h-48 rounded-full bg-orange-500 p-1 shadow-lg">
-                    <img
-                      src={imageUrl}
-                      alt={rec.name}
-                      className="w-full h-full object-cover rounded-full border-4 border-white"
-                      onError={(e) => {
-                        e.currentTarget.src = "/avatar.png";
-                      }}
+                   <img
+                     src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${rec.image}`}
+                    alt={rec.name}
+                    className="w-full h-full object-cover rounded-full border-4 border-white"
+                    onError={(e) => (e.currentTarget.src = "/avatar.png")}
                     />
+                    
                   </div>
                   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
                     <span
@@ -357,22 +351,22 @@ export default function InstructorDetailsPage() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
-              to={`/instructors/${id}/schedule`}
+              to={`/admin/instructors/list`}
               className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
             >
               Manage Schedule
             </Link>
             <Link
-              to={`/instructors/${id}/performance`}
+              to={`/admin/instructors/list`}
               className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
             >
               View Performance
             </Link>
             <Link
-              to="/Instructordashboard"
+              to="/admin/instructors/list"
               className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
             >
-              Back to List DashBoard
+              Back to List
             </Link>
           </div>
         </div>

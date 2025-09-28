@@ -56,7 +56,7 @@ const VehicleDetails = () => {
     try {
       await vehicleService.deleteVehicle(id);
       toast.success('Vehicle deleted successfully');
-      navigate('/vehicles');
+      navigate('/admin/vehicles');
     } catch (error) {
       toast.error('Failed to delete vehicle');
       console.error('Error deleting vehicle:', error);
@@ -107,7 +107,7 @@ const VehicleDetails = () => {
       <div className="details-header">
         <div className="header-left">
           <button 
-            onClick={() => navigate('/vehicles')}
+            onClick={() => navigate('/admin/vehicles')}
             className="btn btn-outline btn-sm"
           >
             <ArrowLeft size={16} />
@@ -124,7 +124,7 @@ const VehicleDetails = () => {
           <span className={getStatusBadge(vehicle.status)}>
             {vehicle.status}
           </span>
-          <Link to={`/vehicles/${vehicle._id}/edit`} className="btn btn-outline btn-sm">
+          <Link to={`/admin/vehicles/${vehicle._id}/edit`} className="btn btn-outline btn-sm">
             <Edit size={16} />
             Edit
           </Link>
@@ -149,14 +149,21 @@ const VehicleDetails = () => {
           <div className="details-card">
             <h2 className="card-title">Vehicle Image</h2>
             <div className="vehicle-image-container">
-              <img
-                src={vehicle.image ? `${API_URL}${vehicle.image}` : "/placeholder-car.png"}
-                alt={`${vehicle.brand} ${vehicle.model}`}
-                className="vehicle-image"
-                onError={(e) => {
-                  e.currentTarget.src = "/placeholder-car.png";
-                }}
-              />
+            <img
+  src={
+    vehicle?.image
+      ? `${process.env.REACT_APP_PUBLIC_URL || "http://localhost:5000"}${vehicle.image}`
+      : "/placeholder-car.jpeg"   // ✅ must be inside your React /public folder
+  }
+  alt={`${vehicle?.brand || "Unknown"} ${vehicle?.model || ""}`}
+  className="vehicle-image"
+  onError={(e) => {
+    e.currentTarget.onerror = null; // prevent infinite loop
+    e.currentTarget.src = "/placeholder-car.jpeg"; // fallback
+  }}
+/>
+
+
             </div>
           </div>
         </div>

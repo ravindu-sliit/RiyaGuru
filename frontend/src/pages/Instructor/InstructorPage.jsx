@@ -108,24 +108,13 @@ export default function InstructorPage() {
         </div>
         <div className="flex items-center gap-6">
           <Link
-            to="/dashboard"
-            className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            Vehicles Management
-          </Link>
-          <Link
-            to="/Instructordashboard"
+            to="/admin/Instructordashboard"
             className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
           >
             Instructors Management
           </Link>
-          {/* 🔙 Back Button for Admin */}
-          <Link
-            to="/home/admin"
-            className="px-4 py-2 rounded-lg text-slate-600 hover:text-red-500 hover:bg-red-50 transition-all font-medium"
-          >
-            ⬅ Back
-          </Link>
+          
+          
         </div>
       </nav>
 
@@ -144,25 +133,25 @@ export default function InstructorPage() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                to="/instructors/add"
+                to="/admin/instructors/add"
                 className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md"
               >
-                Add Instructor
+                + Add Instructor
               </Link>
               <Link
-                to="/instructors/list"
+                to="/admin/instructors/list"
                 className="bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-semibold border shadow-sm"
               >
                 View List
               </Link>
               <Link
-                to="/instructors/availability"
+                to="/admin/instructors/availability"
                 className="bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-semibold border shadow-sm"
               >
                 Availability
               </Link>
               <Link
-                to="/instructors/status"
+                to="/admin/instructors/status"
                 className="bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-semibold border shadow-sm"
               >
                 Filter Status

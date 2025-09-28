@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import vehicleAPI from "../../api/vehicleApi";
+import { vehicleService } from "../../services/vehicleService";
 import { ArrowLeft, Save, Upload, X, Car } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -141,19 +142,13 @@ const AddVehicle = () => {
           <Car className="text-orange-500 w-6 h-6" />
           <span>RiyaGuru.lk</span>
         </div>
-        <div className="flex items-center gap-6 text-sm font-medium text-gray-500">
-          <span className="hover:text-orange-500 cursor-pointer">Dashboard</span>
-          <span className="text-orange-500 font-semibold cursor-pointer">
-            All Vehicles
-          </span>
-          <span className="hover:text-orange-500 cursor-pointer">Add Vehicle</span>
-        </div>
+       
       </div>
 
       {/* Page Header */}
       <div className="max-w-6xl mx-auto px-6 py-6">
         <button
-          onClick={() => navigate("/vehicles")}
+          onClick={() => navigate("/admin/vehicles")}
           type="button"
           className="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-gray-600 hover:border-orange-500 hover:text-orange-500 transition mb-4"
         >

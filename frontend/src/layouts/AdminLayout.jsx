@@ -10,8 +10,8 @@ export default function AdminLayout({ children }) {
   const nav = [
     { to: "/admin", label: "Dashboard", icon: <BookOpen size={18} /> },
     { to: "/admin/students", label: "Students", icon: <Users size={18} /> },
-    { to: "/admin/vehicles", label: "Vehicles", icon: <Car size={18} /> },
-    { to: "/admin/instructors/list", label: "Instructors", icon: <ClipboardList size={18} /> },
+    { to: "/admin/vehicledashboard", label: "Vehicles", icon: <Car size={18} /> },
+    { to: "/admin/Instructordashboard", label: "Instructors", icon: <ClipboardList size={18} /> },
     { to: "/admin/payments", label: "Payments", icon: <CreditCard size={18} /> },
     { to: "/admin/bookings", label: "Bookings", icon: <Calendar size={18} /> },
     { to: "/admin/installments", label: "Installments", icon: <Layers size={18} /> },
