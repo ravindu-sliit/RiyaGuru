@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./DriveManagerLanding.css";
 
 export default function DriveManagerLanding() {
@@ -13,7 +14,7 @@ export default function DriveManagerLanding() {
           (window.innerHeight || document.documentElement.clientHeight) &&
         rect.right <= (window.innerWidth || document.documentElement.clientWidth)
       );
-    }
+    };
 
     function handleScrollAnimations() {
       const elements = document.querySelectorAll(".fade-in");
@@ -83,10 +84,10 @@ export default function DriveManagerLanding() {
             <li><a href="#about">About Us</a></li>
             <li><a href="#testimonials">Testimonials</a></li>
           </ul>
+          <Link to="/login" className="login-btn">LOG IN</Link>
           <a href="#contact" className="contact-btn">CONTACT US</a>
         </div>
       </nav>
-
       {/* Hero Section */}
       <section className="hero" id="home">
         <div className="hero-background">

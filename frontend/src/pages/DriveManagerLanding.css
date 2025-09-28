@@ -84,11 +84,9 @@ body {
   background: var(--accent-orange);
   transition: width 0.3s ease;
 }
-
 .nav-links a:hover::after {
   width: 100%;
 }
-
 .contact-btn {
   background: var(--accent-orange);
   color: var(--white);
@@ -104,10 +102,25 @@ body {
   display: inline-block;
 }
 
-.contact-btn:hover {
-  background: #e6691b;
+.login-btn {
+  background: transparent;
+  color: var(--white);
+  padding: 10px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  margin-right: 12px;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(244, 124, 32, 0.3);
 }
 
 /* Hero Section */
