@@ -241,7 +241,7 @@ const BookingDetails = () => {
 
   const handleDownloadReceipt = (bookingId) => {
     const fileName = `booking_${bookingId}.pdf`;
-    const downloadUrl = `http://localhost:5000/download/${fileName}`;
+    const downloadUrl = `http://localhost:5000/uploads/${fileName}`;
     window.open(downloadUrl, "_blank");
   };
 

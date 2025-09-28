@@ -45,7 +45,6 @@ import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
 
 // Booking
 import BookingDashboard from "../pages/Booking/BookingDashboard";
-import AddBookingPage from "../pages/Booking/AddBookingPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
 import BookingEditPage from "../pages/Booking/BookingEditPage";
 //Payments
