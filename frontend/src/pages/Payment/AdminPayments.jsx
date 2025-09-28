@@ -250,16 +250,6 @@ const AdminPayments = () => {
 
   return (
       <div className="px-6 py-6">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Admin Payment Management
-          </h1>
-          <p className="text-gray-600 mt-1">
-            View and update payment statuses. Sensitive data visible to admins
-            only.
-          </p>
-        </div>
 
         {/* Success Toast */}
         {successMessage && (

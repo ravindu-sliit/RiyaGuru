@@ -1,6 +1,8 @@
 // src/routes/adminRoutes.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
+import AdminSection from "../components/admin/AdminSection";
+import { CreditCard, FileText, Car } from "lucide-react";
 
 // Admin Pages
 import AdminHome from "../pages/Home/AdminHome";
@@ -30,12 +32,44 @@ export default function AdminRoutes() {
         {/* Students */}
         <Route path="students" element={<AdminViewStudents />} />
 
-        {/* Payments */}
-        <Route path="payments" element={<AdminPayments />} />
-        <Route path="installments" element={<AdminInstallments />} />
+        {/* Payments - with route-level header */}
+        <Route
+          element={
+            <AdminSection
+              title="Payment Management"
+              subtitle="Review and manage all student payments"
+              icon={<CreditCard className="w-6 h-6 text-white" />}
+            />
+          }
+        >
+          <Route path="payments" element={<AdminPayments />} />
+        </Route>
 
-        {/* Vehicles */}
-        <Route path="vehicles" element={<VehicleList />} />
+        {/* Installments - with route-level header */}
+        <Route
+          element={
+            <AdminSection
+              title="Installment Management"
+              subtitle="Review and manage students' installment plans"
+              icon={<FileText className="w-6 h-6 text-white" />}
+            />
+          }
+        >
+          <Route path="installments" element={<AdminInstallments />} />
+        </Route>
+
+        {/* Vehicles - with route-level header */}
+        <Route
+          element={
+            <AdminSection
+              title="Vehicle Management"
+              subtitle="Manage your fleet and availability"
+              icon={<Car className="w-6 h-6 text-white" />}
+            />
+          }
+        >
+          <Route path="vehicles" element={<VehicleList />} />
+        </Route>
 
         {/* Instructors */}
         <Route path="instructors/list" element={<InstructorListPage />} />
