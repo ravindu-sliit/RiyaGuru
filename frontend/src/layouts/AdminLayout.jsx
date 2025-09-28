@@ -1,7 +1,7 @@
 // src/layouts/AdminLayout.jsx
 import React from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Users, Car, ClipboardList, CreditCard, Layers, BookOpen, LogOut } from "lucide-react";
+import { Users, Car, ClipboardList, CreditCard, Layers, BookOpen, LogOut, Calendar } from "lucide-react";
 
 export default function AdminLayout({ children }) {
   const location = useLocation();
@@ -13,6 +13,7 @@ export default function AdminLayout({ children }) {
     { to: "/vehicles", label: "Vehicles", icon: <Car size={18} /> },
     { to: "/instructors/list", label: "Instructors", icon: <ClipboardList size={18} /> },
     { to: "/admin-payments", label: "Payments", icon: <CreditCard size={18} /> },
+    { to: "/bookings", label: "Bookings", icon: <Calendar size={18} /> },
     { to: "/admin-installments", label: "Installments", icon: <Layers size={18} /> },
   ];
 
