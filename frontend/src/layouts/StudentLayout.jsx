@@ -9,6 +9,11 @@ import {
   User,
   LogOut,
   LayoutDashboardIcon,
+  ClipboardList,
+  FileText,
+  Settings,
+  Lock,
+  HelpCircle,
 } from "lucide-react";
 
 export default function StudentLayout({ children }) {
@@ -17,15 +22,18 @@ export default function StudentLayout({ children }) {
   const studentId = localStorage.getItem("rg_id");
 
   const navItems = [
-
     { to: `/student`, label: "Dashboard", icon: <LayoutDashboardIcon size={18} /> },
     { to: `/student/progress`, label: "Progress", icon: <BookOpen size={18} /> },
     { to: "/student/bookings", label: "Bookings", icon: <Calendar size={18} /> },
-    { to: "/student/studVehicle", label: "Vehicles", icon: <Car size={18} /> },
     { to: "/student/student-instructors", label: "Instructors", icon: <Car size={18} /> },
-    { to: "/payments", label: "Payments", icon: <CreditCard size={18} /> },
+    { to: "/student/studVehicle", label: "Vehicles", icon: <Car size={18} /> },
     { to: `/student/${studentId}/dashboard`, label: "Profile", icon: <User size={18} /> },
-
+    { to: "/student/my-enrollments", label: "My Enrollments", icon: <ClipboardList size={18} /> },
+    { to: "/student/my-payments", label: "My Payments", icon: <CreditCard size={18} /> },
+    { to: `/student/${studentId}/docs/upload`, label: "My Documents", icon: <FileText size={18} /> },
+    { to: `/student/${studentId}/preferences`, label: "Preferences", icon: <Settings size={18} /> },
+    { to: `/student/${studentId}/password`, label: "Change Password", icon: <Lock size={18} /> },
+    { to: "/inquiry", label: "Inquiries", icon: <HelpCircle size={18} /> },
   ];
 
   const handleSignOut = () => {
