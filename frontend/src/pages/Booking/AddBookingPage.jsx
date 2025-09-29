@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
+import { vehicleService } from "../../services/vehicleService";
 import InstructorAPI from "../../api/instructorApi";
 import { BookingAPI } from "../../api/bookingsApi";
 import vehicleApi from "../../api/vehicleApi";
 import { StudentCourseAPI } from "../../api/studentCourseApi";
 import { useNavigate } from "react-router-dom";
+import {
+  Calendar,
+  Clock,
+  User,
+  Car,
+  BookOpen,
+  ArrowLeft,
+  CheckCircle,
+  AlertCircle,
+  Phone,
+  Award,
+  Check,
+} from "lucide-react";
 
 const AddBookingPage = () => {
-  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-  const UPLOADS_BASE = API_BASE.replace(/\/api$/, "") + "/uploads";
   const navigate = useNavigate();
   const [instructors, setInstructors] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -60,11 +72,8 @@ const AddBookingPage = () => {
         }
         break;
       case "vehicleRegNo":
-        const vehicleRegex = /^[A-Z]{2,3}-\d{4}$/;
         if (!value) {
           newErrors.vehicleRegNo = "Vehicle registration number is required";
-        } else if (!vehicleRegex.test(value)) {
-          newErrors.vehicleRegNo = "Invalid format. Use format: ABC1234";
         } else {
           delete newErrors.vehicleRegNo;
         }
@@ -95,34 +104,43 @@ const AddBookingPage = () => {
     setErrors(newErrors);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    validateField(name, value);
+  const handleCourseSelect = (courseName) => {
+    setFormData((prev) => ({ ...prev, courseName }));
+    validateField("courseName", courseName);
+  };
 
-    if (name === "instructorName") {
-      const instructor = instructors.find((inst) => inst.name === value);
-      setSelectedInstructor(instructor);
-      setFormData((prev) => ({ ...prev, time: "", date: "" }));
-      setAvailableTimeSlots([]);
+  const handleInstructorSelect = (instructor) => {
+    setSelectedInstructor(instructor);
+    setFormData((prev) => ({
+      ...prev,
+      instructorName: instructor.name,
+      time: "",
+      date: "",
+    }));
+    setAvailableTimeSlots([]);
+    validateField("instructorName", instructor.name);
 
-      if (instructor) {
-        const dates = instructor.availability.map((avail) => avail.date);
-        setAvailableDates(dates);
-      } else {
-        setAvailableDates([]);
-      }
+    const dates = instructor.availability.map((avail) => avail.date);
+    setAvailableDates(dates);
+  };
+
+  const handleVehicleSelect = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setFormData((prev) => ({ ...prev, vehicleRegNo: vehicle.regNo }));
+    validateField("vehicleRegNo", vehicle.regNo);
+  };
+
+  const handleDateSelect = (date) => {
+    setFormData((prev) => ({ ...prev, date, time: "" }));
+    validateField("date", date);
+    if (selectedInstructor) {
+      updateTimeSlots(selectedInstructor, date);
     }
+  };
 
-    if (name === "date" && selectedInstructor) {
-      setFormData((prev) => ({ ...prev, time: "" }));
-      updateTimeSlots(selectedInstructor, value);
-    }
-
-    if (name === "vehicleRegNo") {
-      const vehicle = vehicles.find((v) => v.regNo === value);
-      setSelectedVehicle(vehicle);
-    }
+  const handleTimeSelect = (time) => {
+    setFormData((prev) => ({ ...prev, time }));
+    validateField("time", time);
   };
 
   const updateTimeSlots = (instructor, date) => {
@@ -131,20 +149,8 @@ const AddBookingPage = () => {
     );
     setAvailableTimeSlots(availability ? availability.timeSlots : []);
   };
-  const downloadReceipt = (bookingId) => {
-    const receiptUrl = `${UPLOADS_BASE}/receipts/${bookingId}.pdf`;
-
-    // Create a temporary anchor element and trigger download
-    const link = document.createElement("a");
-    link.href = receiptUrl;
-    link.download = `receipt_${bookingId}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const handleSubmit = async () => {
-    // Validate all fields
     Object.keys(formData).forEach((key) => {
       validateField(key, formData[key]);
     });
@@ -166,21 +172,11 @@ const AddBookingPage = () => {
 
       const booking = await BookingAPI.create(payload);
       const bookingId = booking.booking.bookingId;
-      alert("Booking created successfully! " + bookingId);
-      downloadReceipt(bookingId);
-      // Reset form
-      setFormData({
-        courseName: "",
-        instructorName: "",
-        vehicleRegNo: "",
-        date: "",
-        time: "",
-      });
-      setSelectedInstructor(null);
-      setAvailableTimeSlots([]);
-      setAvailableDates([]);
 
-      //navigate("/my-bookings");
+      alert("Booking created successfully! " + bookingId);
+
+      // ✅ Navigate to bookings page
+      navigate("/student/bookings");
     } catch (error) {
       alert("Failed to create booking. Please try again.");
     } finally {
@@ -188,211 +184,430 @@ const AddBookingPage = () => {
     }
   };
 
+  // ✅ match course name to vehicle type
+  let filteredVehicles = vehicles;
+
+  if (formData.courseName) {
+    const course = formData.courseName.toLowerCase();
+
+    if (course.includes("car")) {
+      filteredVehicles = vehicles.filter((v) => v.type.toLowerCase() === "car");
+    } else if (course.includes("motorcycle")) {
+      filteredVehicles = vehicles.filter(
+        (v) => v.type.toLowerCase() === "motorcycle"
+      );
+    } else if (course.includes("threewheeler")) {
+      filteredVehicles = vehicles.filter(
+        (v) => v.type.toLowerCase() === "threewheeler"
+      );
+    } else if (course.includes("heavyvehicle")) {
+      filteredVehicles = vehicles.filter(
+        (v) => v.type.toLowerCase() === "heavyvehicle"
+      );
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-lg">
-          <div className="bg-slate-900 text-white px-6 py-4 rounded-t-lg">
-            <h1 className="text-2xl font-bold">Book a Driving Lesson</h1>
-            <p className="text-gray-300 mt-1">
-              Fill in the details to schedule your lesson
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Modern Header */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate(-1)}
+                className="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-lg flex items-center justify-center transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-white" />
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold text-white">
+                  Book a Driving Lesson
+                </h1>
+                <p className="text-orange-100 mt-1">
+                  Schedule your next learning session
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className="p-6 space-y-6">
-            {/* Course Selection */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                Course Type <span className="text-orange-500">*</span>
-              </label>
-              <select
-                name="courseName"
-                value={formData.courseName}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              >
-                <option value="">Select a course</option>
-                {courses.map((course) => (
-                  <option
-                    key={course.student_course_id}
-                    value={course.course_name}
-                  >
-                    {course.course_name}
-                  </option>
-                ))}
-              </select>
-              {errors.courseName && (
-                <p className="text-red-500 text-sm mt-1">{errors.courseName}</p>
-              )}
-            </div>
-
-            {/* Instructor Selection */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                Instructor <span className="text-orange-500">*</span>
-              </label>
-              <select
-                name="instructorName"
-                value={formData.instructorName}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              >
-                <option value="">Select an instructor</option>
-                {instructors.map((instructor) => (
-                  <option key={instructor._id} value={instructor.name}>
-                    {instructor.name} - {instructor.specialization} (
-                    {instructor.experienceYears} years)
-                  </option>
-                ))}
-              </select>
-              {errors.instructorName && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.instructorName}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="space-y-8">
+          {/* Step 1: Course Selection */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-orange-500" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Step 1: Select Course
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Choose your learning program
                 </p>
-              )}
+              </div>
             </div>
-
-            {/* Vehicle Registration */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                Vehicle Registration Number{" "}
-                <span className="text-orange-500">*</span>
-              </label>
-              <select
-                name="vehicleRegNo"
-                value={formData.vehicleRegNo}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              >
-                <option value="">Select a vehicle</option>
-                {vehicles.map((vehicle) => (
-                  <option key={vehicle._id} value={vehicle.regNo}>
-                    {vehicle.regNo} - {vehicle.brand} {vehicle.model} (
-                    {vehicle.type})
-                  </option>
-                ))}
-              </select>
-              {errors.vehicleRegNo && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.vehicleRegNo}
-                </p>
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {courses.map((course) => (
+                <button
+                  key={course.student_course_id}
+                  onClick={() => handleCourseSelect(course.course_name)}
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
+                    formData.courseName === course.course_name
+                      ? "border-orange-500 bg-orange-50"
+                      : "border-gray-200 hover:border-orange-300 bg-white"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        {course.course_name}
+                      </h3>
+                    </div>
+                    {formData.courseName === course.course_name && (
+                      <CheckCircle className="w-5 h-5 text-orange-500" />
+                    )}
+                  </div>
+                </button>
+              ))}
             </div>
-
-            {/* Date Selection */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                Date <span className="text-orange-500">*</span>
-              </label>
-              <select
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                disabled={!selectedInstructor || availableDates.length === 0}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="">
-                  {!selectedInstructor
-                    ? "Select instructor first"
-                    : availableDates.length === 0
-                    ? "No available dates"
-                    : "Select date"}
-                </option>
-                {availableDates.map((date) => (
-                  <option key={date} value={date}>
-                    {new Date(date).toLocaleDateString("en-GB", {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </option>
-                ))}
-              </select>
-              {errors.date && (
-                <p className="text-red-500 text-sm mt-1">{errors.date}</p>
-              )}
-            </div>
-
-            {/* Time Slot Selection */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                Time Slot <span className="text-orange-500">*</span>
-              </label>
-              <select
-                name="time"
-                value={formData.time}
-                onChange={handleInputChange}
-                disabled={
-                  !selectedInstructor ||
-                  !formData.date ||
-                  availableTimeSlots.length === 0
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="">
-                  {!selectedInstructor || !formData.date
-                    ? "Select instructor and date first"
-                    : availableTimeSlots.length === 0
-                    ? "No available time slots"
-                    : "Select time slot"}
-                </option>
-                {availableTimeSlots.map((slot) => (
-                  <option key={slot} value={slot}>
-                    {slot}
-                  </option>
-                ))}
-              </select>
-              {errors.time && (
-                <p className="text-red-500 text-sm mt-1">{errors.time}</p>
-              )}
-            </div>
-
-            {/* Instructor Info Card */}
-            {selectedInstructor && (
-              <div className="bg-gray-50 rounded-lg p-4 border">
-                <h3 className="text-lg font-medium text-slate-900 mb-2">
-                  Instructor Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-600">Name:</span>
-                    <span className="ml-2 font-medium">
-                      {selectedInstructor.name}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Experience:</span>
-                    <span className="ml-2 font-medium">
-                      {selectedInstructor.experienceYears} years
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Specialization:</span>
-                    <span className="ml-2 font-medium">
-                      {selectedInstructor.specialization}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Phone:</span>
-                    <span className="ml-2 font-medium">
-                      {selectedInstructor.phone}
-                    </span>
-                  </div>
-                </div>
+            {errors.courseName && (
+              <div className="flex items-center gap-2 mt-4">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <p className="text-red-600 text-sm">{errors.courseName}</p>
               </div>
             )}
+          </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end pt-4">
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-medium py-2 px-6 rounded-md transition-colors duration-200"
-              >
-                {loading ? "Creating Booking..." : "Book Lesson"}
-              </button>
+          {/* Step 2: Instructor Selection */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                <User className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Step 2: Choose Instructor
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Select your preferred instructor
+                </p>
+              </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {instructors.map((instructor) => (
+                <button
+                  key={instructor._id}
+                  onClick={() => handleInstructorSelect(instructor)}
+                  className={`p-5 rounded-xl border-2 transition-all text-left ${
+                    selectedInstructor?._id === instructor._id
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-blue-300 bg-white"
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-orange-500 text-white font-bold text-sm">
+                      {instructor.image ? (
+                        <img
+                          src={`${process.env.REACT_APP_API_URL.replace(
+                            "/api",
+                            ""
+                          )}${instructor.image}`}
+                          alt={instructor.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "/avatar.png";
+                          }}
+                        />
+                      ) : (
+                        instructor.name?.charAt(0)?.toUpperCase() || "?"
+                      )}
+                    </div>
+                    {selectedInstructor?._id === instructor._id && (
+                      <CheckCircle className="w-5 h-5 text-blue-500" />
+                    )}
+                  </div>
+
+                  {/* Instructor Name */}
+                  <h3 className="text-base font-semibold text-gray-900 mb-2">
+                    {instructor.name}
+                  </h3>
+
+                  {/* Details */}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Award className="w-4 h-4" />
+                      <span>{instructor.experienceYears} years experience</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Phone className="w-4 h-4" />
+                      <span>{instructor.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <BookOpen className="w-4 h-4" />
+                      <span>{instructor.specialization}</span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {errors.instructorName && (
+              <div className="flex items-center gap-2 mt-4">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <p className="text-red-600 text-sm">{errors.instructorName}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Step 3: Vehicle Selection */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                <Car className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Step 3: Select Vehicle
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Choose your practice vehicle
+                </p>
+              </div>
+            </div>
+
+            {/* ✅ filter vehicles based on selected course */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {vehicles
+                .filter((vehicle) => {
+                  if (!formData.courseName) return true;
+                  const course = formData.courseName.toLowerCase();
+                  if (course.includes("car"))
+                    return vehicle.type.toLowerCase() === "car";
+                  if (course.includes("motorcycle"))
+                    return vehicle.type.toLowerCase() === "motorcycle";
+                  if (course.includes("threewheeler"))
+                    return vehicle.type.toLowerCase() === "threewheeler";
+                  if (course.includes("heavyvehicle"))
+                    return vehicle.type.toLowerCase() === "heavyvehicle";
+                  return true; // default: show all
+                })
+                .map((vehicle) => (
+                  <button
+                    key={vehicle._id}
+                    onClick={() => handleVehicleSelect(vehicle)}
+                    className={`p-5 rounded-xl border-2 transition-all text-left ${
+                      selectedVehicle?._id === vehicle._id
+                        ? "border-green-500 bg-green-50"
+                        : "border-gray-200 hover:border-green-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="h-32 bg-gray-100 flex items-center justify-center border-b">
+                        {vehicle.image ? (
+                          <img
+                            src={`http://localhost:5000${vehicle.image}`}
+                            alt={`${vehicle.brand} ${vehicle.model}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = "/placeholder-car.png";
+                            }}
+                          />
+                        ) : (
+                          <Car size={40} className="text-gray-400" />
+                        )}
+                      </div>
+                      {selectedVehicle?._id === vehicle._id && (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-bold text-gray-900 font-mono text-lg">
+                        {vehicle.regNo}
+                      </h3>
+                      <p className="font-semibold text-gray-800">
+                        {vehicle.brand} {vehicle.model}
+                      </p>
+                      <div className="flex items-center justify-between text-xs text-gray-600">
+                        <span className="px-2 py-1 bg-gray-100 rounded">
+                          {vehicle.type}
+                        </span>
+                        <span className="px-2 py-1 bg-gray-100 rounded">
+                          {vehicle.fuelType}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+            </div>
+
+            {errors.vehicleRegNo && (
+              <div className="flex items-center gap-2 mt-4">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <p className="text-red-600 text-sm">{errors.vehicleRegNo}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Step 4: Date and Time Selection */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Step 4: Pick Date & Time
+                </h2>
+                <p className="text-sm text-gray-600">Select available slot</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Date Selection */}
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3">
+                  Available Dates
+                </h3>
+                {!selectedInstructor ? (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                    <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">
+                      Please select an instructor first
+                    </p>
+                  </div>
+                ) : availableDates.length === 0 ? (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                    <AlertCircle className="w-12 h-12 text-orange-300 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">No available dates</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto">
+                    {availableDates.map((date) => (
+                      <button
+                        key={date}
+                        onClick={() => handleDateSelect(date)}
+                        className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          formData.date === date
+                            ? "border-purple-500 bg-purple-50"
+                            : "border-gray-200 hover:border-purple-300 bg-white"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-gray-900">
+                              {new Date(date).toLocaleDateString("en-GB", {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                              })}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {new Date(date).toLocaleDateString("en-GB", {
+                                year: "numeric",
+                              })}
+                            </p>
+                          </div>
+                          {formData.date === date && (
+                            <CheckCircle className="w-5 h-5 text-purple-500" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {errors.date && (
+                  <div className="flex items-center gap-2 mt-3">
+                    <AlertCircle className="w-4 h-4 text-red-500" />
+                    <p className="text-red-600 text-sm">{errors.date}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Time Selection */}
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3">
+                  Available Time Slots
+                </h3>
+                {!formData.date ? (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                    <Clock className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">
+                      Please select a date first
+                    </p>
+                  </div>
+                ) : availableTimeSlots.length === 0 ? (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                    <AlertCircle className="w-12 h-12 text-orange-300 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">
+                      No available time slots
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+                    {availableTimeSlots.map((slot) => (
+                      <button
+                        key={slot}
+                        onClick={() => handleTimeSelect(slot)}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          formData.time === slot
+                            ? "border-purple-500 bg-purple-50"
+                            : "border-gray-200 hover:border-purple-300 bg-white"
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          <Clock className="w-4 h-4 text-gray-600" />
+                          <span className="font-semibold text-gray-900">
+                            {slot}
+                          </span>
+                          {formData.time === slot && (
+                            <Check className="w-4 h-4 text-purple-500" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {errors.time && (
+                  <div className="flex items-center gap-2 mt-3">
+                    <AlertCircle className="w-4 h-4 text-red-500" />
+                    <p className="text-red-600 text-sm">{errors.time}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-orange-500" />
+              <p className="text-sm text-gray-600">
+                Please review all details before booking
+              </p>
+            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-xl transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Creating Booking...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-5 h-5" />
+                  Confirm Booking
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

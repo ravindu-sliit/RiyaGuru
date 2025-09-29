@@ -8,6 +8,7 @@ import StudentDocUpload from "../pages/Student/StudentDocUpload";
 import StudentPreferences from "../pages/Student/StudentPreferences";
 import StudentProgressPage from "../pages/Student/StudentProgressPage";
 import BookingDetails from "../pages/Booking/BookingDetails";
+import AddBookingPage from "../pages/Booking/AddBookingPage";
 
 import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
 
@@ -39,6 +40,7 @@ export default function StudentRoutes() {
         <Route path=":id/password" element={<StudentPasswordChange />} />
 
         <Route path="bookings" element={<BookingDetails />} />
+        <Route path="Addbookings" element={<AddBookingPage />} />
 
         <Route path="my-enrollments" element={<MyEnrollments />} />
         <Route path="my-payments" element={<PaymentsHub />} />

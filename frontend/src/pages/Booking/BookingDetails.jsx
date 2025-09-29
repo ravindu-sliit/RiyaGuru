@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { BookingAPI } from "../../api/bookingsApi";
 import InstructorAPI from "../../api/instructorApi";
@@ -17,7 +18,6 @@ import {
   CheckCircle,
   AlertCircle,
   Send ,
-  MapPin
 } from "lucide-react";
 
 const BookingDetails = () => {
@@ -226,7 +226,7 @@ const BookingDetails = () => {
       setLoading(false);
     }
   };
-
+const navigate = useNavigate();
   const handleDelete = async (bookingId) => {
     if (window.confirm("Are you sure you want to delete this booking?")) {
       try {
@@ -313,13 +313,13 @@ const handleSendEmail = async (bookingId) => {
                 <p className="text-orange-100 mt-1">Manage your driving lesson appointments</p>
               </div>
             </div>
-            <button
-              onClick={() => openModal("create")}
-              className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <Plus className="w-5 h-5" />
-              New Booking
-            </button>
+             <button
+      onClick={() => navigate("/student/Addbookings")}
+      className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+    >
+      <Plus className="w-5 h-5" />
+      New Booking
+    </button>
           </div>
         </div>
       </div>
