@@ -264,13 +264,6 @@ const VehicleList = () => {
                 )}
 
                 <div className="flex gap-2 mt-auto pt-2 border-t">
-                  
-                  <button
-                    
-                    className="flex-1 text-center text-xs px-2 py-1 border rounded text-red-600 hover:bg-red-50"
-                  >
-                    
-                  </button>
                 </div>
               </div>
             </div>

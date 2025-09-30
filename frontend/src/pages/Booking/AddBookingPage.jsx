@@ -257,10 +257,10 @@ const AddBookingPage = () => {
                   key={course.student_course_id}
                   onClick={() => handleCourseSelect(course.course_name)}
                   className={`p-4 rounded-xl border-2 transition-all text-left ${
-                    formData.courseName === course.course_name
-                      ? "border-orange-500 bg-orange-50"
-                      : "border-gray-200 hover:border-orange-300 bg-white"
-                  }`}
+  formData.courseName === course.course_name
+    ? "border-orange-600 bg-orange-100 shadow-md"
+    : "border-gray-200 hover:border-orange-400 hover:bg-orange-50 bg-white"
+}`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
@@ -304,11 +304,11 @@ const AddBookingPage = () => {
                 <button
                   key={instructor._id}
                   onClick={() => handleInstructorSelect(instructor)}
-                  className={`p-5 rounded-xl border-2 transition-all text-left ${
-                    selectedInstructor?._id === instructor._id
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-blue-300 bg-white"
-                  }`}
+                 className={`p-5 rounded-xl border-2 transition-all text-left ${
+  selectedInstructor?._id === instructor._id
+    ? "border-blue-600 bg-blue-100 shadow-md"
+    : "border-gray-200 hover:border-blue-400 hover:bg-blue-50 bg-white"
+}`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-orange-500 text-white font-bold text-sm">
@@ -401,11 +401,12 @@ const AddBookingPage = () => {
                   <button
                     key={vehicle._id}
                     onClick={() => handleVehicleSelect(vehicle)}
-                    className={`p-5 rounded-xl border-2 transition-all text-left ${
-                      selectedVehicle?._id === vehicle._id
-                        ? "border-green-500 bg-green-50"
-                        : "border-gray-200 hover:border-green-300 bg-white"
-                    }`}
+                   className={`p-5 rounded-xl border-2 transition-all transform text-left ${
+  selectedVehicle?._id === vehicle._id
+    ? "border-green-600 bg-green-100 shadow-lg scale-105"
+    : "border-gray-200 hover:border-green-400 hover:bg-green-50 bg-white"
+}`}
+
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="h-32 bg-gray-100 flex items-center justify-center border-b">
