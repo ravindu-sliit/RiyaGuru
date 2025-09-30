@@ -10,27 +10,22 @@ const CreatePayment = () => {
   const queryPaymentType = urlParams.get("paymentType");
   const initialTab = window.location.hash === "#installment" ? "installment" : "normal";
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [showTabs, setShowTabs] = useState(true);
 
   return (
-    <div
-      className="min-h-screen bg-gray-50"
-      style={{ backgroundColor: "#F5F6FA" }}
-    >
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-screen-2xl mx-auto px-2 sm:px-3 lg:px-4 xl:px-6 py-6 lg:py-10">
+        <div className="bg-white/95 rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200">
+          {showTabs && (
+          <div className="flex border-b border-gray-200 bg-gray-50">
             <button
               onClick={() => setActiveTab("normal")}
-              className={`flex-1 py-6 px-8 text-lg font-semibold transition-all duration-300 relative ${
+              className={`flex-1 py-5 px-8 text-base md:text-lg font-semibold transition-all duration-300 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
                 activeTab === "normal"
-                  ? "text-white"
-                  : "text-gray-600 hover:text-gray-800"
+                  ? "bg-orange-500 text-white"
+                  : "bg-transparent text-gray-700 hover:text-gray-900"
               }`}
-              style={{
-                backgroundColor:
-                  activeTab === "normal" ? "#F47C20" : "transparent",
-              }}
             >
               Normal Payment
               {activeTab === "normal" && (
@@ -42,15 +37,11 @@ const CreatePayment = () => {
             </button>
             <button
               onClick={() => setActiveTab("installment")}
-              className={`flex-1 py-6 px-8 text-lg font-semibold transition-all duration-300 relative ${
+              className={`flex-1 py-5 px-8 text-base md:text-lg font-semibold transition-all duration-300 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
                 activeTab === "installment"
-                  ? "text-white"
-                  : "text-gray-600 hover:text-gray-800"
+                  ? "bg-orange-500 text-white"
+                  : "bg-transparent text-gray-700 hover:text-gray-900"
               }`}
-              style={{
-                backgroundColor:
-                  activeTab === "installment" ? "#F47C20" : "transparent",
-              }}
             >
               Installment Payment
               {activeTab === "installment" && (
@@ -61,9 +52,10 @@ const CreatePayment = () => {
               )}
             </button>
           </div>
+          )}
 
           {/* Tab Content */}
-          <div className="p-8">
+          <div className="p-6 md:p-8 lg:p-10">
             <div className="transition-all duration-500 ease-in-out">
               {activeTab === "normal" && (
                 <div className="animate-fade-in">
@@ -73,6 +65,7 @@ const CreatePayment = () => {
                     courseId={courseId}
                     initialPaymentType={queryPaymentType === 'Installment' ? 'Installment' : 'Full'}
                     studentId={localStorage.getItem("rg_userId")}
+                    onSuccess={() => setShowTabs(false)}
                     onSwitchTab={(tab) => {
                       if (tab === "installment") {
                         window.location.hash = "#installment";

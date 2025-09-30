@@ -11,6 +11,7 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Download,
 } from "lucide-react";
 
 const MyPayments = () => {
@@ -115,10 +116,9 @@ const MyPayments = () => {
     }
   }, [studentId]);
 
-  // Download receipt handler (moved outside useEffect)
+  // Download receipt handler (open backend-generated PDF)
   const handleDownloadReceipt = (paymentId) => {
     const url = `${API_BASE}/receipts/${paymentId}`;
-    // Open in new tab to trigger download; CORS exposes Content-Disposition
     window.open(url, "_blank");
   };
 
@@ -178,39 +178,41 @@ const MyPayments = () => {
     }
   };
 
-  // Get badge for status
+  // Get badge for status (stronger highlight)
   const getStatusBadge = (status) => {
-    const baseClasses =
-      "px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1";
-    switch (status) {
-      case "Approved":
-        return (
-          <span className={`${baseClasses} bg-green-100 text-green-800`}>
-            <CheckCircle className="w-3 h-3" />
-            Approved
-          </span>
-        );
-      case "Rejected":
-        return (
-          <span className={`${baseClasses} bg-red-100 text-red-800`}>
-            <XCircle className="w-3 h-3" />
-            Rejected
-          </span>
-        );
-      case "Pending":
-        return (
-          <span className={`${baseClasses} bg-yellow-100 text-yellow-800`}>
-            <Clock className="w-3 h-3" />
-            Pending
-          </span>
-        );
-      default:
-        return (
-          <span className={`${baseClasses} bg-gray-100 text-gray-800`}>
-            {status}
-          </span>
-        );
-    }
+    const base = "px-2.5 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 ring-1";
+    if (status === "Approved")
+      return (
+        <span className={`${base} bg-green-50 text-green-700 ring-green-200`}>
+          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+          Approved
+        </span>
+      );
+    if (status === "Rejected")
+      return (
+        <span className={`${base} bg-red-50 text-red-700 ring-red-200`}>
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+          Rejected
+        </span>
+      );
+    if (status === "Pending")
+      return (
+        <span className={`${base} bg-amber-50 text-amber-700 ring-amber-200`}>
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          Pending
+        </span>
+      );
+    return (
+      <span className={`${base} bg-gray-50 text-gray-700 ring-gray-200`}>{status}</span>
+    );
+  };
+
+  // Row accent classes by status
+  const rowAccent = (status) => {
+    if (status === "Approved") return "border-l-4 border-green-400/70 bg-green-50/40";
+    if (status === "Rejected") return "border-l-4 border-red-400/70 bg-red-50/40";
+    if (status === "Pending") return "border-l-4 border-amber-400/70 bg-amber-50/40";
+    return "border-l-4 border-slate-200";
   };
 
   if (loading) {
@@ -243,7 +245,7 @@ const MyPayments = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
+    <div className="min-h-screen py-8 bg-gradient-to-b from-slate-50 to-white">
       <div className="px-6">
         {/* Header */}
         <div className="mb-8">
@@ -264,39 +266,39 @@ const MyPayments = () => {
           </div>
         ) : (
           /* Payments Table */
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead className="border-b bg-gradient-to-r from-orange-50 to-transparent">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Course
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Amount
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Method
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-100">
                   {payments.map((payment) => (
                     <tr
                       key={payment._id}
-                      className="hover:bg-gray-50 transition-colors"
+                      className={`transition-colors hover:bg-white ${rowAccent(payment.status)}`}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="font-medium text-gray-900">
@@ -312,7 +314,7 @@ const MyPayments = () => {
                         {formatCurrency(payment.amount)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                        <span className="px-2.5 py-1 text-xs rounded-full bg-blue-100 text-blue-800 ring-1 ring-blue-200">
                           {payment.paymentType}
                         </span>
                       </td>
@@ -333,7 +335,7 @@ const MyPayments = () => {
                           <button
                             onClick={() => handleDelete(payment._id)}
                             disabled={deletingId === payment._id}
-                            className="text-red-600 hover:text-red-800 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center gap-1 transition-colors"
+                            className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
                             title="Delete pending payment"
                           >
                             {deletingId === payment._id ? (
@@ -341,16 +343,17 @@ const MyPayments = () => {
                             ) : (
                               <Trash2 className="w-4 h-4" />
                             )}
-                            <span className="text-sm">Delete</span>
+                            <span className="text-sm font-medium">Delete</span>
                           </button>
                         )}
                         {payment.status === "Approved" && (
                           <button
                             onClick={() => handleDownloadReceipt(payment._id)}
-                            className="text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors ml-3"
+                            className="inline-flex items-center gap-2 ml-3 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-2 px-3 rounded-lg shadow-sm hover:shadow transition-all"
                             title="Download receipt"
                           >
-                            <span className="text-sm">Download Receipt</span>
+                            <Download className="w-4 h-4" />
+                            <span>Download Receipt</span>
                           </button>
                         )}
                       </td>
@@ -363,11 +366,11 @@ const MyPayments = () => {
         )}
 
         {/* Info Box */}
-        <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-100">
+        <div className="mt-6 bg-blue-50/80 rounded-xl p-4 border border-blue-100 shadow-sm">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-medium text-blue-900">Note</h4>
+              <h4 className="font-semibold text-blue-900">Note</h4>
               <p className="text-sm text-blue-800 mt-1">
                 Only <span className="font-medium">Pending</span> payments can
                 be deleted. Approved or Rejected payments are locked for
