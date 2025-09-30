@@ -40,6 +40,43 @@ const AdminInstallments = () => {
     }
   };
 
+  // Accent classes by plan status for the entire card
+  const cardAccent = (status) => {
+    if (status === "Completed") return "border-l-4 border-green-400/80 bg-gradient-to-br from-green-50/60 to-white";
+    if (status === "Overdue") return "border-l-4 border-red-400/80 bg-gradient-to-br from-red-50/60 to-white";
+    if (status === "Active") return "border-l-4 border-blue-400/80 bg-gradient-to-br from-blue-50/40 to-white";
+    return "border-l-4 border-slate-200";
+  };
+
+  // Quick approve/reject from card
+  const approveQuick = async (planId) => {
+    try {
+      setSavingId(planId);
+      await adminApprovePlan(planId, "");
+      await fetchPlans();
+      setSuccessMessage("Installment plan approved.");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (e) {
+      alert("Failed to approve: " + (e.message || "Unknown error"));
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const rejectQuick = async (planId) => {
+    try {
+      setSavingId(planId);
+      await adminRejectPlan(planId, "");
+      await fetchPlans();
+      setSuccessMessage("Installment plan rejected.");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (e) {
+      alert("Failed to reject: " + (e.message || "Unknown error"));
+    } finally {
+      setSavingId(null);
+    }
+  };
+
   useEffect(() => {
     fetchPlans();
   }, []);
@@ -85,15 +122,28 @@ const AdminInstallments = () => {
     }
   };
 
-  // Get unique courses and statuses
-  const uniqueCourses = [...new Set(plans.map((p) => p.courseId))].filter(
-    Boolean
-  );
-  const uniqueStatuses = [
-    ...new Set(plans.flatMap((p) => p.schedule.map((s) => s.status))),
-  ];
+  // Get unique courses
+  const uniqueCourses = [...new Set(plans.map((p) => p.courseId))].filter(Boolean);
+  // Plan-level admin status options for filter
+  const statusOptions = ["Approved", "Pending", "Rejected"];
 
-  // Filter logic
+  const norm = (v) => String(v || "").trim().toLowerCase();
+
+  // Determine admin plan status (robust across possible backend fields)
+  function getAdminPlanStatus(plan) {
+    const s = (plan?.adminStatus || plan?.status || "").toString().toLowerCase();
+    if (plan?.adminApproved === true) return "Approved";
+    if (
+      s === "rejected" ||
+      plan?.adminRejected === true ||
+      plan?.adminDecision === "Rejected"
+    ) {
+      return "Rejected";
+    }
+    return "Pending"; // default
+  }
+
+  // Filter logic (search + course + admin plan status)
   const filteredPlans = plans.filter((plan) => {
     const matchesSearch =
       searchTerm === "" ||
@@ -101,9 +151,7 @@ const AdminInstallments = () => {
       plan.courseId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       plan._id?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCourse = filterCourse === "" || plan.courseId === filterCourse;
-    const matchesStatus =
-      filterStatus === "" ||
-      plan.schedule.some((item) => item.status === filterStatus);
+    const matchesStatus = filterStatus === "" || norm(getAdminPlanStatus(plan)) === norm(filterStatus);
     return matchesSearch && matchesCourse && matchesStatus;
   });
 
@@ -125,67 +173,54 @@ const AdminInstallments = () => {
   };
 
   const getStatusBadge = (status) => {
-    const base = "px-2 py-1 rounded-full text-xs font-medium";
-    switch (status) {
-      case "Approved":
-        return (
-          <span className={`${base} bg-green-100 text-green-800`}>
-            <CheckCircle className="w-3 h-3 inline mr-1" />
-            Approved
-          </span>
-        );
-      case "Overdue":
-        return (
-          <span className={`${base} bg-red-100 text-red-800`}>
-            <XCircle className="w-3 h-3 inline mr-1" />
-            Overdue
-          </span>
-        );
-      case "Pending":
-        return (
-          <span className={`${base} bg-yellow-100 text-yellow-800`}>
-            <Clock className="w-3 h-3 inline mr-1" />
-            Pending
-          </span>
-        );
-      default:
-        return (
-          <span className={`${base} bg-gray-100 text-gray-800`}>{status}</span>
-        );
-    }
+    const base = "px-2.5 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 ring-1";
+    if (status === "Approved") return (
+      <span className={`${base} bg-green-50 text-green-700 ring-green-200`}>
+        <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Approved
+      </span>
+    );
+    if (status === "Overdue") return (
+      <span className={`${base} bg-red-50 text-red-700 ring-red-200`}>
+        <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> Overdue
+      </span>
+    );
+    if (status === "Pending") return (
+      <span className={`${base} bg-amber-50 text-amber-700 ring-amber-200`}>
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Pending
+      </span>
+    );
+    return (
+      <span className={`${base} bg-gray-50 text-gray-700 ring-gray-200`}>{status}</span>
+    );
   };
 
-  // Overall plan status
-  const getPlanStatus = (schedule) => {
+  // Overall plan status (hoisted declaration for earlier use)
+  function getPlanStatus(schedule) {
     const approved = schedule.filter((s) => s.status === "Approved").length;
     const overdue = schedule.filter((s) => s.status === "Overdue").length;
     if (approved === schedule.length) return "Completed";
     if (overdue > 0) return "Overdue";
     return "Active";
-  };
+  }
 
   const getPlanStatusBadge = (status) => {
-    const base = "px-3 py-1 rounded-full text-xs font-medium";
-    switch (status) {
-      case "Completed":
-        return (
-          <span className={`${base} bg-green-100 text-green-800`}>
-            Completed
-          </span>
-        );
-      case "Overdue":
-        return (
-          <span className={`${base} bg-red-100 text-red-800`}>Overdue</span>
-        );
-      case "Active":
-        return (
-          <span className={`${base} bg-blue-100 text-blue-800`}>Active</span>
-        );
-      default:
-        return (
-          <span className={`${base} bg-gray-100 text-gray-800`}>{status}</span>
-        );
-    }
+    const base = "px-3 py-1 rounded-full text-xs font-semibold ring-1 inline-flex items-center gap-2";
+    if (status === "Completed") return (
+      <span className={`${base} bg-green-50 text-green-700 ring-green-200`}>
+        <CheckCircle className="w-3 h-3" /> Completed
+      </span>
+    );
+    if (status === "Overdue") return (
+      <span className={`${base} bg-red-50 text-red-700 ring-red-200`}>
+        <XCircle className="w-3 h-3" /> Overdue
+      </span>
+    );
+    if (status === "Active") return (
+      <span className={`${base} bg-blue-50 text-blue-700 ring-blue-200`}>Active</span>
+    );
+    return (
+      <span className={`${base} bg-gray-50 text-gray-700 ring-gray-200`}>{status}</span>
+    );
   };
 
   if (loading) {
@@ -266,7 +301,7 @@ const AdminInstallments = () => {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Statuses</option>
-              {uniqueStatuses.map((status) => (
+              {statusOptions.map((status) => (
                 <option key={status} value={status}>
                   {status}
                 </option>
@@ -289,106 +324,92 @@ const AdminInstallments = () => {
             </p>
           </div>
         ) : (
-          /* Plans Table */
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Student
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Course
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Total
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Down Payment
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Created
-                    </th>
-                    <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredPlans.map((plan) => (
-                    <React.Fragment key={plan._id}>
-                      <tr className="hover:bg-gray-50">
-                        <td className="px-6 py-4">
-                          <div className="font-medium text-gray-900">
-                            {plan.studentId}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            ID: {plan._id.slice(-6)}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="font-medium">{plan.courseId}</div>
-                          <div className="text-xs text-gray-500">
-                            {plan.totalInstallments} installments
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 font-medium">
-                          {formatCurrency(plan.totalAmount)}
-                        </td>
-                        <td className="px-6 py-4">
-                          {formatCurrency(plan.downPayment)}
-                        </td>
-                        <td className="px-6 py-4">
-                          {getPlanStatusBadge(getPlanStatus(plan.schedule))}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
-                          {formatDate(plan.createdAt)}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            {plan.adminApproved ? (
-                              <span className="text-green-600 text-sm">Approved</span>
-                            ) : (
-                              <button
-                                onClick={() => openReview(plan)}
-                                className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg"
-                              >
-                                Review
-                              </button>
-                            )}
-                        </div>
-                      </td>
-                    </tr>
+          /* Plans as Cards */
+          <div className="grid grid-cols-1 gap-6">
+            {filteredPlans.map((plan) => (
+              <div
+                key={plan._id}
+                className={`relative group rounded-2xl border shadow-sm hover:shadow-lg transition-all ${cardAccent(getPlanStatus(plan.schedule))}`}
+              >
+                {/* Ribbon */}
+                <div className="pointer-events-none absolute -top-2 left-4 h-2 w-24 rounded-full bg-gradient-to-r from-orange-400 to-amber-300 opacity-70"></div>
+                {plan.adminApproved === true && (
+                  <div className="pointer-events-none absolute -top-2 right-4 h-2 w-24 rounded-full bg-gradient-to-l from-green-400 to-emerald-300 opacity-70"></div>
+                )}
+                {/* Header */}
+                <div className="px-5 pt-5 pb-3 flex items-start justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">Student</div>
+                    <div className="text-base font-semibold text-gray-900">{plan.studentId}</div>
+                    <div className="text-xs text-gray-400">ID: {plan._id.slice(-6)}</div>
+                  </div>
+                  {getPlanStatusBadge(getPlanStatus(plan.schedule))}
+                </div>
 
-                    {/* Schedule Details (Collapsible later if needed) */}
-                    <tr>
-                      <td colSpan="7" className="px-6 py-2 bg-gray-50">
-                        <div className="border-t pt-4">
-                          <h4 className="text-sm font-medium text-gray-700 mb-3">Installment Schedule</h4>
-                          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                            {plan.schedule.map((item) => (
-                              <div key={item.installmentNumber} className="bg-white p-3 rounded border text-center text-xs">
-                                <div className="font-medium">#{item.installmentNumber}</div>
-                                <div className="text-gray-700">{formatCurrency(item.amount)}</div>
-                                <div className="text-gray-500 mt-1">{formatDate(item.dueDate)}</div>
-                                <div className="mt-2">{getStatusBadge(item.status)}</div>
-                              </div>
-                            ))}
-                          </div>
+                {/* Body meta */}
+                <div className="px-5 grid grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-lg bg-white/70 backdrop-blur-[1px] p-3 ring-1 ring-gray-200">
+                    <div className="text-xs text-gray-500 mb-1">Course</div>
+                    <div className="font-medium text-gray-800">{plan.courseId}</div>
+                    <div className="text-xs text-gray-500">{plan.totalInstallments} installments</div>
+                  </div>
+                  <div className="rounded-lg bg-white/70 backdrop-blur-[1px] p-3 ring-1 ring-gray-200">
+                    <div className="text-xs text-gray-500 mb-1">Totals</div>
+                    <div className="font-medium text-gray-800">{formatCurrency(plan.totalAmount)}</div>
+                    <div className="text-xs text-gray-500">Down: {formatCurrency(plan.downPayment)}</div>
+                  </div>
+                </div>
+
+                {/* Schedule */}
+                <div className="px-5 mt-4">
+                  <div className="text-xs font-semibold text-gray-600 mb-2">Installment Schedule</div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {plan.schedule.map((item) => (
+                      <div key={item.installmentNumber} className="rounded-lg bg-white/80 ring-1 ring-gray-200 p-2">
+                        <div className="flex items-center justify-between">
+                          <div className="font-medium">#{item.installmentNumber}</div>
+                          {getStatusBadge(item.status)}
                         </div>
-                      </td>
-                    </tr>
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+                        <div className="mt-1 text-gray-700">{formatCurrency(item.amount)}</div>
+                        <div className="text-gray-500">{formatDate(item.dueDate)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer actions */}
+                <div className="px-5 py-4 flex items-center justify-between border-t mt-4 bg-white/60">
+                  <div className="text-xs text-gray-500">Created {formatDate(plan.createdAt)}</div>
+                  <div className="flex gap-2">
+                    {plan.adminApproved ? (
+                      <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-green-100 text-green-800 text-sm font-semibold ring-1 ring-green-300">
+                        <CheckCircle className="w-4 h-4" /> Approved Plan
+                      </span>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => rejectQuick(plan._id)}
+                          disabled={savingId === plan._id}
+                          className="px-3 py-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white text-sm rounded-lg shadow-sm"
+                        >
+                          Reject
+                        </button>
+                        <button
+                          onClick={() => approveQuick(plan._id)}
+                          disabled={savingId === plan._id}
+                          className="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white text-sm rounded-lg shadow-sm"
+                        >
+                          Approve
+                        </button>
+                        <button onClick={() => openReview(plan)} className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg shadow-sm">Review</button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      )}
+        )}
 
       {/* Stats */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">

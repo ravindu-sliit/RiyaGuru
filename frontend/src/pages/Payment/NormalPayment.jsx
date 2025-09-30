@@ -13,7 +13,7 @@ import { StudentAPI } from "../../api/studentApi";
 import { CourseAPI } from "../../api/courseApi";
 import { StudentCourseAPI } from "../../api/studentCourseApi";
 
-const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchTab, initialPaymentType }) => {
+const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchTab, initialPaymentType, onSuccess }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     studentName: studentId, // keep storing studentId in studentName as backend expects
@@ -38,12 +38,13 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
   const [success, setSuccess] = useState(false);
   const [studentNameResolved, setStudentNameResolved] = useState("");
   const [serverError, setServerError] = useState("");
+  const [successInfo, setSuccessInfo] = useState(null);
 
   const validationRules = {
-    cardNumber: /^[0-9]{13,19}$/,
+    cardNumber: /^[0-9]{16}$/,
     cardHolder: /^[a-zA-Z\s]{2,50}$/,
     expiryDate: /^(0[1-9]|1[0-2])\/([0-9]{2})$/,
-    cvv: /^[0-9]{3,4}$/,
+    cvv: /^[0-9]{3}$/,
     studentName: /^.{2,}$/,
     amount: /^[0-9]+(\.[0-9]{1,2})?$/,
   };
@@ -170,7 +171,7 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
 
     if (name === "cardNumber" && formData.paymentMethod === "Card") {
       if (!validationRules.cardNumber.test(value.replace(/\s/g, ""))) {
-        return "Card number must be 13-19 digits";
+        return "Card number must be 16 digits";
       }
     }
 
@@ -206,7 +207,7 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
 
     if (name === "cvv" && formData.paymentMethod === "Card") {
       if (!validationRules.cvv.test(value)) {
-        return "CVV must be 3-4 digits";
+        return "CVV must be 3 digits";
       }
     }
 
@@ -233,15 +234,17 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
 
     if (name.startsWith("card.")) {
       const cardField = name.split(".")[1];
+      // Sanitize CVV: only digits, max 3
+      const nextValue = cardField === "cvv" ? value.replace(/\D/g, "").slice(0, 3) : value;
       setFormData((prev) => ({
         ...prev,
         cardDetails: {
           ...prev.cardDetails,
-          [cardField]: value,
+          [cardField]: nextValue,
         },
       }));
 
-      const error = validateField(cardField, value);
+      const error = validateField(cardField, nextValue);
       setErrors((prev) => ({
         ...prev,
         [`card.${cardField}`]: error,
@@ -310,7 +313,7 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
 
   const handleCardNumberChange = (e) => {
     const formatted = formatCardNumber(e.target.value);
-    if (formatted.replace(/\s/g, "").length <= 19) {
+    if (formatted.replace(/\s/g, "").length <= 16) {
       handleInputChange({
         target: { name: "card.cardNumber", value: formatted },
       });
@@ -416,6 +419,21 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
 
       console.log(response);
 
+      // Build success info with date/time and amount/method
+      try {
+        const createdAtRaw = response?.payment?.createdAt || response?.data?.createdAt || response?.createdAt;
+        const when = createdAtRaw ? new Date(createdAtRaw) : new Date();
+        setSuccessInfo({
+          date: when,
+          amount: (() => { const n = parseFloat(formData.amount); return Number.isFinite(n) ? n : undefined; })(),
+          paymentMethod: formData.paymentMethod,
+        });
+      } catch (_) {
+        setSuccessInfo({ date: new Date(), amount: (() => { const n = parseFloat(formData.amount); return Number.isFinite(n) ? n : undefined; })(), paymentMethod: formData.paymentMethod });
+      }
+      if (typeof onSuccess === "function") {
+        try { onSuccess(); } catch (_) {}
+      }
       setSuccess(true);
       setFormData({
         studentName: "",
@@ -447,30 +465,93 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
   };
 
   if (success) {
+    const when = successInfo?.date ? new Date(successInfo.date) : new Date();
+    const dateStr = when.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "2-digit" });
+    const timeStr = when.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: undefined });
+    const amountStr = (() => {
+      const n = successInfo?.amount;
+      if (typeof n === "number") {
+        try { return new Intl.NumberFormat(undefined, { style: "currency", currency: "LKR" }).format(n); } catch { return `Rs ${n.toFixed(2)}`; }
+      }
+      return "-";
+    })();
     return (
-      <div className="text-center py-12">
-        <div
-          className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: "#28A745" }}
-        >
-          <CheckCircle className="w-12 h-12 text-white" />
+      <div className="relative py-12 bg-gradient-to-b from-slate-50 to-white">
+        {/* Decorative background blobs */}
+        <div className="pointer-events-none absolute -top-10 -left-10 w-64 h-64 rounded-full bg-orange-200/30 blur-3xl" />
+        <div className="pointer-events-none absolute top-20 -right-10 w-72 h-72 rounded-full bg-emerald-200/30 blur-3xl" />
+        {/* Box 1: Success confirmation */}
+        <div className="relative text-center bg-white/95 backdrop-blur rounded-2xl shadow-xl max-w-2xl mx-auto px-8 py-10 border border-gray-100">
+          <div className="relative w-24 h-24 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-green-500 to-emerald-400 opacity-20 blur-xl" />
+            <div className="relative w-full h-full rounded-full ring-4 ring-green-100 flex items-center justify-center bg-green-500 animate-pulse">
+              <CheckCircle className="w-14 h-14 text-white" />
+            </div>
+          </div>
+          <span className="inline-flex items-center px-3 py-1 mb-3 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">Success</span>
+          <h2 className="text-2xl font-extrabold mb-2 text-slate-900">
+            Payment Submitted Successfully!
+          </h2>
+          <p className="text-slate-600 max-w-lg mx-auto">
+            Your payment has been submitted and is being processed. You will receive a confirmation shortly.
+          </p>
         </div>
-        <h2 className="text-2xl font-bold mb-4" style={{ color: "#0A1A2F" }}>
-          Payment Submitted Successfully!
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Your payment has been submitted and is being processed. You will
-          receive a confirmation shortly.
-        </p>
-        <button
-          onClick={() => {
-            setSuccess(false);
-            navigate("/my-payments");
-          }}
-          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105"
-        >
-          My Payments
-        </button>
+
+        {/* Box 2: Summary */}
+        <div className="mt-8 bg-white rounded-2xl shadow-lg max-w-2xl mx-auto border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-transparent">
+            <h3 className="text-lg font-semibold text-gray-900">Payment Summary</h3>
+          </div>
+          <div className="divide-y divide-gray-100">
+            <div className="grid grid-cols-2">
+              <div className="px-6 py-4 text-gray-500 bg-white">Payment Date</div>
+              <div className="px-6 py-4 font-medium bg-white">{dateStr}</div>
+            </div>
+            <div className="grid grid-cols-2">
+              <div className="px-6 py-4 text-gray-500 bg-slate-50">Payment Time</div>
+              <div className="px-6 py-4 font-medium bg-slate-50">{timeStr}</div>
+            </div>
+            {successInfo?.paymentMethod && (
+              <div className="grid grid-cols-2">
+                <div className="px-6 py-4 text-gray-500 bg-white">Payment Method</div>
+                <div className="px-6 py-4 font-medium bg-white">{successInfo.paymentMethod}</div>
+              </div>
+            )}
+            {courseName && (
+              <div className="grid grid-cols-2">
+                <div className="px-6 py-4 text-gray-500 bg-slate-50">Course</div>
+                <div className="px-6 py-4 font-medium bg-slate-50">{courseName}</div>
+              </div>
+            )}
+            <div className="grid grid-cols-2">
+              <div className="px-6 py-4 text-gray-500 bg-white">Amount</div>
+              <div className="px-6 py-4 font-semibold text-emerald-700 bg-white">{amountStr}</div>
+            </div>
+          </div>
+          <div className="px-6 py-6 flex flex-col sm:flex-row items-center justify-center gap-3 bg-gradient-to-r from-white to-orange-50">
+            <button
+              onClick={() => {
+                setSuccess(false);
+                navigate("/my-payments");
+              }}
+              className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+            >
+              My Payments
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="w-full sm:w-auto bg-white text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300 py-3 px-6 rounded-xl shadow-sm transition-colors"
+            >
+              Print Receipt
+            </button>
+            <button
+              onClick={() => navigate("/")}
+              className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white py-3 px-6 rounded-xl shadow-sm transition-colors"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -705,7 +786,7 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
                     : "border-gray-200 focus:border-orange-400"
                 }`}
                 placeholder="1234 5678 9012 3456"
-                maxLength="23"
+                maxLength="19"
               />
               {errors["card.cardNumber"] && (
                 <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
@@ -748,8 +829,8 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
                 Expiry Date *
               </label>
               {(() => {
-                const today = new Date();
-                const min = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+                // Enforce selecting year 2025 onwards
+                const min = `2025-01`;
                 // Convert stored MM/YY to YYYY-MM for display if needed
                 const val = (() => {
                   const v = formData.cardDetails.expiryDate;
@@ -807,7 +888,10 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
                     : "border-gray-200 focus:border-orange-400"
                 }`}
                 placeholder="123"
-                maxLength="4"
+                inputMode="numeric"
+                pattern="[0-9]{3}"
+                maxLength="3"
+                title="CVV must be exactly 3 digits"
               />
               {errors["card.cvv"] && (
                 <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
