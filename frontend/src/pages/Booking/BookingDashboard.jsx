@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookingAPI } from "../../api/bookingsApi";
-import { Calendar, CheckCircle, XCircle, Filter, Download, Eye, ArrowLeft } from "lucide-react";
+import {
+  Calendar,
+  CheckCircle,
+  XCircle,
+  Filter,
+  Download,
+  Eye,
+  ArrowLeft,
+} from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -110,85 +118,93 @@ export default function AdminBookingDashboard() {
     setCurrentPage(page);
   };
 
-const handleStatusUpdate = async (id, newStatus) => {
-  try {
-    // If backend supports PATCH /bookings/:id/status
-    await BookingAPI.updateStatus(id, newStatus);
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      // If backend supports PATCH /bookings/:id/status
+      await BookingAPI.updateStatus(id, newStatus);
 
-    // Or fallback: await BookingAPI.update(id, { status: newStatus });
+      // Or fallback: await BookingAPI.update(id, { status: newStatus });
 
-    // Update state so UI refreshes immediately
-    setBookings((prev) =>
-      prev.map((b) => (b._id === id ? { ...b, status: newStatus } : b))
-    );
-    setFilteredBookings((prev) =>
-      prev.map((b) => (b._id === id ? { ...b, status: newStatus } : b))
-    );
-  } catch (err) {
-    console.error("❌ Failed to update status:", err);
-  }
-};
+      // Update state so UI refreshes immediately
+      setBookings((prev) =>
+        prev.map((b) => (b._id === id ? { ...b, status: newStatus } : b))
+      );
+      setFilteredBookings((prev) =>
+        prev.map((b) => (b._id === id ? { ...b, status: newStatus } : b))
+      );
+    } catch (err) {
+      console.error("❌ Failed to update status:", err);
+    }
+  };
 
+  // 📄 Export PDF
+  const exportPDF = () => {
+    const doc = new jsPDF("landscape"); // landscape for wide tables
+    doc.setFontSize(14);
+    doc.setTextColor("#0A1A2F"); // Dark Navy
+    doc.text("All Booking List of RiyaGuru.lk Driving School", 14, 15);
 
+    autoTable(doc, {
+      startY: 25,
+      head: [
+        [
+          "Booking ID",
+          "Student",
+          "Instructor ID",
+          "Course",
+          "Date",
+          "Time",
+          "Status",
+        ],
+      ],
+      body: filteredBookings.map((b) => [
+        b.bookingId,
+        b.userId,
+        b.instructorId,
+        b.course,
+        b.date,
+        b.time,
+        b.status,
+      ]),
+      styles: {
+        fontSize: 10,
+        cellPadding: 4,
+        halign: "center",
+        valign: "middle",
+        textColor: "#0A1A2F", // Dark Navy text
+      },
+      headStyles: {
+        fillColor: "#F47C20", // Orange
+        textColor: "#FFFFFF", // White
+        fontStyle: "bold",
+      },
+      alternateRowStyles: {
+        fillColor: "#F5F6FA", // Light Gray
+      },
+      theme: "grid",
+    });
 
-
-
-  
-// 📄 Export PDF
-const exportPDF = () => {
-  const doc = new jsPDF("landscape"); // landscape for wide tables
-  doc.setFontSize(14);
-  doc.setTextColor("#0A1A2F"); // Dark Navy
-  doc.text("All Booking List of RiyaGuru.lk Driving School", 14, 15);
-
-  autoTable(doc, {
-    startY: 25,
-    head: [["Booking ID", "Student", "Instructor ID", "Course", "Date", "Time", "Status"]],
-    body: filteredBookings.map((b) => [
-      b.bookingId,
-      b.userId,
-      b.instructorId,
-      b.course,
-      b.date,
-      b.time,
-      b.status,
-    ]),
-    styles: {
-      fontSize: 10,
-      cellPadding: 4,
-      halign: "center",
-      valign: "middle",
-      textColor: "#0A1A2F", // Dark Navy text
-    },
-    headStyles: {
-      fillColor: "#F47C20", // Orange
-      textColor: "#FFFFFF", // White
-      fontStyle: "bold",
-    },
-    alternateRowStyles: {
-      fillColor: "#F5F6FA", // Light Gray
-    },
-    theme: "grid",
-  });
-
-  doc.save("bookings.pdf");
-};
-
+    doc.save("bookings.pdf");
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-gray-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-6"></div>
-          <h2 className="text-xl font-semibold text-gray-700 mb-2">Loading Bookings</h2>
-          <p className="text-gray-500">Please wait while we fetch the booking data...</p>
+          <h2 className="text-xl font-semibold text-gray-700 mb-2">
+            Loading Bookings
+          </h2>
+          <p className="text-gray-500">
+            Please wait while we fetch the booking data...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-       <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Modern Header */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
         <div className="px-6 py-6">
@@ -207,8 +223,12 @@ const exportPDF = () => {
                 <Calendar className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Booking Management</h1>
-                <p className="text-orange-100">Monitor and manage all driving lesson bookings</p>
+                <h1 className="text-2xl font-bold text-white">
+                  Booking Management
+                </h1>
+                <p className="text-orange-100">
+                  Monitor and manage all driving lesson bookings
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -231,8 +251,12 @@ const exportPDF = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Bookings</p>
-                <p className="text-2xl font-bold text-gray-900">{bookings.length}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Bookings
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {bookings.length}
+                </p>
               </div>
               <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
                 <Calendar className="w-6 h-6 text-blue-600" />
@@ -245,7 +269,7 @@ const exportPDF = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Confirmed</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {bookings.filter(b => b.status === 'booked').length}
+                  {bookings.filter((b) => b.status === "booked").length}
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
@@ -259,7 +283,7 @@ const exportPDF = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Completed</p>
                 <p className="text-2xl font-bold text-blue-600">
-                  {bookings.filter(b => b.status === 'completed').length}
+                  {bookings.filter((b) => b.status === "completed").length}
                 </p>
               </div>
               <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -273,7 +297,7 @@ const exportPDF = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Cancelled</p>
                 <p className="text-2xl font-bold text-red-600">
-                  {bookings.filter(b => b.status === 'cancelled').length}
+                  {bookings.filter((b) => b.status === "cancelled").length}
                 </p>
               </div>
               <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center">
@@ -289,10 +313,12 @@ const exportPDF = () => {
             <Filter className="w-5 h-5 text-orange-500" />
             <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 items-end">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Vehicle Type
+              </label>
               <select
                 value={filters.vehicle}
                 onChange={(e) => handleFilterChange("vehicle", e.target.value)}
@@ -308,7 +334,9 @@ const exportPDF = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
               <select
                 value={filters.status}
                 onChange={(e) => handleFilterChange("status", e.target.value)}
@@ -324,17 +352,23 @@ const exportPDF = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Start Date
+              </label>
               <input
                 type="date"
                 value={filters.startDate}
-                onChange={(e) => handleFilterChange("startDate", e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange("startDate", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                End Date
+              </label>
               <input
                 type="date"
                 value={filters.endDate}
@@ -364,11 +398,13 @@ const exportPDF = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">All Bookings</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                All Bookings
+              </h3>
               <div className="text-sm text-gray-500">
                 Showing {(currentPage - 1) * itemsPerPage + 1}-
-                {Math.min(currentPage * itemsPerPage, filteredBookings.length)} of{" "}
-                {filteredBookings.length} bookings
+                {Math.min(currentPage * itemsPerPage, filteredBookings.length)}{" "}
+                of {filteredBookings.length} bookings
               </div>
             </div>
           </div>
@@ -400,12 +436,21 @@ const exportPDF = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {getPaginatedBookings().length > 0 ? (
                   getPaginatedBookings().map((b, index) => (
-                    <tr key={b._id} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                    <tr
+                      key={b._id}
+                      className={`hover:bg-gray-50 transition-colors ${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                      }`}
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">#{b.bookingId}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          #{b.bookingId}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{b.userId}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {b.userId}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{b.course}</div>
@@ -427,35 +472,97 @@ const exportPDF = () => {
                           {b.status.charAt(0).toUpperCase() + b.status.slice(1)}
                         </span>
                       </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-  {b.status === "booked" ? (
-    <div className="flex items-center justify-center gap-2">
-      {/* ✅ Complete Button */}
-      <button
-        onClick={() => handleStatusUpdate(b._id, "completed")}
-        className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors font-medium"
-      >
-        <CheckCircle className="w-3 h-3" />
-        Complete
-      </button>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        {b.status === "pending" ? (
+                          <div className="flex items-center justify-center gap-2">
+                            {/* ✅ Confirm Button */}
+                            <button
+                              onClick={() =>
+                                handleStatusUpdate(b._id, "booked")
+                              }
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors font-medium"
+                            >
+                              <CheckCircle className="w-3 h-3" />
+                              Confirm
+                            </button>
 
-      {/* ❌ Cancel Button */}
-      <button
-        onClick={() => handleStatusUpdate(b._id, "cancelled")}
-        className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors font-medium"
-      >
-        <XCircle className="w-3 h-3" />
-        Cancel
-      </button>
-    </div>
-  ) : (
-    <button className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs rounded-lg transition-colors font-medium">
-      <Eye className="w-3 h-3" />
-      View
-    </button>
-  )}
-</td>
+                            {/* ❌ Cancel Button */}
+                            <button
+                              onClick={() =>
+                                handleStatusUpdate(b._id, "cancelled")
+                              }
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors font-medium"
+                            >
+                              <XCircle className="w-3 h-3" />
+                              Cancel
+                            </button>
+                          </div>
+                        ) : b.status === "booked" ? (
+                          <div className="flex items-center justify-center gap-2">
+                            {/* ▶️ Start Button */}
+                            <button
+                              onClick={() =>
+                                handleStatusUpdate(b._id, "started")
+                              }
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded-lg transition-colors font-medium"
+                            >
+                              <CheckCircle className="w-3 h-3" />
+                              Start
+                            </button>
 
+                            {/* ✅ Complete Button */}
+                            <button
+                              onClick={() =>
+                                handleStatusUpdate(b._id, "completed")
+                              }
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors font-medium"
+                            >
+                              <CheckCircle className="w-3 h-3" />
+                              Complete
+                            </button>
+
+                            {/* ❌ Cancel Button */}
+                            <button
+                              onClick={() =>
+                                handleStatusUpdate(b._id, "cancelled")
+                              }
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors font-medium"
+                            >
+                              <XCircle className="w-3 h-3" />
+                              Cancel
+                            </button>
+                          </div>
+                        ) : b.status === "started" ? (
+                          <div className="flex items-center justify-center gap-2">
+                            {/* ✅ Complete Button */}
+                            <button
+                              onClick={() =>
+                                handleStatusUpdate(b._id, "completed")
+                              }
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors font-medium"
+                            >
+                              <CheckCircle className="w-3 h-3" />
+                              Complete
+                            </button>
+
+                            {/* ❌ Cancel Button */}
+                            <button
+                              onClick={() =>
+                                handleStatusUpdate(b._id, "cancelled")
+                              }
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors font-medium"
+                            >
+                              <XCircle className="w-3 h-3" />
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs rounded-lg transition-colors font-medium">
+                            <Eye className="w-3 h-3" />
+                            View
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   ))
                 ) : (
@@ -463,8 +570,12 @@ const exportPDF = () => {
                     <td colSpan={6} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center">
                         <Calendar className="w-12 h-12 text-gray-300 mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                        <p className="text-gray-500">No bookings match the selected filters.</p>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                          No bookings found
+                        </h3>
+                        <p className="text-gray-500">
+                          No bookings match the selected filters.
+                        </p>
                       </div>
                     </td>
                   </tr>
