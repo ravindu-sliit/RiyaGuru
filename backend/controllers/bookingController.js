@@ -7,7 +7,6 @@ import StudentCourse from "../models/StudentCourse.js";
 import { generateBookingPDF } from "../utils/pdfUtils.js";
 import { sendBookingEmail } from "../utils/sendBookingEmail.js"; 
 
-
 export const sendBookingEmailById = async (req, res) => {
   try {
     const bookingId = req.params.id;
@@ -44,7 +43,6 @@ export const sendBookingEmailById = async (req, res) => {
   }
 };
 
-
 // 🔹 Auto increment Booking ID
 const getNextBookingId = async () => {
   const counter = await Counter.findOneAndUpdate(
@@ -54,46 +52,45 @@ const getNextBookingId = async () => {
   );
   return `B${counter.seq.toString().padStart(3, "0")}`;
 };
-//  Create Booking
+
+// 🔹 Create Booking (default status = pending)
 export const createBooking = async (req, res) => {
   try {
     const { instructorId, regNo, date, time, course } = req.body;
     const userId = req.user.userId; // e.g., "S003"
 
-    // 🔹 Fetch student
+    // Fetch student
     const student = await Student.findOne({ studentId: userId });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
-    // 🔹 Verify student is enrolled in requested course
+    // Verify student is enrolled in requested course
     const enrolled = await StudentCourse.findOne({
       student_id: student.studentId,
       course_id: course,
       status: "Active",
     });
     if (!enrolled) {
-      return res
-        .status(403)
-        .json({ message: `You are not enrolled in ${course}` });
+      return res.status(403).json({ message: `You are not enrolled in ${course}` });
     }
 
-    // 🔹 Fetch instructor
+    // Fetch instructor
     const instructor = await Instructor.findOne({ instructorId });
     if (!instructor)
       return res.status(404).json({ message: "Instructor not found" });
 
-    // 🔹 Fetch vehicle
+    // Fetch vehicle
     const vehicle = await Vehicle.findOne({ regNo });
     if (!vehicle) return res.status(404).json({ message: "Vehicle not found" });
 
-    // 🔹 Prevent double booking
+    // Prevent double booking
     const existing = await Booking.findOne({ instructorId, regNo, date, time });
     if (existing)
       return res.status(400).json({ message: "Already booked at this time" });
 
-    // 🔹 Generate booking ID
+    // Generate booking ID
     const bookingId = await getNextBookingId();
 
-    // 🔹 Save booking
+    // Save booking (default status = pending)
     const booking = new Booking({
       bookingId,
       userId,
@@ -105,18 +102,18 @@ export const createBooking = async (req, res) => {
       course,
       date,
       time,
-      status: "booked",
+      status: "pending", // ✅ default
     });
     await booking.save();
 
-    // 🔹 Update instructor & vehicle status
+    // Update instructor & vehicle (just mark active since in use)
     instructor.status = "Active";
     await instructor.save();
 
     vehicle.status = "Active";
     await vehicle.save();
 
-    // 🔹 Generate PDF
+    // Generate PDF
     const pdfPath = await generateBookingPDF(
       booking,
       student,
@@ -124,18 +121,13 @@ export const createBooking = async (req, res) => {
       vehicle
     );
 
-    // 🔹 Send PDF via email (to your personal inbox)
-    await sendBookingEmail(
-      "codestack80@gmail.com", 
-      booking,
-      pdfPath
-    );
+    // Send PDF via email
+    await sendBookingEmail("codestack80@gmail.com", booking, pdfPath);
 
-    //  Single response (cleaned)
     res.status(201).json({
       message: "Booking created successfully, PDF generated and emailed",
       booking,
-      pdf: `http://localhost:5000/uploads/booking_${booking.bookingId}.pdf`, // direct download link
+      pdf: `http://localhost:5000/uploads/booking_${booking.bookingId}.pdf`,
     });
   } catch (error) {
     console.error(" Booking creation failed:", error);
@@ -143,7 +135,7 @@ export const createBooking = async (req, res) => {
   }
 };
 
-// Get all bookings
+// 🔹 Get all bookings
 export const getBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
@@ -155,7 +147,7 @@ export const getBookings = async (req, res) => {
   }
 };
 
-//  Get booking by ID
+// 🔹 Get booking by ID
 export const getBookingById = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id)
@@ -169,24 +161,19 @@ export const getBookingById = async (req, res) => {
   }
 };
 
-//  Update booking
+// 🔹 Update booking details
 export const updateBooking = async (req, res) => {
   try {
     const { instructorId, regNo, date, time, course } = req.body;
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
 
-    // 🔹 Fetch instructor
     const instructor = await Instructor.findOne({ instructorId });
-    if (!instructor)
-      return res.status(404).json({ message: "New instructor not found" });
+    if (!instructor) return res.status(404).json({ message: "New instructor not found" });
 
-    // 🔹 Fetch vehicle
     const vehicle = await Vehicle.findOne({ regNo });
-    if (!vehicle)
-      return res.status(404).json({ message: "New vehicle not found" });
+    if (!vehicle) return res.status(404).json({ message: "New vehicle not found" });
 
-    // 🔹 Check enrollment again
     const student = await Student.findOne({ studentId: booking.userId });
     const enrolled = await StudentCourse.findOne({
       student_id: student.studentId,
@@ -195,12 +182,9 @@ export const updateBooking = async (req, res) => {
     });
 
     if (!enrolled) {
-      return res
-        .status(403)
-        .json({ message: `You are not enrolled in ${course}` });
+      return res.status(403).json({ message: `You are not enrolled in ${course}` });
     }
 
-    // 🔹 Prevent double booking
     const conflict = await Booking.findOne({
       date,
       time,
@@ -214,7 +198,7 @@ export const updateBooking = async (req, res) => {
     booking.instructorId = instructorId;
     booking.vehicle = vehicle._id;
     booking.regNo = regNo;
-    booking.course = course; // store course name string
+    booking.course = course;
     booking.date = date;
     booking.time = time;
 
@@ -226,7 +210,7 @@ export const updateBooking = async (req, res) => {
   }
 };
 
-// ✅ Delete booking
+// 🔹 Delete booking
 export const deleteBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -239,7 +223,7 @@ export const deleteBooking = async (req, res) => {
   }
 };
 
-// ✅ Check availability (only enrolled courses)
+// 🔹 Check availability
 export const checkAvailability = async (req, res) => {
   try {
     const { date, time } = req.query;
@@ -252,7 +236,6 @@ export const checkAvailability = async (req, res) => {
     const student = await Student.findOne({ studentId: userId });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
-    // 🔹 Get enrolled courses (course_id are names: "Car", "Motorcycle")
     const enrollments = await StudentCourse.find({
       student_id: student.studentId,
       status: "Active",
@@ -270,7 +253,7 @@ export const checkAvailability = async (req, res) => {
 
     const availableVehicles = await Vehicle.find({
       regNo: { $nin: bookedVehicles },
-      type: { $in: allowedTypes }, // only vehicles matching enrolled course names
+      type: { $in: allowedTypes },
     });
 
     res.json({
@@ -285,7 +268,7 @@ export const checkAvailability = async (req, res) => {
   }
 };
 
-// ✅ Get logged-in student’s courses
+// 🔹 Get logged-in student’s courses
 export const getMyCourses = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -298,7 +281,7 @@ export const getMyCourses = async (req, res) => {
     });
 
     const myCourses = enrollments.map((en) => ({
-      name: en.course_id, // course name string
+      name: en.course_id,
       enrollmentDate: en.enrollmentDate,
       status: en.status,
     }));
@@ -309,9 +292,10 @@ export const getMyCourses = async (req, res) => {
   }
 };
 
+// 🔹 Update booking status (Admin action)
 export const updateBookingStatus = async (req, res) => {
   try {
-    const { status } = req.body; // e.g., "completed", "cancelled"
+    const { status } = req.body; 
     const booking = await Booking.findById(req.params.id)
       .populate("instructor")
       .populate("vehicle");
@@ -319,7 +303,7 @@ export const updateBookingStatus = async (req, res) => {
     if (!booking) return res.status(404).json({ message: "Booking not found" });
 
     // Allowed statuses
-    const allowedStatuses = ["booked", "completed", "cancelled"];
+    const allowedStatuses = ["pending", "booked", "started", "completed", "cancelled"];
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({
         message: `Invalid status. Allowed: ${allowedStatuses.join(", ")}`,
@@ -329,7 +313,7 @@ export const updateBookingStatus = async (req, res) => {
     booking.status = status;
     await booking.save();
 
-    // 🔹 If completed/cancelled, free instructor & vehicle
+    // Free instructor & vehicle if booking ends
     if (["completed", "cancelled"].includes(status)) {
       if (booking.instructor) {
         booking.instructor.status = "Available";
@@ -350,16 +334,14 @@ export const updateBookingStatus = async (req, res) => {
   }
 };
 
-// ✅ Get logged-in instructor's bookings
+// 🔹 Get logged-in instructor's bookings
 export const getMyBookings = async (req, res) => {
   try {
-    // 1. Find instructor by their userId
     const instructor = await Instructor.findOne({ instructorId: req.user.userId });
     if (!instructor) {
       return res.status(404).json({ message: "Instructor not found" });
     }
 
-    // 2. Find bookings by instructor name (since booking table uses name)
     const bookings = await Booking.find({ instructorName: instructor.name });
 
     res.json({ bookings });
@@ -368,4 +350,3 @@ export const getMyBookings = async (req, res) => {
     res.status(500).json({ message: "Error fetching instructor bookings" });
   }
 };
-

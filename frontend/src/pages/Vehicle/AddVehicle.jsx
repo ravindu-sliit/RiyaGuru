@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import vehicleAPI from "../../api/vehicleApi";
-import { vehicleService } from "../../services/vehicleService";
 import { ArrowLeft, Save, Upload, X, Car } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -125,7 +124,7 @@ const AddVehicle = () => {
 
       await vehicleAPI.create(fd);
       toast.success("Vehicle added successfully!");
-      navigate("/vehicles");
+      navigate("/admin/vehicles");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to add vehicle");
       console.error("Error creating vehicle:", error);
