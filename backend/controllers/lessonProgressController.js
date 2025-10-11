@@ -73,6 +73,22 @@ export const getAllLessonProgress = async (req, res) => {
   }
 };
 
+// ✅ Get lessons for a specific student + course (filtered)
+export const getLessonsByStudentAndCourse = async (req, res) => {
+  try {
+    const { studentId, courseName } = req.params;
+    const lessons = await LessonProgress.find({
+      student_id: studentId,
+      vehicle_type: courseName,
+      status: "Completed",
+    }).sort({ lesson_number: 1 });
+
+    res.json(lessons);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // ✅ Delete a lesson progress entry
 // ✅ Delete a lesson progress entry and re-sync progress
 export const deleteLessonProgress = async (req, res) => {

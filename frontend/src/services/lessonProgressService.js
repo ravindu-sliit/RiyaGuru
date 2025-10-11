@@ -10,8 +10,37 @@ export const lessonProgressService = {
 
   // ✅ Get lessons for a specific student
   async getLessonsByStudent(studentId) {
-    const res = await fetch(`${API_URL}/lesson-progress/${studentId}`);
+    // attach auth header if token is present in localStorage (repo uses inconsistent keys)
+    const rawAuth = localStorage.getItem("rg_auth") || localStorage.getItem("rg_token");
+    let token = null;
+    try {
+      const parsed = JSON.parse(rawAuth || "null");
+      token = parsed?.token || rawAuth; // rawAuth may itself be a token string
+    } catch (e) {
+      token = rawAuth; // fallback: raw string token
+    }
+
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const res = await fetch(`${API_URL}/lesson-progress/${studentId}`, { headers });
     if (!res.ok) throw new Error("Failed to fetch student lessons");
+    return res.json();
+  },
+
+  // Get completed lessons for a given student and course (server-side filtered)
+  async getLessonsByStudentAndCourse(studentId, courseName) {
+    const rawAuth = localStorage.getItem("rg_auth") || localStorage.getItem("rg_token");
+    let token = null;
+    try {
+      const parsed = JSON.parse(rawAuth || "null");
+      token = parsed?.token || rawAuth;
+    } catch (e) {
+      token = rawAuth;
+    }
+
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${API_URL}/lesson-progress/${studentId}/${encodeURIComponent(courseName)}`, { headers });
+    if (!res.ok) throw new Error("Failed to fetch student lessons by course");
     return res.json();
   },
 
