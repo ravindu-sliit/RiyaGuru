@@ -5,6 +5,7 @@ import ProgressTracking from "../models/ProgressTracking.js";
 import Student from "../models/StudentModel.js";
 import Course from "../models/Course.js";
 import { renderCertificatePDF } from "../helpers/certificatePdf.js";
+import { sendCertificateEmail } from "../utils/sendCertificateEmail.js";
 
 /**
  * Issue a certificate for a student & course
@@ -90,6 +91,20 @@ export const issueCertificate = async (req, res) => {
     await tracking.save({ session });
 
     await session.commitTransaction();
+    // Try to send certificate via email (do not fail the API if email sending fails)
+    (async () => {
+      try {
+        if (student.email && certificate.file_url) {
+          await sendCertificateEmail(student.email, student, certificate, certificate.file_url);
+        } else {
+          console.warn("No student email or certificate file found; skipping email.");
+        }
+      } catch (e) {
+        // log the error; email delivery failures shouldn't rollback the certificate issuance
+        console.error("Error sending certificate email:", e?.message || e);
+      }
+    })();
+
     res.json({ message: "Certificate issued", certificate });
   } catch (err) {
     await session.abortTransaction();
