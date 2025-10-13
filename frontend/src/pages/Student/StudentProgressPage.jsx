@@ -1,12 +1,18 @@
 // src/pages/Student/StudentProgressPage.jsx
 import { useEffect, useState } from "react";
-import { BookOpen, CheckCircle, Award, TrendingUp } from "lucide-react";
+import { BookOpen, CheckCircle, Award, TrendingUp, X } from "lucide-react";
+import { lessonProgressService } from "../../services/lessonProgressService";
 
 export default function StudentProgressPage() {
   const [studentId, setStudentId] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  // Modal state for showing completed lessons
+  const [showModal, setShowModal] = useState(false);
+  const [modalLessons, setModalLessons] = useState([]);
+  const [modalCourseName, setModalCourseName] = useState("");
+  const [modalLoading, setModalLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -94,43 +100,108 @@ export default function StudentProgressPage() {
         )
       : 0;
 
+  // Completed Lessons Modal (renders when showModal is true)
+  const CompletedLessonsModal = (
+    showModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div
+          className="absolute inset-0 bg-black/40"
+          onClick={() => setShowModal(false)}
+        />
+        <div className="bg-white rounded-2xl shadow-xl p-6 z-10 w-11/12 max-w-2xl">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold">Completed lessons — {modalCourseName}</h3>
+            <button onClick={() => setShowModal(false)} className="p-2">
+              <X />
+            </button>
+          </div>
+
+          {modalLessons.length === 0 ? (
+            modalLoading ? (
+              <p className="text-sm text-gray-500">Loading...</p>
+            ) : (
+              <p className="text-sm text-gray-500">No completed lessons found.</p>
+            )
+          ) : (
+            <div className="grid gap-3">
+              {modalLessons.map((l) => (
+                <div key={l._id} className="p-3 border rounded-lg bg-gray-50">
+                  <div className="flex justify-between">
+                    <div>
+                      <div className="font-semibold">Lesson #{l.lesson_number}</div>
+                      <div className="text-sm text-gray-600">{new Date(l.date).toLocaleDateString()}</div>
+                    </div>
+                    <div className="text-sm text-gray-700">{l.feedback || "No feedback"}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto p-6">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl shadow-lg p-8 mb-10">
-          <h2 className="text-3xl font-bold mb-2">Student Dashboard</h2>
-          <p className="text-blue-100 font-medium">
+        {CompletedLessonsModal}
+        {/* Header - match landing page hero */}
+        <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl shadow-lg p-8 mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold mb-2">Student Dashboard</h2>
+          <p className="text-blue-200 font-medium">
             {full_name} <span className="text-white/80">(ID: {student_id})</span>
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-          <StatCard
-            title="Courses Enrolled"
-            value={totalCourses}
-            icon={<BookOpen size={22} />}
-            gradient="from-blue-500 to-blue-600"
-          />
-          <StatCard
-            title="Lessons Completed"
-            value={lessonsCompleted}
-            icon={<CheckCircle size={22} />}
-            gradient="from-green-500 to-emerald-600"
-          />
-          <StatCard
-            title="Certificates Issued"
-            value={certificatesIssued}
-            icon={<Award size={22} />}
-            gradient="from-yellow-500 to-orange-500"
-          />
-          <StatCard
-            title="Average Progress"
-            value={`${avgProgress}%`}
-            icon={<TrendingUp size={22} />}
-            gradient="from-purple-500 to-indigo-600"
-          />
+        {/* Stats Cards (landing style) */}
+        <div className="px-6 -mt-6 relative z-10">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <StatCard
+              title="Courses Enrolled"
+              value={totalCourses}
+              subtitle="Active courses"
+              icon={<BookOpen size={24} />}
+              gradient="from-blue-500 to-blue-600"
+              bgColor="bg-blue-50"
+              textColor="text-blue-600"
+              change="+2 since last month"
+              positive={true}
+            />
+            <StatCard
+              title="Lessons Completed"
+              value={lessonsCompleted}
+              subtitle="Completed lessons"
+              icon={<CheckCircle size={24} />}
+              gradient="from-green-500 to-emerald-600"
+              bgColor="bg-green-50"
+              textColor="text-green-600"
+              change="+8% this week"
+              positive={true}
+            />
+            <StatCard
+              title="Certificates Issued"
+              value={certificatesIssued}
+              subtitle="Available certificates"
+              icon={<Award size={24} />}
+              gradient="from-yellow-500 to-orange-500"
+              bgColor="bg-yellow-50"
+              textColor="text-yellow-600"
+              change="+1 recently"
+              positive={true}
+            />
+            <StatCard
+              title="Average Progress"
+              value={`${avgProgress}%`}
+              subtitle="Average across courses"
+              icon={<TrendingUp size={24} />}
+              gradient="from-purple-500 to-indigo-600"
+              bgColor="bg-purple-50"
+              textColor="text-purple-600"
+              change="Stable"
+              positive={true}
+            />
+          </div>
         </div>
 
         {/* Course Cards */}
@@ -168,17 +239,47 @@ export default function StudentProgressPage() {
                   </span>
                 </div>
 
-                {/* Progress Bar */}
+                {/* Progress Bar (click to view completed lessons) */}
                 <div className="mb-4">
-                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-3 bg-gradient-to-r from-blue-500 to-blue-700 rounded-full"
-                      style={{ width: `${pct}%` }}
-                    />
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div
+                        className="h-3 bg-gray-200 rounded-full overflow-hidden"
+                        title={`${pct}% completed`}
+                      >
+                        <div
+                          className="h-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <p className="text-sm text-gray-600 mt-2 font-medium">{pct}% completed</p>
+                    </div>
+                    <div>
+                      <button
+                        onClick={async () => {
+                          if (!studentId) return alert("Student not loaded yet.");
+                          try {
+                            setModalLoading(true);
+                            const filtered = await lessonProgressService.getLessonsByStudentAndCourse(
+                              studentId,
+                              c.course_name
+                            );
+                            setModalCourseName(c.course_name);
+                            setModalLessons(filtered);
+                            setShowModal(true);
+                          } catch (err) {
+                            console.error("Failed to load lessons:", err);
+                            alert("Failed to load lessons: " + err.message);
+                          } finally {
+                            setModalLoading(false);
+                          }
+                        }}
+                        className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+                      >
+                        View Lessons
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600 mt-2 font-medium">
-                    {pct}% completed
-                  </p>
                 </div>
 
                 {/* Last Lesson */}
