@@ -21,7 +21,7 @@ export default function InstructorLayout() {
     { to: "/instructor/lesson-progress/students", label: "Students", icon: <Users size={18} /> },
     { to: "/instructor/lesson-entry", label: "Add Lesson", icon: <ClipboardList size={18} /> },
     { to: "/instructor/progress-tracking", label: "Progress", icon: <TrendingUp size={18} /> },
-    { to: "/bookings", label: "Bookings", icon: <Calendar size={18} /> }, // stays global
+    { to: "/instructor/booking", label: "Bookings", icon: <Calendar size={18} /> },
     { to: "/instructor/profile", label: "My Profile", icon: <User size={18} /> },
   ];
 
