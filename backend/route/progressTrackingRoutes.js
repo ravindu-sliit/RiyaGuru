@@ -6,10 +6,12 @@ import {
   issueCertificate,
   getAllProgress,
 } from "../controllers/progressTrackingController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllProgress);
+// protect this endpoint — instructors will be scoped in controller
+router.get("/", protect, getAllProgress);
 router.get("/:studentId/:courseName", getProgress);
 router.post("/update/:studentId/:courseName", manualUpdateProgress);
 router.post("/certificate/:studentId/:courseName", issueCertificate);

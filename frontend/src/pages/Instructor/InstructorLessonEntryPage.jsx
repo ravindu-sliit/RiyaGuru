@@ -6,6 +6,7 @@ import {
   CheckCircle,
   ClipboardList,
 } from "lucide-react";
+import InstructorNav from "../../components/InstructorNav";
 
 export default function InstructorLessonEntryPage() {
   const [students, setStudents] = useState([]);
@@ -148,6 +149,7 @@ export default function InstructorLessonEntryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <InstructorNav />
       {/* Hero Header */}
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-10">
         <div className="max-w-5xl mx-auto">

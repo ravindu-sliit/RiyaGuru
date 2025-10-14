@@ -15,6 +15,8 @@ import {
 import { toast } from "react-toastify";
 import LessonProgressCard from "../../components/LessonProgressCard";
 
+import InstructorNav from "../../components/InstructorNav";
+import ProgressHero from "../../components/ProgressHero";
 export default function LessonProgressDashboard() {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -73,57 +75,21 @@ export default function LessonProgressDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Modern Navigation Header */}
-      <div className="bg-white shadow-sm border-b border-gray-100">
-        <div className="px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-gray-800 font-bold text-lg">
-            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
-            <span>
-              Drive<span className="text-orange-500">Manager</span> Pro
-            </span>
-          </div>
-          <div className="flex items-center gap-6">
-            <NavItem to="/lesson-progress" icon={<Settings size={18} />} active>
-              Dashboard
-            </NavItem>
-            <NavItem to="/lesson-progress/add" icon={<Plus size={18} />}>
-              Add Lesson
-            </NavItem>
-            <NavItem to="/progress-tracking" icon={<TrendingUp size={18} />}>
-              Progress Tracking
-            </NavItem>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero Header Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-12">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div className="mb-6 md:mb-0">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">
-              Lesson Progress Management
-            </h1>
-            <p className="text-blue-200 text-lg max-w-2xl">
-              Track and manage student lesson progress with comprehensive analytics and insights
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <button className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-3 rounded-xl hover:bg-white/20 transition-all duration-300">
-              <Filter size={18} />
-              Filter
-            </button>
-            <Link
-              to="/lesson-progress/add"
-              className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:-translate-y-0.5"
-            >
+      <InstructorNav />
+      <ProgressHero title="Lesson Progress Management" subtitle="Track and manage student lesson progress with comprehensive analytics and insights">
+        <div className="flex gap-3">
+          <button className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-3 rounded-xl hover:bg-white/20 transition-all duration-300">
+            <Filter size={18} />
+            Filter
+          </button>
+          {localStorage.getItem("rg_role") === "Instructor" && (
+            <Link to="/instructor/lesson-entry" className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:-translate-y-0.5">
               <Plus size={18} />
               Add Lesson Progress
             </Link>
-          </div>
+          )}
         </div>
-      </div>
+      </ProgressHero>
 
       {/* Stats Dashboard */}
       <div className="px-6 -mt-6 relative z-10">
@@ -187,7 +153,7 @@ export default function LessonProgressDashboard() {
                 Recent Lesson Progress
               </h2>
               <Link
-                to="/lesson-progress/all"
+                to="/instructor/lesson-progress/all"
                 className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl text-gray-700"
               >
                 View All Lessons
@@ -217,13 +183,15 @@ export default function LessonProgressDashboard() {
             <p className="text-gray-600 mt-1">Commonly used features and shortcuts</p>
           </div>
           <div className="p-8 grid md:grid-cols-3 gap-6">
-            <QuickAction to="/lesson-progress/add" icon={<Plus size={20} />} gradient="from-orange-500 to-red-500">
-              Add New Lesson
-            </QuickAction>
-            <QuickAction to="/lesson-progress/students" icon={<Users size={20} />} gradient="from-blue-500 to-cyan-500">
+            {localStorage.getItem("rg_role") === "Instructor" && (
+              <QuickAction to="/instructor/lesson-entry" icon={<Plus size={20} />} gradient="from-orange-500 to-red-500">
+                Add New Lesson
+              </QuickAction>
+            )}
+            <QuickAction to="/instructor/lesson-progress/students" icon={<Users size={20} />} gradient="from-blue-500 to-cyan-500">
               View by Student
             </QuickAction>
-            <QuickAction to="/progress-tracking" icon={<TrendingUp size={20} />} gradient="from-purple-500 to-indigo-500">
+            <QuickAction to="/instructor/progress-tracking" icon={<TrendingUp size={20} />} gradient="from-purple-500 to-indigo-500">
               Progress Tracking
             </QuickAction>
           </div>
@@ -295,7 +263,7 @@ function EmptyState() {
       <h3 className="text-xl font-bold text-gray-800 mb-2">No lesson progress recorded yet</h3>
       <p className="text-gray-600 mb-6">Start tracking lessons by adding a new entry</p>
       <Link
-        to="/lesson-progress/add"
+        to="/instructor/lesson-entry"
         className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
       >
         <Plus size={18} />

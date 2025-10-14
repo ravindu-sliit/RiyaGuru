@@ -10,7 +10,7 @@ export default function InstructorHome() {
       title: "My Students",
       description: "Track student progress and lessons",
       icon: <Users className="w-6 h-6 text-blue-600" />,
-      path: "/lesson-progress/students",
+      path: "/instructor/lesson-progress/students",
     },
     {
       title: "Lesson Entry",

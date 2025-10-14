@@ -6,6 +6,10 @@ import { updateProgress } from "../helpers/progressHelper.js";
 // ✅ Add new lesson progress (with validation)
 export const addLessonProgress = async (req, res) => {
   try {
+    // Only instructors or admins may add lesson progress
+    if (!req.user || (req.user.role !== "Instructor" && req.user.role !== "Admin")) {
+      return res.status(403).json({ message: "Only instructors or admins may add lesson progress" });
+    }
     const {
       student_id,
       student_course_id,
@@ -29,6 +33,11 @@ export const addLessonProgress = async (req, res) => {
     }
 
     // 2️⃣ Save the new lesson progress
+    // If the caller is an Instructor, ensure they are adding for themselves
+    if (req.user.role === "Instructor" && req.user.userId !== instructor_id) {
+      return res.status(403).json({ message: "Instructors can only add lessons for themselves" });
+    }
+
     const newLesson = new LessonProgress({
       student_id,
       student_course_id,
@@ -66,6 +75,13 @@ export const getLessonsByStudent = async (req, res) => {
 // ✅ Get all lesson progress records
 export const getAllLessonProgress = async (req, res) => {
   try {
+    // If the request is authenticated and the user is an Instructor, scope to their lessons
+    if (req.user && req.user.role === "Instructor") {
+      const lessons = await LessonProgress.find({ instructor_id: req.user.userId });
+      return res.json(lessons);
+    }
+
+    // Otherwise (admin or unauthenticated), return all lessons
     const lessons = await LessonProgress.find();
     res.json(lessons);
   } catch (error) {

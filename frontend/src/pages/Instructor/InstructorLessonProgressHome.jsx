@@ -1,6 +1,7 @@
 // src/pages/Instructor/InstructorLessonProgressHome.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import InstructorNav from "../../components/InstructorNav";
 import {
   BookOpen,
   Plus,
@@ -15,39 +16,7 @@ import {
 export default function InstructorLessonProgressHome() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Modern Navigation Header */}
-      <div className="bg-white shadow-sm border-b border-gray-100">
-        <div className="px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-gray-800 font-bold text-lg">
-            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
-            <span>
-              Riya<span className="text-orange-500">Guru</span>.lk
-            </span>
-          </div>
-          <div className="flex items-center gap-6">
-            <NavItem to="/instructor/lesson-progress" icon={<BarChart3 size={18} />} active>
-              Dashboard
-            </NavItem>
-            <NavItem to="/instructor/lesson-entry" icon={<Plus size={18} />}>
-              Add Lesson
-            </NavItem>
-            <NavItem to="/instructor/lesson-progress/students" icon={<Users size={18} />}>
-              Students
-            </NavItem>
-            <NavItem to="/instructor/progress-tracking" icon={<TrendingUp size={18} />}>
-              Progress
-            </NavItem>
-            <NavItem to="/instructor/instructorbooking" icon={<Calendar size={18} />}>
-              Bookings
-            </NavItem>
-            <NavItem to="/instructor/profile" icon={<User size={18} />}>
-              My Profile
-            </NavItem>
-          </div>
-        </div>
-      </div>
+      <InstructorNav />
 
       {/* Hero Header Section */}
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-12">

@@ -2,7 +2,17 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 export const progressTrackingService = {
   async getAllProgress() {
-    const res = await fetch(`${API_URL}/progress-tracking`);
+    const rawAuth = localStorage.getItem("rg_auth") || localStorage.getItem("rg_token");
+    let token = null;
+    try {
+      const parsed = JSON.parse(rawAuth || "null");
+      token = parsed?.token || rawAuth;
+    } catch (e) {
+      token = rawAuth;
+    }
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const res = await fetch(`${API_URL}/progress-tracking`, { headers });
     if (!res.ok) throw new Error("Failed to fetch progress records");
     return res.json();
   },

@@ -8,8 +8,10 @@ import {
   Filter,
   Search,
 } from "lucide-react";
+import InstructorNav from "../../components/InstructorNav";
 import { toast } from "react-toastify";
 import ProgressChart from "../../components/ProgressChart";
+import ProgressHero from "../../components/ProgressHero";
 
 export default function ProgressTrackingDashboard() {
   const [progressRecords, setProgressRecords] = useState([]);
@@ -97,37 +99,16 @@ export default function ProgressTrackingDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Header */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Progress Tracking Dashboard</h1>
-            <p className="text-blue-200 text-sm">
-              Monitor course completion, track progress, and issue certificates
-            </p>
+      <InstructorNav />
+      <ProgressHero title="Progress Tracking Dashboard" subtitle="Monitor course completion, track progress, and issue certificates">
+        <div className="flex gap-3">
+          <div className="relative">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input type="text" placeholder="Search students or courses..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 pr-3 py-2 rounded-lg text-sm border border-gray-300 w-64 focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-700" />
           </div>
-          {/* Search + Filter */}
-          <div className="flex gap-3">
-            <div className="relative">
-              <Search
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Search students or courses..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-3 py-2 rounded-lg text-sm border border-gray-300 w-64 focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-700"
-              />
-            </div>
-            <button className="flex items-center gap-2 bg-white/10 border border-white/20 px-4 py-2 rounded-lg text-sm hover:bg-white/20 transition">
-              <Filter size={16} />
-              Filter
-            </button>
-          </div>
+          <button className="flex items-center gap-2 bg-white/10 border border-white/20 px-4 py-2 rounded-lg text-sm hover:bg-white/20 transition"> <Filter size={16} /> Filter</button>
         </div>
-      </div>
+      </ProgressHero>
 
       {/* Stats */}
       <div className="px-6 -mt-6 relative z-10">

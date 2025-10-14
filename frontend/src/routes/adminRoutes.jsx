@@ -24,6 +24,7 @@ import VehicleDashboard from "../pages/Vehicle/VehicleDashboard";
 // Instructor
 import InstructorRoutes from "./instructorRoutes";
 import InstructorPage from "../pages/Instructor/InstructorPage";
+import AdminAddLessonProgress from "../pages/Admin/AdminAddLessonProgress";
 import InstructorListPage from "../pages/Instructor/InstructorListPage";
 import InstructorDetailsPage from "../pages/Instructor/InstructorDetailsPage";
 import AddInstructorPage from "../pages/Instructor/AddInstructorPage";
@@ -33,6 +34,9 @@ import StatusFilterPage from "../pages/Instructor/StatusFilterPage";
 
 // Bookings
 import BookingDashboard from "../pages/Booking/BookingDashboard";
+// Admin-specific instructor pages
+import AdminLessonProgress from "../pages/Admin/AdminLessonProgress";
+import AdminProgressTracking from "../pages/Admin/AdminProgressTracking";
 
 export default function AdminRoutes() {
   return (
@@ -85,6 +89,12 @@ export default function AdminRoutes() {
 
         {/* Instructors */}
         <Route path="instructors/list" element={<InstructorListPage />} />
+
+  {/* Admin-specific instructor management pages (stay in admin UI) */}
+  <Route path="instructor/lesson-progress" element={<AdminLessonProgress />} />
+  <Route path="instructor/lesson-progress/all" element={<AdminLessonProgress />} />
+  <Route path="instructor/progress-tracking" element={<AdminProgressTracking />} />
+  <Route path="instructor/lesson-entry" element={<AdminAddLessonProgress />} />
         
 
         {/* Bookings */}
