@@ -138,10 +138,10 @@ const VehicleList = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b pb-4">
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6 rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Vehicle Management</h1>
-          <p className="text-gray-500 text-sm">Manage your fleet of {vehicles.length} vehicles</p>
+          <p className="text-gray-800 text-sm font-medium">Manage your fleet of {vehicles.length} vehicles</p>
         </div>
         <div className="flex gap-2">
           <Link
@@ -162,7 +162,7 @@ const VehicleList = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 items-center mb-4">
+      <div className="flex flex-wrap gap-3 items-center mb-4 rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-4">
         <div className="relative flex-1 min-w-[250px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
@@ -170,14 +170,14 @@ const VehicleList = () => {
             placeholder="Search by registration, model, or brand..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full pl-10 pr-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+          className="border border-white/40 bg-white/70 backdrop-blur-sm rounded-md px-3 py-2 text-sm"
         >
           <option value="all">All Status</option>
           <option value="Active">Active</option>
@@ -188,7 +188,7 @@ const VehicleList = () => {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+          className="border border-white/40 bg-white/70 backdrop-blur-sm rounded-md px-3 py-2 text-sm"
         >
           <option value="all">All Types</option>
           <option value="Car">Car</option>
@@ -204,7 +204,7 @@ const VehicleList = () => {
               setStatusFilter('all');
               setTypeFilter('all');
             }}
-            className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-100"
+            className="inline-flex items-center gap-2 px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-md text-sm hover:bg-white/80"
           >
             <Filter size={16} />
             Clear
@@ -213,7 +213,7 @@ const VehicleList = () => {
       </div>
 
       {/* Results Count */}
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-gray-800 font-medium mb-4">
         Showing {filteredVehicles.length} of {vehicles.length} vehicles
       </p>
 
@@ -221,9 +221,9 @@ const VehicleList = () => {
       {filteredVehicles.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {filteredVehicles.map((vehicle) => (
-            <div key={vehicle._id} className="bg-white border rounded-lg shadow-sm hover:shadow-md transition flex flex-col">
+            <div key={vehicle._id} className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm hover:shadow-md transition flex flex-col">
               {/* Vehicle Image */}
-              <div className="h-32 bg-gray-100 flex items-center justify-center border-b">
+              <div className="h-32 bg-white/40 flex items-center justify-center border-b border-white/30">
                 {vehicle.image ? (
                   <img
                     src={`http://localhost:5000${vehicle.image}`}
@@ -247,9 +247,9 @@ const VehicleList = () => {
                   </span>
                 </div>
 
-                <p className="text-xs text-gray-500 font-mono mb-2">{vehicle.regNo}</p>
+                <p className="text-xs text-gray-800 font-mono mb-2">{vehicle.regNo}</p>
 
-                <div className="space-y-1 text-sm text-gray-600 mb-2">
+                <div className="space-y-1 text-sm text-gray-800 mb-2">
                   <div className="flex items-center gap-2"><Car size={14} /> {vehicle.type}</div>
                   <div className="flex items-center gap-2"><Calendar size={14} /> {vehicle.year}</div>
                   <div className="flex items-center gap-2"><Fuel size={14} /> {vehicle.fuelType}</div>
@@ -257,22 +257,22 @@ const VehicleList = () => {
                 </div>
 
                 {vehicle.assignedInstructor && (
-                  <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded text-xs text-gray-500 mb-2">
+                  <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-2 py-1 rounded text-xs text-gray-700 mb-2 border border-white/40">
                     <User size={12} />
                     Assigned: {vehicle.assignedInstructor.name}
                   </div>
                 )}
 
-                <div className="flex gap-2 mt-auto pt-2 border-t">
-                  <Link to={`/admin/vehicles/${vehicle._id}`} className="flex-1 text-center text-xs px-2 py-1 border rounded hover:bg-gray-50">
+                <div className="flex gap-2 mt-auto pt-2 border-t border-white/30">
+                  <Link to={`/admin/vehicles/${vehicle._id}`} className="flex-1 text-center text-xs px-2 py-1 border border-white/40 rounded hover:bg-white/60">
                     <Eye size={14} className="inline mr-1" /> View
                   </Link>
-                  <Link to={`/admin/vehicles/${vehicle._id}/edit`} className="flex-1 text-center text-xs px-2 py-1 border rounded hover:bg-gray-50">
+                  <Link to={`/admin/vehicles/${vehicle._id}/edit`} className="flex-1 text-center text-xs px-2 py-1 border border-white/40 rounded hover:bg-white/60">
                     <Edit size={14} className="inline mr-1" /> Edit
                   </Link>
                   <button
                     onClick={() => handleDelete(vehicle._id)}
-                    className="flex-1 text-center text-xs px-2 py-1 border rounded text-red-600 hover:bg-red-50"
+                    className="flex-1 text-center text-xs px-2 py-1 border border-white/40 rounded text-red-700 hover:bg-white/60"
                   >
                     <Trash2 size={14} className="inline mr-1" /> Delete
                   </button>

@@ -119,10 +119,10 @@ export default function EditInstructorPage() {
 
   if (!form)
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-sm border p-16 text-center">
-          <div className="w-12 h-12 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading instructor data...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-16 text-center">
+          <div className="w-12 h-12 border-4 border-white/50 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-800">Loading instructor data...</p>
         </div>
       </div>
     );
@@ -137,9 +137,9 @@ export default function EditInstructorPage() {
     : "/no-avatar.png";
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       {/* Navbar */}
-      <nav className="flex justify-between items-center bg-white px-8 py-4 border-b shadow-sm sticky top-0 z-50">
+      <nav className="flex justify-between items-center rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm px-6 py-3 mb-6">
         <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
           <span className="text-orange-500 text-2xl"></span>
           Instructor Management
@@ -147,33 +147,33 @@ export default function EditInstructorPage() {
         <div className="flex items-center gap-6">
           
           
-          <Link to="/admin/Instructordashboard" className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 font-medium">
+          <Link to="/admin/Instructordashboard" className="px-4 py-2 rounded-lg text-orange-600 bg-white/70 backdrop-blur-sm border border-white/40 font-medium hover:bg-white/80">
            Instructor DashBoard
           </Link>
         </div>
       </nav>
            
-      <div className="max-w-6xl mx-auto px-8 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-6">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Edit Instructor</h1>
-            <p className="text-slate-600 text-lg">Update instructor profile and availability</p>
+            <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Edit Instructor</h1>
+            <p className="text-gray-800 text-lg font-medium">Update instructor profile and availability</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link to={`/admin/instructors/${id}`} className="bg-white border px-6 py-3 rounded-lg hover:bg-slate-50">← Back to Profile</Link>
+            <Link to={`/admin/instructors/${id}`} className="px-6 py-3 rounded-lg border border-white/40 bg-white/70 backdrop-blur-sm hover:bg-white/80 text-gray-800">← Back to Profile</Link>
           </div>
         </div>
 
         {/* Form */}
-        <form onSubmit={submit} className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        <form onSubmit={submit} className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm overflow-hidden">
           <div className="p-8 space-y-8">
-            {error && <div className="p-4 bg-red-50 border text-red-700 rounded-lg">{error}</div>}
+            {error && <div className="p-4 rounded-lg border border-red-200 bg-red-50 text-red-700">{error}</div>}
 
             {/* Profile Image */}
             <div>
-              <h3 className="text-lg font-semibold mb-2">📸 Profile Image</h3>
-              <div className="w-40 h-40 mb-4 rounded-full overflow-hidden border">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">📸 Profile Image</h3>
+              <div className="w-40 h-40 mb-4 rounded-full overflow-hidden border border-white/40 bg-white/70 backdrop-blur-sm">
                 <img src={currentImageUrl} alt="preview" className="w-full h-full object-cover"/>
               </div>
               <input type="file" accept="image/*" onChange={onImage}/>
@@ -187,8 +187,8 @@ export default function EditInstructorPage() {
               <Input label="License Number" name="licenseNumber" value={form.licenseNumber} onChange={onChange} required />
               <Input label="Experience (Years)" name="experienceYears" type="number" value={form.experienceYears} onChange={onChange} />
               <div>
-                <label className="block mb-2">Specialization</label>
-                <select name="specialization" value={form.specialization} onChange={onChange} className="w-full px-3 py-2 border rounded-lg">
+                <label className="block mb-2 text-gray-900 font-medium">Specialization</label>
+                <select name="specialization" value={form.specialization} onChange={onChange} className="w-full px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-300">
                   <option value="All">All</option>
                   <option value="Car">Car</option>
                   <option value="Motorcycle">Motorcycle</option>
@@ -197,14 +197,14 @@ export default function EditInstructorPage() {
                 </select>
               </div>
               <div className="md:col-span-2">
-                <label className="block mb-2">Address</label>
-                <textarea name="address" value={form.address} onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-lg"/>
+                <label className="block mb-2 text-gray-900 font-medium">Address</label>
+                <textarea name="address" value={form.address} onChange={onChange} rows={3} className="w-full px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-300"/>
               </div>
             </div>
 
             {/* Status */}
             <div>
-              <label className="block mb-2">Status</label>
+              <label className="block mb-2 text-gray-900 font-medium">Status</label>
               <div className="flex gap-4">
                 <RadioCard label="Active" value="Active" checked={form.status === "Active"} onChange={onChange} active />
                 <RadioCard label="Not Active" value="Not-Active" checked={form.status === "Not-Active"} onChange={onChange} />
@@ -213,20 +213,20 @@ export default function EditInstructorPage() {
 
             {/* Availability */}
             <div>
-              <label className="block mb-2">Availability</label>
+              <label className="block mb-2 text-gray-900 font-medium">Availability</label>
               <div className="flex gap-2 mb-4">
-                <input type="date" value={date.toISOString().split("T")[0]} onChange={(e) => setDate(new Date(e.target.value))} className="px-3 py-2 border rounded-lg"/>
-                <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="px-3 py-2 border rounded-lg"/>
-                <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="px-3 py-2 border rounded-lg"/>
+                <input type="date" value={date.toISOString().split("T")[0]} onChange={(e) => setDate(new Date(e.target.value))} className="px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-300"/>
+                <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-300"/>
+                <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-300"/>
                 <button type="button" onClick={addAvailability} className="px-4 py-2 bg-orange-500 text-white rounded-lg">➕ Add</button>
               </div>
               {form.availability?.length > 0 ? (
                 <ul className="space-y-2">
                   {form.availability.map((a) => (
-                    <li key={a.date} className="p-3 bg-slate-50 border rounded-lg flex flex-wrap gap-2">
-                      <span className="font-medium">{a.date}</span>
+                    <li key={a.date} className="p-3 rounded-lg border border-white/40 bg-white/40 backdrop-blur-sm flex flex-wrap gap-2">
+                      <span className="font-semibold text-gray-900">{a.date}</span>
                       {a.timeSlots.map((t) => (
-                        <span key={t} className="px-2 py-1 bg-orange-50 text-orange-700 rounded-full text-sm flex items-center gap-1">
+                        <span key={t} className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-sm flex items-center gap-1 border border-orange-200">
                           {t}
                           <button type="button" onClick={() => removeSlot(a.date, t)} className="text-red-500">✖</button>
                         </span>
@@ -235,15 +235,15 @@ export default function EditInstructorPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-slate-500 text-sm">No availability added yet</p>
+                <p className="text-gray-700 text-sm">No availability added yet</p>
               )}
             </div>
           </div>
 
           {/* Footer */}
-          <div className="bg-slate-50 border-t px-8 py-6 flex justify-end gap-3">
-            <Link to={`/admin/instructors/${id}`} className="px-6 py-3 bg-white border rounded-lg">Cancel</Link>
-            <button type="submit" disabled={saving} className="px-8 py-3 bg-orange-500 text-white rounded-lg">
+          <div className="border-t border-white/30 bg-white/50 backdrop-blur-md px-8 py-6 flex justify-end gap-3">
+            <Link to={`/admin/instructors/${id}`} className="px-6 py-3 rounded-lg border border-white/40 bg-white/70 backdrop-blur-sm text-gray-800 hover:bg-white/80">Cancel</Link>
+            <button type="submit" disabled={saving} className="px-8 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-60">
               {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
@@ -257,8 +257,8 @@ export default function EditInstructorPage() {
 function Input({ label, name, value, onChange, type = "text", required }) {
   return (
     <div>
-      <label className="block mb-2">{label}{required && <span className="text-red-500">*</span>}</label>
-      <input type={type} name={name} value={value || ""} onChange={onChange} required={required} className="w-full px-3 py-2 border rounded-lg"/>
+      <label className="block mb-2 text-gray-900 font-medium">{label}{required && <span className="text-red-500">*</span>}</label>
+      <input type={type} name={name} value={value || ""} onChange={onChange} required={required} className="w-full px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-300"/>
     </div>
   );
 }
@@ -266,8 +266,8 @@ function Input({ label, name, value, onChange, type = "text", required }) {
 function RadioCard({ label, value, checked, onChange, active }) {
   return (
     <label className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer ${
-      checked ? (active ? "border-green-400 bg-green-50" : "border-amber-400 bg-amber-50")
-      : "border-slate-200 bg-slate-50"
+      checked ? (active ? "border-green-300 bg-green-50" : "border-amber-300 bg-yellow-50")
+      : "border-white/40 bg-white/40 backdrop-blur-sm"
     }`}>
       <input type="radio" name="status" value={value} checked={checked} onChange={onChange} className="hidden"/>
       <span>{label}</span>

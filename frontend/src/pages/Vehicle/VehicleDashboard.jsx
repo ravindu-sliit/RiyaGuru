@@ -91,7 +91,7 @@ const VehicleDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Navigation */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
         <div className="px-6 py-6">
@@ -127,17 +127,17 @@ const VehicleDashboard = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center px-6 py-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-3xl font-extrabold text-gray-900">
             Vehicle Management
           </h1>
-          <p className="text-gray-500">
+          <p className="text-gray-800 font-medium">
             Manage your driving school fleet efficiently
           </p>
         </div>
         <div className="flex items-center gap-3">
             <Link
             to="/admin/vehicles"
-            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-orange-500 hover:bg-orange-50"
+            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-semibold text-gray-800 hover:text-orange-600 hover:bg-orange-50"
           >
             <Car size={16} /> All Vehicles
           </Link>
@@ -152,7 +152,7 @@ const VehicleDashboard = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 px-6 pb-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 px-6 pb-6 pt-2">
         {[
           {
             title: "Total Vehicles",
@@ -189,23 +189,23 @@ const VehicleDashboard = () => {
         ].map((stat, idx) => (
           <div
             key={idx}
-            className={`bg-white p-6 rounded-lg shadow border-l-4 ${stat.color}`}
+            className={"p-6 rounded-2xl shadow-sm border border-white/40 bg-white/60 backdrop-blur-md"}
           >
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-gray-500">
+              <span className="text-base font-semibold text-gray-800">
                 {stat.title}
               </span>
               <div
-                className={`w-10 h-10 rounded-md flex items-center justify-center ${stat.bg}`}
+                className={`w-10 h-10 rounded-md flex items-center justify-center ${stat.bg} opacity-90`}
               >
                 {stat.icon}
               </div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-900">
+              <div className="text-4xl font-extrabold text-gray-900">
                 {stat.value}
               </div>
-              <p className="text-xs text-gray-400">{stat.subtitle}</p>
+              <p className="text-sm font-medium text-gray-800">{stat.subtitle}</p>
             </div>
           </div>
         ))}
@@ -214,10 +214,10 @@ const VehicleDashboard = () => {
       {/* Content Grid */}
       <div className="grid md:grid-cols-2 gap-4 px-6 pb-10">
         {/* Recent Updates */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b flex items-center gap-2">
+        <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/40 flex items-center gap-2">
             <TrendingUp className="text-orange-500" size={18} />
-            <h2 className="font-semibold text-gray-900">Recent Updates</h2>
+            <h2 className="font-bold text-gray-900">Recent Updates</h2>
           </div>
           <div className="p-6">
             {recentVehicles.length > 0 ? (
@@ -225,14 +225,14 @@ const VehicleDashboard = () => {
                 {recentVehicles.map((v) => (
                   <div
                     key={v._id}
-                    className="p-3 rounded-md bg-gray-50 hover:bg-gray-100 transition"
+                    className="p-3 rounded-md bg-white/40 hover:bg-white/60 transition border border-white/30"
                   >
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify_between items-center">
                       <div>
-                        <h4 className="font-semibold text-sm text-gray-900">
+                        <h4 className="font-bold text-base text-gray-900">
                           {v.brand} {v.model}
                         </h4>
-                        <p className="text-xs text-gray-500 font-mono">
+                        <p className="text-xs text-gray-800 font-mono">
                           {v.regNo}
                         </p>
                       </div>
@@ -240,7 +240,7 @@ const VehicleDashboard = () => {
                         <span className={getStatusBadge(v.status)}>
                           {getStatusIcon(v.status)} {v.status}
                         </span>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-gray-800 font-medium mt-1">
                           {new Date(v.updatedAt).toLocaleDateString("en-US")}
                         </p>
                       </div>
@@ -258,9 +258,9 @@ const VehicleDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b">
-            <h2 className="font-semibold text-gray-900">Quick Actions</h2>
+        <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/40">
+            <h2 className="font-bold text-gray-900">Quick Actions</h2>
           </div>
           <div className="p-6 grid gap-3">
             {[
@@ -272,22 +272,22 @@ const VehicleDashboard = () => {
               <Link
                 key={idx}
                 to={action.to}
-                className="flex items-center gap-3 p-3 rounded-md border bg-gray-50 text-gray-600 hover:bg-orange-50 hover:border-orange-500 hover:text-orange-500"
+                className="flex items-center gap-3 p-3 rounded-md border border-white/40 bg-white/40 backdrop-blur-sm text-gray-900 hover:bg-white/60 hover:border-white/50 hover:text-orange-700 transition"
               >
-                <div className="w-8 h-8 flex items-center justify-center rounded bg-gray-100 text-gray-500 group-hover:bg-orange-500 group-hover:text-white transition">
+                <div className="w-8 h-8 flex items-center justify-center rounded bg-white/80 text-gray-700 group-hover:bg-orange-500 group-hover:text-white transition">
                   {action.icon}
                 </div>
-                <span className="text-sm font-medium">{action.text}</span>
+                <span className="text-sm font-semibold">{action.text}</span>
               </Link>
             ))}
           </div>
         </div>
 
         {/* Service Reminders */}
-        <div className="bg-white rounded-lg shadow overflow-hidden md:col-span-2">
-          <div className="px-6 py-4 border-b flex items-center gap-2">
+        <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm overflow-hidden md:col-span-2">
+          <div className="px-6 py-4 border-b border-white/40 flex items-center gap-2">
             <Calendar className="text-orange-500" size={18} />
-            <h2 className="font-semibold text-gray-900">Service Reminders</h2>
+            <h2 className="font-bold text-gray-900">Service Reminders</h2>
           </div>
           <div className="p-6">
             {vehicles.filter((v) => v.nextServiceDue).length > 0 ? (
@@ -311,30 +311,30 @@ const VehicleDashboard = () => {
                     return (
                       <div
                         key={v._id}
-                        className={`flex justify-between items-center p-3 rounded-md ${
+                        className={`flex justify-between items-center p-3 rounded-md border ${
                           isOverdue
-                            ? "bg-red-100 border-l-4 border-red-500"
+                            ? "bg-red-100/70 border-red-300"
                             : isDueSoon
-                            ? "bg-yellow-100 border-l-4 border-yellow-500"
-                            : "bg-gray-50 border-l-4 border-blue-500"
+                            ? "bg-yellow-100/70 border-yellow-300"
+                            : "bg-white/40 border-white/30"
                         }`}
                       >
                         <div>
-                          <h4 className="font-semibold text-sm text-gray-900">
+                          <h4 className="font-bold text-base text-gray-900">
                             {v.brand} {v.model}
                           </h4>
-                          <p className="text-xs text-gray-500 font-mono">
+                          <p className="text-xs text-gray-700 font-mono">
                             {v.regNo}
                           </p>
                         </div>
                         <div className="text-right">
                           <span
-                            className={`text-sm font-medium block ${
+                            className={`text-sm font-semibold block ${
                               isOverdue
-                                ? "text-red-700"
+                                ? "text-red-800"
                                 : isDueSoon
-                                ? "text-yellow-700"
-                                : "text-blue-700"
+                                ? "text-yellow-800"
+                                : "text-blue-800"
                             }`}
                           >
                             {isOverdue
