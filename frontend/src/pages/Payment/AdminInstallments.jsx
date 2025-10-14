@@ -19,6 +19,9 @@ const AdminInstallments = () => {
   const [filterCourse, setFilterCourse] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [savingId, setSavingId] = useState(null);
+  // Local UI overrides to force status immediately after action
+  const [approvedIds, setApprovedIds] = useState([]);
+  const [rejectedIds, setRejectedIds] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   // Review modal state
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -53,6 +56,12 @@ const AdminInstallments = () => {
     try {
       setSavingId(planId);
       await adminApprovePlan(planId, "");
+      // Optimistic local update to reflect Approved immediately
+      setPlans((prev) => prev.map((p) => (
+        p._id === planId ? { ...p, adminApproved: true, adminRejected: false, adminStatus: "Approved", adminDecision: "Approved" } : p
+      )));
+      setApprovedIds((prev) => Array.from(new Set([...prev, planId])));
+      setRejectedIds((prev) => prev.filter((id) => id !== planId));
       await fetchPlans();
       setSuccessMessage("Installment plan approved.");
       setTimeout(() => setSuccessMessage(""), 3000);
@@ -67,6 +76,12 @@ const AdminInstallments = () => {
     try {
       setSavingId(planId);
       await adminRejectPlan(planId, "");
+      // Optimistic local update to reflect Rejected immediately
+      setPlans((prev) => prev.map((p) => (
+        p._id === planId ? { ...p, adminApproved: false, adminRejected: true, adminStatus: "Rejected", adminDecision: "Rejected" } : p
+      )));
+      setRejectedIds((prev) => Array.from(new Set([...prev, planId])));
+      setApprovedIds((prev) => prev.filter((id) => id !== planId));
       await fetchPlans();
       setSuccessMessage("Installment plan rejected.");
       setTimeout(() => setSuccessMessage(""), 3000);
@@ -97,6 +112,11 @@ const AdminInstallments = () => {
       setSavingId(selectedPlan._id);
       await adminApprovePlan(selectedPlan._id, reviewComment);
       closeReview();
+      setPlans((prev) => prev.map((p) => (
+        p._id === selectedPlan._id ? { ...p, adminApproved: true, adminRejected: false, adminStatus: "Approved", adminDecision: "Approved" } : p
+      )));
+      setApprovedIds((prev) => Array.from(new Set([...prev, selectedPlan._id])));
+      setRejectedIds((prev) => prev.filter((id) => id !== selectedPlan._id));
       await fetchPlans();
       setSuccessMessage("Installment plan approved.");
       setTimeout(() => setSuccessMessage(""), 3000);
@@ -112,6 +132,11 @@ const AdminInstallments = () => {
       setSavingId(selectedPlan._id);
       await adminRejectPlan(selectedPlan._id, reviewComment);
       closeReview();
+      setPlans((prev) => prev.map((p) => (
+        p._id === selectedPlan._id ? { ...p, adminApproved: false, adminRejected: true, adminStatus: "Rejected", adminDecision: "Rejected" } : p
+      )));
+      setRejectedIds((prev) => Array.from(new Set([...prev, selectedPlan._id])));
+      setApprovedIds((prev) => prev.filter((id) => id !== selectedPlan._id));
       await fetchPlans();
       setSuccessMessage("Installment plan rejected.");
       setTimeout(() => setSuccessMessage(""), 3000);
@@ -131,6 +156,9 @@ const AdminInstallments = () => {
 
   // Determine admin plan status (robust across possible backend fields)
   function getAdminPlanStatus(plan) {
+    // Local overrides first
+    if (approvedIds.includes(plan?._id)) return "Approved";
+    if (rejectedIds.includes(plan?._id)) return "Rejected";
     const s = (plan?.adminStatus || plan?.status || "").toString().toLowerCase();
     if (plan?.adminApproved === true) return "Approved";
     if (
@@ -140,6 +168,8 @@ const AdminInstallments = () => {
     ) {
       return "Rejected";
     }
+    // Also treat plain status field as rejected when present
+    if (plan?.status === "Rejected") return "Rejected";
     return "Pending"; // default
   }
 
@@ -325,11 +355,11 @@ const AdminInstallments = () => {
           </div>
         ) : (
           /* Plans as Cards */
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-4">
             {filteredPlans.map((plan) => (
               <div
                 key={plan._id}
-                className={`relative group rounded-2xl border shadow-sm hover:shadow-lg transition-all ${cardAccent(getPlanStatus(plan.schedule))}`}
+                className={`relative group rounded-2xl border shadow-sm hover:shadow-md transition-all ${cardAccent(getPlanStatus(plan.schedule))}`}
               >
                 {/* Ribbon */}
                 <div className="pointer-events-none absolute -top-2 left-4 h-2 w-24 rounded-full bg-gradient-to-r from-orange-400 to-amber-300 opacity-70"></div>
@@ -337,73 +367,110 @@ const AdminInstallments = () => {
                   <div className="pointer-events-none absolute -top-2 right-4 h-2 w-24 rounded-full bg-gradient-to-l from-green-400 to-emerald-300 opacity-70"></div>
                 )}
                 {/* Header */}
-                <div className="px-5 pt-5 pb-3 flex items-start justify-between">
+                <div className="px-4 pt-3 pb-2 flex items-start justify-between">
                   <div>
-                    <div className="text-sm text-gray-500">Student</div>
-                    <div className="text-base font-semibold text-gray-900">{plan.studentId}</div>
+                    <div className="text-xs text-gray-500">Student</div>
+                    <div className="text-sm font-semibold text-gray-900">{plan.studentId}</div>
                     <div className="text-xs text-gray-400">ID: {plan._id.slice(-6)}</div>
                   </div>
                   {getPlanStatusBadge(getPlanStatus(plan.schedule))}
                 </div>
 
-                {/* Body meta */}
-                <div className="px-5 grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-lg bg-white/70 backdrop-blur-[1px] p-3 ring-1 ring-gray-200">
-                    <div className="text-xs text-gray-500 mb-1">Course</div>
-                    <div className="font-medium text-gray-800">{plan.courseId}</div>
-                    <div className="text-xs text-gray-500">{plan.totalInstallments} installments</div>
+                {/* Body meta (ultra compact inline) */}
+                <div className="px-4 py-1 text-[12px] text-gray-700 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <div>
+                    <span className="text-gray-500">Course:</span>
+                    <span className="ml-1 font-medium">{plan.courseId}</span>
                   </div>
-                  <div className="rounded-lg bg-white/70 backdrop-blur-[1px] p-3 ring-1 ring-gray-200">
-                    <div className="text-xs text-gray-500 mb-1">Totals</div>
-                    <div className="font-medium text-gray-800">{formatCurrency(plan.totalAmount)}</div>
-                    <div className="text-xs text-gray-500">Down: {formatCurrency(plan.downPayment)}</div>
+                  <div className="hidden sm:block w-px h-3 bg-gray-300" />
+                  <div>
+                    <span className="text-gray-500">Installments:</span>
+                    <span className="ml-1 font-medium">{plan.totalInstallments}</span>
+                  </div>
+                  <div className="hidden sm:block w-px h-3 bg-gray-300" />
+                  <div>
+                    <span className="text-gray-500">Total:</span>
+                    <span className="ml-1 font-semibold">{formatCurrency(plan.totalAmount)}</span>
+                  </div>
+                  <div className="hidden sm:block w-px h-3 bg-gray-300" />
+                  <div>
+                    <span className="text-gray-500">Down:</span>
+                    <span className="ml-1 font-medium">{formatCurrency(plan.downPayment)}</span>
                   </div>
                 </div>
 
-                {/* Schedule */}
-                <div className="px-5 mt-4">
-                  <div className="text-xs font-semibold text-gray-600 mb-2">Installment Schedule</div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                {/* Schedule (single-row compact chips) */}
+                <div className="px-4 mt-1">
+                  <div className="text-xs font-semibold text-gray-700 mb-1">Installments</div>
+                  <div className="flex gap-2 overflow-x-auto whitespace-nowrap pr-1 custom-scroll-thin">
                     {plan.schedule.map((item) => (
-                      <div key={item.installmentNumber} className="rounded-lg bg-white/80 ring-1 ring-gray-200 p-2">
-                        <div className="flex items-center justify-between">
-                          <div className="font-medium">#{item.installmentNumber}</div>
-                          {getStatusBadge(item.status)}
-                        </div>
-                        <div className="mt-1 text-gray-700">{formatCurrency(item.amount)}</div>
-                        <div className="text-gray-500">{formatDate(item.dueDate)}</div>
+                      <div
+                        key={item.installmentNumber}
+                        className={`px-2.5 py-1.5 rounded-lg text-[11px] leading-4 inline-flex items-center shadow-sm ring-1 ${
+                          item.status === 'Approved'
+                            ? 'bg-green-50 text-green-800 ring-green-200'
+                            : item.status === 'Overdue'
+                            ? 'bg-red-50 text-red-800 ring-red-200'
+                            : 'bg-amber-50 text-amber-800 ring-amber-200'
+                        }`}
+                        title={`#${item.installmentNumber} • ${formatCurrency(item.amount)} • ${formatDate(item.dueDate)} • ${item.status}`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                          item.status === 'Approved' ? 'bg-green-500' : item.status === 'Overdue' ? 'bg-red-500' : 'bg-amber-500'
+                        }`} />
+                        <span className="font-semibold">#{item.installmentNumber}</span>
+                        <span className="mx-1 text-gray-400/70">•</span>
+                        <span className="font-medium">{formatCurrency(item.amount)}</span>
+                        <span className="mx-1 text-gray-400/70">•</span>
+                        <span>{formatDate(item.dueDate)}</span>
+                        <span className="mx-1 text-gray-400/70">•</span>
+                        <span className="font-semibold">{item.status}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Footer actions */}
-                <div className="px-5 py-4 flex items-center justify-between border-t mt-4 bg-white/60">
+                <div className="px-4 py-3 flex items-center justify-between border-t mt-3 bg-white/60">
                   <div className="text-xs text-gray-500">Created {formatDate(plan.createdAt)}</div>
                   <div className="flex gap-2">
-                    {plan.adminApproved ? (
-                      <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-green-100 text-green-800 text-sm font-semibold ring-1 ring-green-300">
-                        <CheckCircle className="w-4 h-4" /> Approved Plan
-                      </span>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => rejectQuick(plan._id)}
-                          disabled={savingId === plan._id}
-                          className="px-3 py-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white text-sm rounded-lg shadow-sm"
-                        >
-                          Reject
-                        </button>
-                        <button
-                          onClick={() => approveQuick(plan._id)}
-                          disabled={savingId === plan._id}
-                          className="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white text-sm rounded-lg shadow-sm"
-                        >
-                          Approve
-                        </button>
-                        <button onClick={() => openReview(plan)} className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg shadow-sm">Review</button>
-                      </>
-                    )}
+                    {(() => {
+                      const adminStatus = getAdminPlanStatus(plan);
+                      if (adminStatus === "Approved") {
+                        return (
+                          <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-green-100 text-green-800 text-sm font-semibold ring-1 ring-green-300">
+                            <CheckCircle className="w-4 h-4" /> Approved Plan
+                          </span>
+                        );
+                      }
+                      if (adminStatus === "Rejected") {
+                        return (
+                          <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-red-100 text-red-800 text-sm font-semibold ring-1 ring-red-300">
+                            <XCircle className="w-4 h-4" /> Rejected Plan
+                          </span>
+                        );
+                      }
+                      // Pending → show action buttons
+                      return (
+                        <>
+                          <button
+                            onClick={() => rejectQuick(plan._id)}
+                            disabled={savingId === plan._id}
+                            className="px-3 py-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white text-sm rounded-lg shadow-sm"
+                          >
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => approveQuick(plan._id)}
+                            disabled={savingId === plan._id}
+                            className="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white text-sm rounded-lg shadow-sm"
+                          >
+                            Approve
+                          </button>
+                          <button onClick={() => openReview(plan)} className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg shadow-sm">Review</button>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

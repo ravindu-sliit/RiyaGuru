@@ -76,7 +76,7 @@ const CreatePayment = () => {
                     courseName={courseName}
                     courseId={courseId}
                     initialPaymentType={queryPaymentType === 'Installment' ? 'Installment' : 'Full'}
-                    studentId={localStorage.getItem("rg_userId")}
+                    studentId={localStorage.getItem("rg_id") || localStorage.getItem("rg_userId")}
                     onSuccess={() => setShowTabs(false)}
                     onSwitchTab={(tab) => {
                       if (tab === "installment") {

@@ -376,13 +376,14 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
     try {
       // Prepare payload
       const mapCourseName = (name) => {
-        const n = String(name || "").trim().toLowerCase();
-        if (n === "car") return "Car";
-        if (n === "van") return "Van";
-        if (n === "heavy vehicle" || n === "heavy" || n === "heavy-vehicle") return "Heavy Vehicle";
-        if (n === "light vehicle" || n === "light" || n === "light-vehicle") return "Light Vehicle";
-        if (n === "motor bicycle" || n === "motor-bicycle" || n === "motor bike" || n === "motorbike" || n === "motorcycle" || n === "motor cycle") return "Motor Bicycle";
-        if (n === "three wheeler" || n === "three-wheeler" || n === "threewheel" || n === "tuk" || n === "tuk tuk") return "Three Wheeler";
+        const raw = String(name || "").trim().toLowerCase();
+        const compact = raw.replace(/[^a-z0-9]/g, ""); // remove spaces, hyphens, etc.
+        if (compact === "car") return "Car";
+        if (compact === "van") return "Van";
+        if (["heavyvehicle","heavy"].includes(compact)) return "Heavy Vehicle";
+        if (["lightvehicle","light"].includes(compact)) return "Light Vehicle";
+        if (["motorbicycle","motorbike","motorcycle","motorcycle","motorcycle","motorcycle"].includes(compact)) return "Motor Bicycle";
+        if (["threewheeler","threewheel","tuk","tuktuk"].includes(compact)) return "Three Wheeler";
         // default: return as-is; backend may reject if not in enum
         return name;
       };
@@ -557,11 +558,11 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
   }
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-2xl mx-auto">
+      <div className="rounded-2xl bg-white p-4 md:p-6 space-y-6 shadow-xl ring-1 ring-gray-200">
       {/* Student Information */}
       <div
-        className="bg-gray-50 rounded-xl p-6"
-        style={{ backgroundColor: "#F5F6FA" }}
+        className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
       >
         <h3 className="text-lg font-semibold mb-4" style={{ color: "#0A1A2F" }}>
           Student Information
@@ -759,8 +760,7 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
       {/* Card Details */}
       {formData.paymentMethod === "Card" && (
         <div
-          className="bg-gray-50 rounded-xl p-6"
-          style={{ backgroundColor: "#F5F6FA" }}
+          className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
         >
           <div className="flex items-center gap-3 mb-4">
             <CreditCard className="w-6 h-6" style={{ color: "#F47C20" }} />
@@ -907,8 +907,7 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
       {/* Bank Transfer Details */}
       {formData.paymentMethod === "Bank" && (
         <div
-          className="bg-gray-50 rounded-xl p-6"
-          style={{ backgroundColor: "#F5F6FA" }}
+          className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
         >
           <div className="flex items-center gap-3 mb-4">
             <Building className="w-6 h-6" style={{ color: "#2D74C4" }} />
@@ -962,7 +961,7 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
       )}
 
       {formData.paymentMethod === "Cash" && (
-        <div className="bg-gray-50 rounded-xl p-6" style={{ backgroundColor: "#F5F6FA" }}>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
           <h3 className="text-lg font-semibold mb-2" style={{ color: "#0A1A2F" }}>Cash Payment Instructions</h3>
           <p className="text-sm text-gray-700">
             Visit our branch and pay directly to activate your booking. Office address:
@@ -1004,6 +1003,7 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
           )}
         </button>
       </div>
+    </div>
     </div>
   );
 };

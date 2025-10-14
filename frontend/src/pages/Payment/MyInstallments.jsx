@@ -295,7 +295,7 @@ const EditInstallmentPlanModal = ({
 // Main Component
 const MyInstallmentPlans = () => {
   const navigate = useNavigate();
-  const studentId = localStorage.getItem("rg_userId");
+  const studentId = localStorage.getItem("rg_id") || localStorage.getItem("rg_userId");
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

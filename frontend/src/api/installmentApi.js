@@ -2,7 +2,7 @@
 const API_URL = `${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/installments`;
 
 const authHeaders = (extra = {}) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("rg_token");
   const headers = { ...extra };
   if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
