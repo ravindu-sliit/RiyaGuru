@@ -38,8 +38,8 @@ export default function AdminLayout({ children }) {
         backgroundPosition: "center",
       }}
     >
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-white/30 bg-white/50 backdrop-blur-md shadow-sm flex flex-col">
+      {/* Sidebar (fixed, non-scroll) */}
+      <aside className="fixed top-0 left-0 h-screen w-64 border-r border-white/30 bg-white/50 backdrop-blur-md shadow-sm flex flex-col">
         <div className="px-6 py-4 font-bold text-lg border-b border-white/30 text-gray-900">RiyaGuru.lk Admin</div>
         <nav className="flex flex-col p-4 space-y-2 flex-grow">
           {nav.map((item) => (
@@ -68,12 +68,14 @@ export default function AdminLayout({ children }) {
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 p-6">
-        <div className="rounded-2xl border border-white/30 bg-white/50 backdrop-blur-md shadow-sm p-6 min-h-[calc(100vh-48px)]">
-          {children ? children : <Outlet />}
-        </div>
-      </main>
+      {/* Right content: scrollable area */}
+      <div className="flex-1 ml-64 h-screen flex flex-col">
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="rounded-2xl border border-white/30 bg-white/50 backdrop-blur-md shadow-sm p-6 min-h-[calc(100vh-48px)]">
+            {children ? children : <Outlet />}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

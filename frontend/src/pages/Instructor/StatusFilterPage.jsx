@@ -43,9 +43,9 @@ export default function StatusFilterPage() {
   const stats = getStatusStats();
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50">
+      <nav className="flex justify-between items-center rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm px-6 py-3 mb-6">
         <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
           <span className="text-orange-500 text-2xl"></span>
           Instructor Management
@@ -54,21 +54,21 @@ export default function StatusFilterPage() {
     
           <Link
             to="/admin/Instructordashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-600 bg-white/70 backdrop-blur-sm border border-white/40 font-medium hover:bg-white/80"
           >
              Instructor DashBoard
           </Link>
         </div>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-8 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-6">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
               Filter by Status
             </h1>
-            <p className="text-slate-600 text-lg">
+            <p className="text-gray-800 text-lg font-medium">
               View instructors by their current status
             </p>
           </div>
@@ -76,7 +76,7 @@ export default function StatusFilterPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/admin/Instructordashboard"
-              className="flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
+              className="flex items-center gap-2 border border-white/40 bg-white/70 backdrop-blur-sm hover:bg-white/80 text-gray-800 px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
             >
               ← Back to All Instructors
             </Link>
@@ -84,19 +84,19 @@ export default function StatusFilterPage() {
         </div>
 
         {/* Filter Controls */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+        <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             {/* Status Filter */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <span className="text-orange-500 text-lg">🔍</span>
-                <label className="text-sm font-medium text-slate-700">
+                <label className="text-sm font-semibold text-gray-900">
                   Filter by Status:
                 </label>
               </div>
               <div className="relative">
                 <select
-                  className="pl-4 pr-10 py-3 bg-slate-50 border-2 border-slate-200 rounded-lg text-slate-700 focus:border-orange-400 focus:ring-4 focus:ring-orange-400/20 focus:outline-none transition-all appearance-none cursor-pointer min-w-[150px]"
+                  className="pl-4 pr-10 py-3 bg-white/70 backdrop-blur-sm border border-white/40 rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-300 focus:outline-none transition-all appearance-none cursor-pointer min-w-[150px]"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                 >
@@ -104,7 +104,7 @@ export default function StatusFilterPage() {
                   <option value="Not-Active"> Not-Active</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <span className="text-slate-400">▼</span>
+                  <span className="text-gray-500">▼</span>
                 </div>
               </div>
             </div>
@@ -127,31 +127,31 @@ export default function StatusFilterPage() {
           </div>
 
           {/* Quick Stats */}
-          <div className="mt-6 pt-6 border-t border-slate-200">
+          <div className="mt-6 pt-6 border-t border-white/30">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-slate-50 rounded-lg">
-                <div className="text-2xl font-bold text-slate-800 mb-1">
+              <div className="text-center p-4 rounded-lg border border-white/40 bg-white/40">
+                <div className="text-2xl font-bold text-gray-900 mb-1">
                   {rows.length}
                 </div>
-                <div className="text-sm text-slate-600 font-medium">
+                <div className="text-sm text-gray-800 font-medium">
                   {status === "Active"
                     ? "Active Instructors"
                     : "Inactive Instructors"}
                 </div>
               </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
+              <div className="text-center p-4 rounded-lg border border-white/40 bg-white/40">
                 <div className="text-2xl font-bold text-green-600 mb-1">
                   {stats.activeCount}
                 </div>
-                <div className="text-sm text-slate-600 font-medium">
+                <div className="text-sm text-gray-800 font-medium">
                   Total Active
                 </div>
               </div>
-              <div className="text-center p-4 bg-amber-50 rounded-lg">
+              <div className="text-center p-4 rounded-lg border border-white/40 bg-white/40">
                 <div className="text-2xl font-bold text-amber-600 mb-1">
                   {stats.inactiveCount}
                 </div>
-                <div className="text-sm text-slate-600 font-medium">
+                <div className="text-sm text-gray-800 font-medium">
                   Total Inactive
                 </div>
               </div>
@@ -161,40 +161,40 @@ export default function StatusFilterPage() {
 
         {/* Results */}
         {loading ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16">
+          <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-16">
             <div className="flex flex-col items-center justify-center py-8">
-              <div className="w-12 h-12 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mb-4"></div>
-              <p className="text-slate-600 font-medium">
+              <div className="w-12 h-12 border-4 border-white/50 border-t-orange-500 rounded-full animate-spin mb-4"></div>
+              <p className="text-gray-800 font-medium">
                 Loading instructors...
               </p>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-gray-700 mt-1">
                 Please wait while we fetch the data
               </p>
             </div>
           </div>
         ) : rows.length > 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm overflow-hidden">
             {/* Results Header */}
-            <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
+            <div className="border-b border-white/40 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-orange-500 text-lg"></span>
-                  <h3 className="text-lg font-semibold text-slate-800">
+                  <h3 className="text-lg font-bold text-gray-900">
                     {status} Instructors ({rows.length})
                   </h3>
                 </div>
-                <div className="text-sm text-slate-600">
+                <div className="text-sm text-gray-800">
                   Last updated: {new Date().toLocaleTimeString()}
                 </div>
               </div>
             </div>
 
             {/* Instructor List */}
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-white/40">
               {rows.map((r) => (
                 <div
                   key={r.instructorId}
-                  className="p-6 hover:bg-slate-50 transition-colors group"
+                  className="p-6 hover:bg-white/60 transition-colors group"
                 >
                   <div className="flex items-center justify-between">
                     {/* Info */}
@@ -206,7 +206,7 @@ export default function StatusFilterPage() {
         src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${r.image}`}
         alt={r.name}
         className="w-full h-full object-cover"
-        onError={(e) => (e.currentTarget.src = "/avatar.png")}
+        onError={(e) => (e.currentTarget.src = "/avatar.svg")}
       />
     ) : (
       r.name?.charAt(0)?.toUpperCase() || "?"
@@ -216,24 +216,24 @@ export default function StatusFilterPage() {
   {/* Instructor Details */}
   <div className="flex-1">
     <div className="flex items-center gap-3 mb-1">
-      <h4 className="text-lg font-semibold text-slate-800">{r.name}</h4>
-      <span className="font-mono text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">
+      <h4 className="text-lg font-semibold text-gray-900">{r.name}</h4>
+      <span className="font-mono text-sm text-gray-800 border border-white/40 bg-white/70 backdrop-blur-sm px-2 py-1 rounded">
         {r.instructorId}
       </span>
     </div>
-    <div className="flex items-center gap-4 text-sm text-slate-600">
+    <div className="flex items-center gap-4 text-sm text-gray-800">
       <div className="flex items-center gap-1">
         <span>{getSpecializationIcon(r.specialization)}</span>
-        <span>{r.specialization}</span>
+        <span className="font-semibold">{r.specialization}</span>
       </div>
       {r.email && (
         <div className="flex items-center gap-1">
-          <span>{r.email}</span>
+          <span className="font-medium">{r.email}</span>
         </div>
       )}
       {r.phone && (
         <div className="flex items-center gap-1">
-          <span>{r.phone}</span>
+          <span className="font-medium">{r.phone}</span>
         </div>
       )}
     </div>
@@ -258,7 +258,7 @@ export default function StatusFilterPage() {
               
                         <Link
                           to={`/admin/instructors/${r._id || r.id}/edit`}
-                          className="px-3 py-2 text-xs font-medium bg-slate-50 text-slate-700 rounded-lg hover:bg-slate-100"
+                          className="px-3 py-2 text-xs font-medium rounded-lg border border-white/40 bg-white/70 backdrop-blur-sm text-gray-800 hover:bg-white/80"
                         >
                           Edit
                         </Link>
@@ -270,15 +270,15 @@ export default function StatusFilterPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16">
+          <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-16">
             <div className="text-center">
               <div className="text-6xl mb-4">
                 {status === "Active" ? "" : ""}
               </div>
-              <h3 className="text-xl font-semibold text-slate-700 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 No {status.toLowerCase()} instructors found
               </h3>
-              <p className="text-slate-500 mb-6">
+              <p className="text-gray-700 mb-6">
                 There are currently no instructors with "{status}" status.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -290,7 +290,7 @@ export default function StatusFilterPage() {
                 </button>
                 <Link
                   to="/instructors/add"
-                  className="px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-lg hover:bg-gray-50 font-medium"
+                  className="px-6 py-3 rounded-lg border border-white/40 bg-white/70 backdrop-blur-sm text-gray-800 hover:bg-white/80 font-medium"
                 >
                   + Add New Instructor
                 </Link>
@@ -301,26 +301,25 @@ export default function StatusFilterPage() {
 
         {/* Summary */}
         {!loading && rows.length > 0 && (
-          <div className="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="mt-6 rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-orange-500 text-lg"></span>
-              <h3 className="text-lg font-semibold text-slate-800">Summary</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Summary</h3>
             </div>
             <div className="text-center">
-              <p className="text-slate-600">
-                Showing{" "}
-                <span className="font-semibold text-slate-800">
+              <p className="text-gray-800">
+                Showing 
+                <span className="font-semibold text-gray-900">
                   {rows.length}
-                </span>{" "}
-                instructors with{" "}
-                <span className="font-semibold text-slate-800">
+                </span>
+                {" "}instructors with {" "}
+                <span className="font-semibold text-gray-900">
                   "{status}"
-                </span>{" "}
-                status
+                </span>
+                {" "}status
               </p>
-              <p className="text-sm text-slate-500 mt-1">
-                Use the filter above to switch between Active and Inactive
-                instructors
+              <p className="text-sm text-gray-700 mt-1">
+                Use the filter above to switch between Active and Inactive instructors
               </p>
             </div>
           </div>

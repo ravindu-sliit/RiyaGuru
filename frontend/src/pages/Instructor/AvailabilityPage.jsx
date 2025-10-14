@@ -61,9 +61,9 @@ export default function AvailabilityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50">
+      <nav className="flex justify-between items-center rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm px-6 py-3 mb-6">
         <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
           <span className="text-orange-500 text-2xl"></span>
           Instructor Management
@@ -73,21 +73,21 @@ export default function AvailabilityPage() {
           
           <Link
             to="/admin/Instructordashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-orange-600 bg-white/70 backdrop-blur-sm border border-white/40 font-medium hover:bg-white/80"
           >
             Instructors DashBoard
           </Link>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-8 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
               Instructor Availability
             </h1>
-            <p className="text-slate-600 text-lg">
+            <p className="text-gray-800 text-lg font-medium">
               Find available instructors for specific dates and time slots
             </p>
           </div>
@@ -95,7 +95,7 @@ export default function AvailabilityPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/admin/Instructordashboard"
-              className="flex items-center gap-2 bg-white hover:bg-gray-50 text-slate-700 px-6 py-3 rounded-lg font-medium border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
+              className="flex items-center gap-2 border border-white/40 bg-white/70 backdrop-blur-sm hover:bg-white/80 text-gray-800 px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
             >
               ← Back
             </Link>
@@ -103,10 +103,10 @@ export default function AvailabilityPage() {
         </div>
 
         {/* Search Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+        <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-6">
             <span className="text-orange-500 text-lg">🔍</span>
-            <h2 className="text-xl font-semibold text-slate-800">
+            <h2 className="text-xl font-semibold text-gray-900">
               Search Availability
             </h2>
           </div>
@@ -114,7 +114,7 @@ export default function AvailabilityPage() {
           <div className="flex flex-col lg:flex-row lg:items-end gap-4">
             {/* Date Filter */}
             <div className="flex-1">
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                  Select Date
               </label>
               <div className="flex gap-2">
@@ -122,11 +122,11 @@ export default function AvailabilityPage() {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="flex-1 px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-lg text-slate-700 focus:border-orange-400 focus:ring-4 focus:ring-orange-400/20 focus:outline-none transition-all"
+                  className="flex-1 px-4 py-3 bg-white/70 backdrop-blur-sm border border-white/40 rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-300 focus:outline-none transition-all"
                 />
                 <button
                   onClick={setTodayDate}
-                  className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-all text-sm border border-slate-200"
+                  className="px-4 py-3 border border-white/40 bg-white/70 backdrop-blur-sm hover:bg-white/80 text-gray-800 rounded-lg font-medium transition-all text-sm"
                 >
                   Today
                 </button>
@@ -135,7 +135,7 @@ export default function AvailabilityPage() {
 
             {/* Time Filter */}
             <div className="flex-1">
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
                  Time Range (Optional)
               </label>
               <input
@@ -143,7 +143,7 @@ export default function AvailabilityPage() {
                 placeholder="e.g., 09:00-17:00 or 14:30-16:30"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 focus:border-orange-400 focus:ring-4 focus:ring-orange-400/20 focus:outline-none transition-all"
+                className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-white/40 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-orange-300 focus:outline-none transition-all"
               />
             </div>
 
@@ -166,7 +166,7 @@ export default function AvailabilityPage() {
 
               <button
                 onClick={clearFilters}
-                className="px-4 py-3 bg-white hover:bg-gray-50 text-slate-700 border border-slate-200 hover:border-slate-300 rounded-lg font-medium transition-all"
+                className="px-4 py-3 border border-white/40 bg-white/70 backdrop-blur-sm hover:bg-white/80 text-gray-800 rounded-lg font-medium transition-all"
               >
                 Clear
               </button>
@@ -175,8 +175,8 @@ export default function AvailabilityPage() {
 
           {/* Search Info */}
           {(date || time) && (
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center gap-2 text-blue-700 text-sm">
+            <div className="mt-4 p-3 rounded-lg border border-blue-200 bg-blue-50/80 backdrop-blur-sm">
+              <div className="flex items-center gap-2 text-blue-800 text-sm">
                 <span>🔍</span>
                 <span>
                   Searching for instructors
@@ -187,7 +187,7 @@ export default function AvailabilityPage() {
                     </span>
                   )}
                   {time && (
-                    <span className="font-medium"> during {time}</span>
+                    <span className="font-semibold"> during {time}</span>
                   )}
                 </span>
               </div>
@@ -197,13 +197,13 @@ export default function AvailabilityPage() {
 
         {/* Results */}
         {loading ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16">
+          <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-16">
             <div className="flex flex-col items-center justify-center py-8">
-              <div className="w-12 h-12 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mb-4"></div>
-              <p className="text-slate-600 font-medium">
+              <div className="w-12 h-12 border-4 border-white/50 border-t-orange-500 rounded-full animate-spin mb-4"></div>
+              <p className="text-gray-800 font-medium">
                 Searching for available instructors...
               </p>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-gray-700 mt-1">
                 Please wait while we check their schedules
               </p>
             </div>
@@ -214,12 +214,12 @@ export default function AvailabilityPage() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <span className="text-orange-500 text-lg"></span>
-                <h3 className="text-xl font-semibold text-slate-800">
+                <h3 className="text-xl font-bold text-gray-900">
                   Available Instructors ({rows.length})
                 </h3>
               </div>
               {rows.length > 0 && (
-                <div className="text-sm text-slate-600">
+                <div className="text-sm text-gray-800">
                   Last updated: {new Date().toLocaleTimeString()}
                 </div>
               )}
@@ -231,7 +231,7 @@ export default function AvailabilityPage() {
                 {rows.map((r) => (
                   <div
                     key={r.instructorId}
-                    className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-all duration-200 group"
+                    className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-6 hover:shadow-md transition-all duration-200 group"
                   >
                     {/* Instructor Header */}
                     {/* Name + Photo */}
@@ -252,7 +252,7 @@ export default function AvailabilityPage() {
   </div>
 
   <div>
-    <div className="font-medium text-slate-800">{r.name}</div>
+    <div className="font-semibold text-gray-900">{r.name}</div>
   </div>
 </div>
 
@@ -261,7 +261,7 @@ export default function AvailabilityPage() {
                     <div className="space-y-3 mb-4">
                       {/* Specialization */}
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">
+                        <span className="text-sm text-gray-800 font-medium">
                           Specialization:
                         </span>
                         <div
@@ -276,15 +276,15 @@ export default function AvailabilityPage() {
 
                       {/* Phone */}
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">Phone:</span>
-                        <span className="text-sm font-medium text-slate-800">
+                        <span className="text-sm text-gray-800 font-medium">Phone:</span>
+                        <span className="text-sm font-semibold text-gray-900">
                           {r.phone || "Not provided"}
                         </span>
                       </div>
 
                       {/* Status */}
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">Status:</span>
+                        <span className="text-sm text-gray-800 font-medium">Status:</span>
                         <span
                           className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
                             r.status === "Active"
@@ -299,16 +299,16 @@ export default function AvailabilityPage() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2 pt-4 border-t border-slate-100">
+                    <div className="flex gap-2 pt-4 border-t border-white/30">
                       <Link
                         to={``}
-                        className="flex-1 px-3 py-2 text-sm font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-center"
+                        className="flex-1 px-3 py-2 text-sm font-medium rounded-lg border border-white/40 bg-white/70 backdrop-blur-sm text-blue-700 hover:bg-white/80 transition-colors text-center"
                       >
                          View Profile
                       </Link>
                       <Link
                         to={``}
-                        className="flex-1 px-3 py-2 text-sm font-medium bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors text-center"
+                        className="flex-1 px-3 py-2 text-sm font-medium rounded-lg border border-white/40 bg-white/70 backdrop-blur-sm text-orange-700 hover:bg-white/80 transition-colors text-center"
                       >
                          Schedule
                       </Link>
@@ -317,13 +317,13 @@ export default function AvailabilityPage() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-16">
+              <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm p-16">
                 <div className="text-center">
                   <div className="text-6xl mb-4"></div>
-                  <h3 className="text-xl font-semibold text-slate-700 mb-2">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     No Available Instructors
                   </h3>
-                  <p className="text-slate-500 mb-6">
+                  <p className="text-gray-700 mb-6">
                     {date || time
                       ? "No instructors are available for the selected date and time."
                       : "Search for instructors by selecting a date or time range above."}
@@ -332,7 +332,7 @@ export default function AvailabilityPage() {
                     {(date || time) && (
                       <button
                         onClick={clearFilters}
-                        className="px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                        className="px-6 py-3 rounded-lg border border-white/40 bg-white/70 backdrop-blur-sm text-gray-800 hover:bg-white/80 transition-colors font-medium"
                       >
                         Clear Filters
                       </button>
@@ -340,7 +340,7 @@ export default function AvailabilityPage() {
                     <Link
                       to="/admin/instructors/add"
                       className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
-                    >
+                      >
                       + Add New Instructor
                     </Link>
                   </div>

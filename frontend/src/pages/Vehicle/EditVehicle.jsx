@@ -161,7 +161,7 @@ const handleSubmit = async (e) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="max-w-6xl mx-auto px-6 py-6">
         <button
@@ -180,10 +180,10 @@ const handleSubmit = async (e) => {
       <div className="max-w-6xl mx-auto px-6 pb-10">
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-lg shadow border overflow-hidden grid md:grid-cols-3"
+          className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md shadow-sm overflow-hidden grid md:grid-cols-3"
         >
           {/* Main Form */}
-          <div className="p-6 md:col-span-2 border-r">
+          <div className="p-6 md:col-span-2 border-r border-white/30">
             {/* Basic Info */}
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -201,9 +201,9 @@ const handleSubmit = async (e) => {
                     value={formData.regNo}
                     onChange={handleInputChange}
                     placeholder="ABC-1234"
-                    className={`w-full px-3 py-2 border rounded-md text-sm ${
-                      errors.regNo ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-400`}
+                    className={`w-full px-3 py-2 border rounded-md text-sm bg-white/70 backdrop-blur-sm ${
+                      errors.regNo ? "border-red-400" : "border-white/40"
+                    } focus:ring-2 focus:ring-orange-300`}
                   />
                   {errors.regNo && (
                     <p className="text-xs text-red-500 mt-1">{errors.regNo}</p>
@@ -221,9 +221,9 @@ const handleSubmit = async (e) => {
                     value={formData.brand}
                     onChange={handleInputChange}
                     placeholder="Honda, Toyota, etc."
-                    className={`w-full px-3 py-2 border rounded-md text-sm ${
-                      errors.brand ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-400`}
+                    className={`w-full px-3 py-2 border rounded-md text-sm bg-white/70 backdrop-blur-sm ${
+                      errors.brand ? "border-red-400" : "border-white/40"
+                    } focus:ring-2 focus:ring-orange-300`}
                   />
                   {errors.brand && (
                     <p className="text-xs text-red-500 mt-1">{errors.brand}</p>
@@ -241,9 +241,9 @@ const handleSubmit = async (e) => {
                     value={formData.model}
                     onChange={handleInputChange}
                     placeholder="Civic, Aqua, etc."
-                    className={`w-full px-3 py-2 border rounded-md text-sm ${
-                      errors.model ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-400`}
+                    className={`w-full px-3 py-2 border rounded-md text-sm bg-white/70 backdrop-blur-sm ${
+                      errors.model ? "border-red-400" : "border-white/40"
+                    } focus:ring-2 focus:ring-orange-300`}
                   />
                   {errors.model && (
                     <p className="text-xs text-red-500 mt-1">{errors.model}</p>
@@ -262,9 +262,9 @@ const handleSubmit = async (e) => {
                     max={new Date().getFullYear() + 1}
                     value={formData.year}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2 border rounded-md text-sm ${
-                      errors.year ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-400`}
+                    className={`w-full px-3 py-2 border rounded-md text-sm bg-white/70 backdrop-blur-sm ${
+                      errors.year ? "border-red-400" : "border-white/40"
+                    } focus:ring-2 focus:ring-orange-300`}
                   />
                   {errors.year && (
                     <p className="text-xs text-red-500 mt-1">{errors.year}</p>
@@ -288,9 +288,9 @@ const handleSubmit = async (e) => {
                     name="type"
                     value={formData.type}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2 border rounded-md text-sm ${
-                      errors.type ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-400`}
+                    className={`w-full px-3 py-2 border rounded-md text-sm bg-white/70 backdrop-blur-sm ${
+                      errors.type ? "border-red-400" : "border-white/40"
+                    } focus:ring-2 focus:ring-orange-300`}
                   >
                     <option value="">Select vehicle type</option>
                     <option value="Car">Car</option>
@@ -312,9 +312,9 @@ const handleSubmit = async (e) => {
                     name="fuelType"
                     value={formData.fuelType}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2 border rounded-md text-sm ${
-                      errors.fuelType ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-400`}
+                    className={`w-full px-3 py-2 border rounded-md text-sm bg-white/70 backdrop-blur-sm ${
+                      errors.fuelType ? "border-red-400" : "border-white/40"
+                    } focus:ring-2 focus:ring-orange-300`}
                   >
                     <option value="">Select fuel type</option>
                     <option value="Petrol">Petrol</option>
@@ -341,9 +341,9 @@ const handleSubmit = async (e) => {
                     value={formData.mileage}
                     onChange={handleInputChange}
                     placeholder="0"
-                    className={`w-full px-3 py-2 border rounded-md text-sm ${
-                      errors.mileage ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-400`}
+                    className={`w-full px-3 py-2 border rounded-md text-sm bg-white/70 backdrop-blur-sm ${
+                      errors.mileage ? "border-red-400" : "border-white/40"
+                    } focus:ring-2 focus:ring-orange-300`}
                   />
                   {errors.mileage && (
                     <p className="text-xs text-red-500 mt-1">
@@ -361,7 +361,7 @@ const handleSubmit = async (e) => {
                     name="status"
                     value={formData.status}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-orange-400"
+                    className="w-full px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-md text-sm focus:ring-2 focus:ring-orange-300"
                   >
                     <option value="Active">Active</option>
                     <option value="Not-Active">Not Active</option>
@@ -386,7 +386,7 @@ const handleSubmit = async (e) => {
                     name="lastServiceDate"
                     value={formData.lastServiceDate}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-orange-400"
+                    className="w-full px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-md text-sm focus:ring-2 focus:ring-orange-300"
                   />
                 </div>
                 <div>
@@ -398,7 +398,7 @@ const handleSubmit = async (e) => {
                     name="nextServiceDue"
                     value={formData.nextServiceDue}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-orange-400"
+                    className="w-full px-3 py-2 border border-white/40 bg-white/70 backdrop-blur-sm rounded-md text-sm focus:ring-2 focus:ring-orange-300"
                   />
                 </div>
               </div>
@@ -406,13 +406,13 @@ const handleSubmit = async (e) => {
           </div>
 
           {/* Image Sidebar */}
-          <div className="p-6 bg-gray-50 flex flex-col">
+          <div className="p-6 flex flex-col">
   <div className="mb-6 flex-1">
     <h3 className="text-sm font-semibold text-gray-900 mb-2">
       Vehicle Image
     </h3>
     {imagePreview || formData.image ? (
-      <div className="relative border rounded-md overflow-hidden">
+      <div className="relative border border-white/40 rounded-md overflow-hidden">
         <img
           src={
             imagePreview
@@ -436,7 +436,7 @@ const handleSubmit = async (e) => {
     ) : (
       <div
         onClick={() => document.getElementById("image").click()}
-        className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:border-orange-500 hover:bg-orange-50"
+        className="border-2 border-dashed border-white/50 bg-white/40 backdrop-blur-sm rounded-md p-6 text-center cursor-pointer hover:bg-white/60"
       >
         <Upload className="mx-auto text-gray-400 w-10 h-10 mb-2" />
         <p className="text-sm text-gray-500">
@@ -476,9 +476,9 @@ const handleSubmit = async (e) => {
     </button>
     <button
       type="button"
-      onClick={() => navigate("/vehicles")}
+      onClick={() => navigate("/admin/vehicles")}
       disabled={loading}
-      className="w-full py-2 px-4 rounded-md border border-gray-300 bg-white text-gray-600 font-medium text-sm hover:bg-gray-50 disabled:opacity-60"
+      className="w-full py-2 px-4 rounded-md border border-white/40 bg-white/70 backdrop-blur-sm text-gray-700 font-medium text-sm hover:bg-white/80 disabled:opacity-60"
     >
       Cancel
     </button>
