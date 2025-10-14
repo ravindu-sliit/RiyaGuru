@@ -302,7 +302,6 @@ const MyInstallmentPlans = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCourse, setFilterCourse] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-  const [filterInstallmentNum, setFilterInstallmentNum] = useState("");
   const [editingPlan, setEditingPlan] = useState(null);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("All"); // All, Pending, Active, Overdue, Completed
@@ -436,15 +435,14 @@ const MyInstallmentPlans = () => {
       plan.courseId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       plan._id?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterCourse === "" || plan.courseId === filterCourse;
-    const matchesStatus =
-      filterStatus === "" || plan.schedule.some((s) => s.status === filterStatus);
-    const matchesInstallment =
-      filterInstallmentNum === "" || plan.schedule.some((s) => String(s.installmentNumber) === String(filterInstallmentNum));
-    // Compute overall status for tab (map Pending Approval/Down Payment Due under Pending)
+    // Use overall plan status for filtering (not individual installment statuses)
     const ov = getOverallStatus(plan);
+    const overallForFilter = ov === "Pending Approval" || ov === "Down Payment Due" ? "Pending" : ov;
+    const matchesStatus = filterStatus === "" || overallForFilter === filterStatus;
+    // Compute overall status for tab (map Pending Approval/Down Payment Due under Pending)
     const overallForTab = ov === "Pending Approval" || ov === "Down Payment Due" ? "Pending" : ov;
     const matchesTab = activeTab === "All" || overallForTab === activeTab;
-    return matchesSearch && matchesFilter && matchesStatus && matchesInstallment && matchesTab;
+    return matchesSearch && matchesFilter && matchesStatus && matchesTab;
   });
 
   // Get unique courses for filter dropdown
@@ -549,7 +547,7 @@ const MyInstallmentPlans = () => {
 
         {/* Search & Filter Bar */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -588,22 +586,13 @@ const MyInstallmentPlans = () => {
               >
                 <option value="">All Statuses</option>
                 <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
+                <option value="Active">Active</option>
                 <option value="Overdue">Overdue</option>
+                <option value="Completed">Completed</option>
               </select>
             </div>
 
-            {/* Installment # Filter */}
-            <div>
-              <input
-                type="number"
-                min="1"
-                placeholder="Installment #"
-                value={filterInstallmentNum}
-                onChange={(e) => setFilterInstallmentNum(e.target.value)}
-                className="w-full pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              />
-            </div>
+            
           </div>
         </div>
 
@@ -613,10 +602,10 @@ const MyInstallmentPlans = () => {
             <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">No Installment Plans Found</h3>
             <p className="text-gray-500">
-              {searchTerm || filterCourse || filterStatus || filterInstallmentNum
+              {searchTerm || filterCourse || filterStatus
                 ? "Try adjusting your filters."
                 : "You haven't created any installment plans yet."}
-            </p>
+          </p>
           </div>
         ) : (
           <div className="space-y-5">
