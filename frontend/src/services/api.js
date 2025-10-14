@@ -1,8 +1,9 @@
+import { getAuthToken } from "./authHeader";
+
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
 export async function apiFetch(path, options = {}) {
-  const raw = localStorage.getItem("rg_auth");
-  const token = raw ? JSON.parse(raw)?.token : null;
+  const token = getAuthToken();
 
   const headers = {
     ...(options.headers || {}),

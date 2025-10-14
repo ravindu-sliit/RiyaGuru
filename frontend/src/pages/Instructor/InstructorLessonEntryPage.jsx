@@ -7,6 +7,8 @@ import {
   ClipboardList,
 } from "lucide-react";
 import InstructorNav from "../../components/InstructorNav";
+import { lessonProgressService } from "../../services/lessonProgressService";
+import { getAuthToken } from "../../services/authHeader";
 
 export default function InstructorLessonEntryPage() {
   const [students, setStudents] = useState([]);
@@ -23,6 +25,9 @@ export default function InstructorLessonEntryPage() {
   });
 
   const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({});
+  const [existingLessonNumbers, setExistingLessonNumbers] = useState([]);
+  const [pendingValidation, setPendingValidation] = useState(false);
   const [stats, setStats] = useState({
     students: 0,
     courses: 0,
@@ -72,6 +77,27 @@ export default function InstructorLessonEntryPage() {
     loadCourses();
   }, [form.student_id]);
 
+  // When student + course selection changes, fetch existing completed lessons for uniqueness check
+  useEffect(() => {
+    async function loadExistingLessons() {
+      setExistingLessonNumbers([]);
+      if (!form.student_id || !form.vehicle_type) return;
+      try {
+        // vehicle_type holds the course_name
+        const data = await lessonProgressService.getLessonsByStudentAndCourse(form.student_id, form.vehicle_type);
+        // data may be array or object depending on API; normalize
+        const lessons = Array.isArray(data) ? data : (data?.lessons || data || []);
+        const nums = lessons.map((l) => Number(l.lesson_number)).filter((n) => !Number.isNaN(n));
+        setExistingLessonNumbers(nums);
+      } catch (err) {
+        console.error("Failed to load existing lessons for uniqueness check", err);
+        setExistingLessonNumbers([]);
+      }
+    }
+
+    loadExistingLessons();
+  }, [form.student_id, form.vehicle_type]);
+
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => {
@@ -86,63 +112,115 @@ export default function InstructorLessonEntryPage() {
       }
       return updated;
     });
+    // clear field-specific error when user changes it
+    setErrors((prev) => ({ ...prev, [e.target.name]: undefined }));
   }
 
   async function handleSubmit(e) {
   e.preventDefault();
   setMessage("");
-
-  // 🔹 Validate student
-  if (!form.student_id) {
-    setMessage("❌ Please select a student.");
-    return;
-  }
-
-  // 🔹 Validate course
-  if (!form.student_course_id) {
-    setMessage("❌ Please select a course.");
-    return;
-  }
-
-  // 🔹 Validate lesson number
-  if (!form.lesson_number || form.lesson_number < 1) {
-    setMessage("❌ Lesson number must be at least 1.");
-    return;
-  }
-
-  // 🔹 Validate instructor
-  if (!form.instructor_id) {
-    setMessage("❌ Instructor ID missing. Please log in again.");
-    return;
-  }
-
-  // 🔹 Require feedback if lesson is marked Completed
-  if (form.status === "Completed" && !form.feedback.trim()) {
-    setMessage("❌ Please provide feedback for a completed lesson.");
-    return;
-  }
+  // Validate and collect field level errors
+  const valid = validateForm();
+  if (!valid) return;
 
   try {
-    const res = await fetch("http://localhost:5000/api/lesson-progress/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed to save");
-
+    // quick client-side check for token
+    const token = getAuthToken();
+    if (!token) {
+      setMessage('❌ You are not authenticated. Please sign in again.');
+      return;
+    }
+    const data = await lessonProgressService.addLessonProgress(form);
+    // success
+    setErrors({});
     setMessage("✅ Lesson saved and progress updated!");
     setStats((prev) => ({
       ...prev,
       lessonsCompleted: prev.lessonsCompleted + 1,
     }));
   } catch (err) {
-    setMessage("❌ " + err.message);
+    const serverMsg = err?.message || "Failed to save";
+    // If server indicates a duplicate lesson, show it inline on lesson_number
+    if (serverMsg && /lesson\s*#?\d+/i.test(serverMsg) && /already/i.test(serverMsg)) {
+      setErrors((prev) => ({ ...prev, lesson_number: serverMsg }));
+      setMessage("");
+    } else if (serverMsg === 'Unauthorized' || /401/.test(serverMsg)) {
+      // token missing/expired
+      setMessage('❌ Unauthorized. Please login again.');
+    } else {
+      if (!errors.lesson_number) setMessage("❌ " + serverMsg);
+    }
+
     setStats((prev) => ({
       ...prev,
       pendingEntries: prev.pendingEntries + 1,
     }));
+  }
+}
+
+function validateForm() {
+  const next = {};
+  if (!form.student_id) next.student_id = "Please select a student.";
+  if (!form.student_course_id) next.student_course_id = "Please select a course.";
+
+  // lesson number must be a positive integer
+  const ln = parseInt(form.lesson_number, 10);
+  if (Number.isNaN(ln) || ln < 1) next.lesson_number = "Lesson number must be an integer >= 1.";
+
+  if (!form.instructor_id) next.instructor_id = "Instructor ID missing. Please re-login.";
+
+  if (form.status === "Completed" && !String(form.feedback || "").trim()) {
+    next.feedback = "Please provide feedback for a completed lesson.";
+  }
+
+  setErrors(next);
+  // if next has any keys with truthy values, invalid
+  return Object.keys(next).length === 0;
+}
+
+// Check that lesson_number is unique for selected student+course
+async function validateLessonNumberUnique() {
+  // quick client-side check from cached numbers
+  setErrors((prev) => ({ ...prev, lesson_number: undefined }));
+  const ln = parseInt(form.lesson_number, 10);
+  if (Number.isNaN(ln) || ln < 1) {
+    setErrors((prev) => ({ ...prev, lesson_number: "Lesson number must be an integer >= 1." }));
+    return false;
+  }
+
+  if (!form.student_id || !form.vehicle_type) {
+    // can't validate uniqueness until student+course selected
+    return true;
+  }
+
+  setPendingValidation(true);
+  try {
+    // use cached list where possible
+    if (existingLessonNumbers.includes(ln)) {
+      setErrors((prev) => ({ ...prev, lesson_number: `Lesson #${ln} already exists for this course.` }));
+      return false;
+    }
+
+    // As a fallback, check server (in case cache is stale)
+    try {
+      const data = await lessonProgressService.getLessonsByStudentAndCourse(form.student_id, form.vehicle_type);
+      const lessons = Array.isArray(data) ? data : (data?.lessons || data || []);
+      const nums = lessons.map((l) => Number(l.lesson_number)).filter((n) => !Number.isNaN(n));
+      setExistingLessonNumbers(nums);
+      if (nums.includes(ln)) {
+        setErrors((prev) => ({ ...prev, lesson_number: `Lesson #${ln} already exists for this course.` }));
+        return false;
+      }
+    } catch (e) {
+      // non-fatal: assume unique if server check fails
+      console.warn("Server uniqueness check failed, proceeding optimistically", e);
+    }
+
+    // unique
+    setErrors((prev) => ({ ...prev, lesson_number: undefined }));
+    return true;
+  } finally {
+    setPendingValidation(false);
   }
 }
 
@@ -209,7 +287,7 @@ export default function InstructorLessonEntryPage() {
               name="student_id"
               value={form.student_id}
               onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 ${errors.student_id ? 'border-red-500 focus:ring-red-300' : ''}`}
               required
             >
               <option value="">Select Student</option>
@@ -225,7 +303,7 @@ export default function InstructorLessonEntryPage() {
               name="student_course_id"
               value={form.student_course_id}
               onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 ${errors.student_course_id ? 'border-red-500 focus:ring-red-300' : ''}`}
               required
               disabled={!courses.length}
             >
@@ -243,18 +321,20 @@ export default function InstructorLessonEntryPage() {
               name="lesson_number"
               value={form.lesson_number}
               onChange={handleChange}
+              onBlur={async () => { await validateLessonNumberUnique(); }}
               placeholder="Lesson Number"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 ${errors.lesson_number ? 'border-red-500 focus:ring-red-300' : ''}`}
               min="1"
               required
             />
+            {errors.lesson_number && <div className="text-sm text-red-600 mt-1">{errors.lesson_number}</div>}
 
             {/* Status */}
             <select
               name="status"
               value={form.status}
               onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 ${errors.status ? 'border-red-500 focus:ring-red-300' : ''}`}
             >
               <option value="Completed">Completed</option>
               <option value="Pending">Pending</option>
@@ -266,12 +346,14 @@ export default function InstructorLessonEntryPage() {
               value={form.feedback}
               onChange={handleChange}
               placeholder="Feedback"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 ${errors.feedback ? 'border-red-500 focus:ring-red-300' : ''}`}
             />
+            {errors.feedback && <div className="text-sm text-red-600 mt-1">{errors.feedback}</div>}
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition disabled:opacity-60"
+              disabled={Object.keys(errors).some((k) => errors[k]) || pendingValidation}
             >
               Save Lesson
             </button>
