@@ -9,7 +9,7 @@ import {
   BookOpen,
   ChevronDown,
 } from "lucide-react";
-import { getAllPlans, deletePlan as apiDeletePlan } from "../../api/installmentApi";
+import { getAllPlans, deletePlan as apiDeletePlan, updatePlan as apiUpdatePlan } from "../../api/installmentApi";
 
 // Modal Component
 const EditInstallmentPlanModal = ({
@@ -329,7 +329,10 @@ const MyInstallmentPlans = () => {
   const getOverallStatus = (plan) => {
     const approvedCount = plan.schedule.filter((i) => i.status === "Approved").length;
     const overdueCount = plan.schedule.filter((i) => i.status === "Overdue").length;
-    if (!plan.adminApproved) return "Pending Approval";
+    if (!plan.adminApproved) {
+      if (plan.rejectionReason) return "Rejected";
+      return "Pending Approval";
+    }
     if (plan.adminApproved && !plan.downPaymentPaid) return "Down Payment Due";
     if (approvedCount === plan.schedule.length) return "Completed";
     if (overdueCount > 0) return "Overdue";
@@ -371,22 +374,36 @@ const MyInstallmentPlans = () => {
     fetchPlans();
   }, [fetchPlans]);
 
-  // Save edited plan (mock for now - replace with actual API call)
+  // Save edited plan (persist to backend)
   const handleSavePlan = async (updatedPlan) => {
     setSaving(true);
     try {
-      // TODO: Replace with actual API call
-      // const savedPlan = await updatePlan(updatedPlan._id, updatedPlan);
-      // setPlans(prev => prev.map(p => p._id === savedPlan._id ? savedPlan : p));
-
-      // For demo, just update locally
-      setPlans((prev) =>
-        prev.map((p) => (p._id === updatedPlan._id ? updatedPlan : p))
+      const approvedSum = Array.isArray(updatedPlan.schedule)
+        ? updatedPlan.schedule
+            .filter((i) => i.status === "Approved")
+            .reduce((sum, i) => sum + Number(i.amount || 0), 0)
+        : 0;
+      const remainingAmount = Math.max(
+        0,
+        Number(updatedPlan.totalAmount || 0) - Number(updatedPlan.downPayment || 0) - approvedSum
       );
+
+      const payload = {
+        totalAmount: updatedPlan.totalAmount,
+        downPayment: updatedPlan.downPayment,
+        totalInstallments: updatedPlan.totalInstallments,
+        startDate: updatedPlan.startDate,
+        remainingAmount,
+      };
+
+      const res = await apiUpdatePlan(updatedPlan._id, payload);
+      const savedPlan = res.plan || res; // api returns { plan }
+
+      setPlans((prev) => prev.map((p) => (p._id === savedPlan._id ? savedPlan : p)));
       setEditingPlan(null);
       alert("Plan updated successfully!");
     } catch (err) {
-      alert("Failed to save changes: " + err.message);
+      alert("Failed to save changes: " + (err?.message || "Unknown error"));
     } finally {
       setSaving(false);
     }
@@ -478,6 +495,8 @@ const MyInstallmentPlans = () => {
         return "text-yellow-700 bg-yellow-100";
       case "Down Payment Due":
         return "text-blue-700 bg-blue-100";
+      case "Rejected":
+        return "text-red-800 bg-red-100";
       default:
         return "text-gray-700 bg-gray-100";
     }
@@ -534,7 +553,7 @@ const MyInstallmentPlans = () => {
 
         {/* Tabs */}
         <div className="mb-4 flex gap-2 overflow-x-auto">
-          {['All','Pending','Active','Overdue','Completed'].map((tab) => (
+          {['All','Pending','Active','Overdue','Completed','Rejected'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -589,6 +608,7 @@ const MyInstallmentPlans = () => {
                 <option value="Active">Active</option>
                 <option value="Overdue">Overdue</option>
                 <option value="Completed">Completed</option>
+                <option value="Rejected">Rejected</option>
               </select>
             </div>
 
@@ -620,6 +640,8 @@ const MyInstallmentPlans = () => {
               );
               const approvedCount = plan.schedule.filter((i) => i.status === "Approved").length;
               const overallStatus = getOverallStatus(plan);
+              const isRejected = overallStatus === 'Rejected';
+              const canViewSchedule = plan.downPaymentPaid || overallStatus === 'Pending Approval';
               return (
                 <div key={plan._id} className={`bg-white rounded-xl shadow-sm border ${overallStatus === 'Overdue' ? 'border-red-300' : 'border-gray-100'}`}>
                   {/* Card header */}
@@ -682,7 +704,7 @@ const MyInstallmentPlans = () => {
                           Pay Down Payment
                         </button>
                       )}
-                      {(!plan.adminApproved) && (
+                      {(!plan.adminApproved && !isRejected) && (
                         <>
                           <button
                             onClick={() => setEditingPlan(plan)}
@@ -700,36 +722,40 @@ const MyInstallmentPlans = () => {
                           </button>
                         </>
                       )}
-                      <button
-                        onClick={() => setExpanded((prev) => ({ ...prev, [plan._id]: !prev[plan._id] }))}
-                        disabled={!plan.downPaymentPaid}
-                        title={plan.downPaymentPaid ? "Toggle schedule" : "Schedule unlocks after down payment is approved"}
-                        className={`px-4 py-2 rounded-lg border flex items-center gap-1 ${!plan.downPaymentPaid ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'border-gray-300 hover:bg-gray-50 text-gray-800'}`}
-                      >
-                        <ChevronDown className={`w-4 h-4 transition-transform ${expanded[plan._id] ? 'rotate-180' : ''}`} />
-                        {expanded[plan._id] ? 'Hide' : 'Show'} Schedule
-                      </button>
+                      {!isRejected && (
+                        <button
+                          onClick={() => setExpanded((prev) => ({ ...prev, [plan._id]: !prev[plan._id] }))}
+                          disabled={!canViewSchedule}
+                          title={canViewSchedule ? "Toggle schedule" : "Schedule unlocks after down payment is approved"}
+                          className={`px-4 py-2 rounded-lg border flex items-center gap-1 ${!canViewSchedule ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' : 'border-gray-300 hover:bg-gray-50 text-gray-800'}`}
+                        >
+                          <ChevronDown className={`w-4 h-4 transition-transform ${expanded[plan._id] ? 'rotate-180' : ''}`} />
+                          {expanded[plan._id] ? 'Hide' : 'Show'} Schedule
+                        </button>
+                      )}
                       {/* Download and Contact buttons removed as requested */}
-                      <button
-                        onClick={() => {
-                          if (!nextDisabled && next && plan.downPaymentPaid) {
-                            const amt = next.amount;
-                            const course = plan.courseId;
-                            navigate(`/create-payment?totalAmount=${amt}&courseName=${encodeURIComponent(course)}&courseId=${encodeURIComponent(course)}&paymentType=Installment#normal`);
-                          }
-                        }}
-                        disabled={nextDisabled || !plan.downPaymentPaid}
-                        title={!plan.downPaymentPaid ? "Please complete and get approval for down payment first" : (nextDisabled ? (canPayPlan(plan) ? "Next installment not within 7 days" : (plan.adminApproved ? "Please pay down payment first" : "Requires admin approval")) : `Pay #${next?.installmentNumber}`)}
-                        className={`px-4 py-2 rounded-lg text-white ${nextDisabled || !plan.downPaymentPaid ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'}`}
-                      >
-                        {next ? `Pay Next (#${next.installmentNumber})` : 'No Due'}
-                      </button>
+                      {!isRejected && (
+                        <button
+                          onClick={() => {
+                            if (!nextDisabled && next && plan.downPaymentPaid) {
+                              const amt = next.amount;
+                              const course = plan.courseId;
+                              navigate(`/create-payment?totalAmount=${amt}&courseName=${encodeURIComponent(course)}&courseId=${encodeURIComponent(course)}&paymentType=Installment#normal`);
+                            }
+                          }}
+                          disabled={nextDisabled || !plan.downPaymentPaid}
+                          title={!plan.downPaymentPaid ? "Please complete and get approval for down payment first" : (nextDisabled ? (canPayPlan(plan) ? "Next installment not within 7 days" : (plan.adminApproved ? "Please pay down payment first" : "Requires admin approval")) : `Pay #${next?.installmentNumber}`)}
+                          className={`px-4 py-2 rounded-lg text-white ${nextDisabled || !plan.downPaymentPaid ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'}`}
+                        >
+                          {next ? `Pay Next (#${next.installmentNumber})` : 'No Due'}
+                        </button>
+                      )}
                       </div>
                     </div>
                   </div>
                   {/* Divider */}
                   <div className="border-t" />
-                  <div className={`p-6 ${plan.downPaymentPaid && expanded[plan._id] ? '' : 'hidden'}`}>
+                  <div className={`p-6 ${(!isRejected && canViewSchedule && expanded[plan._id]) ? '' : 'hidden'}`}>
                     <h4 className="text-sm font-medium text-gray-700 mb-3">Installment Schedule</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                       {plan.schedule.map((item) => {

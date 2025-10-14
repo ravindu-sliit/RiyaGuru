@@ -103,22 +103,63 @@ export const getPlanById = async (req, res) => {
 // PUT /api/installments/:id
 export const updatePlan = async (req, res) => {
   try {
-    const { totalAmount, downPayment, remainingAmount, totalInstallments, startDate } = req.body;
+    const { totalAmount, downPayment, totalInstallments, startDate } = req.body;
 
     // 🔍 Validation
-    if (totalAmount <= 0) return res.status(400).json({ message: "Total amount must be positive" });
-    if (downPayment < 0) return res.status(400).json({ message: "Down payment cannot be negative" });
-    if (totalInstallments < 1 || totalInstallments > 12) {
+    if (Number(totalAmount) <= 0) return res.status(400).json({ message: "Total amount must be positive" });
+    if (Number(downPayment) < 0) return res.status(400).json({ message: "Down payment cannot be negative" });
+    if (Number(totalInstallments) < 1 || Number(totalInstallments) > 12) {
       return res.status(400).json({ message: "Installments must be between 1 and 12" });
     }
 
-    const plan = await InstallmentPlan.findByIdAndUpdate(
-      req.params.id,
-      { totalAmount, downPayment, remainingAmount, totalInstallments, startDate },
-      { new: true, runValidators: true }
-    );
+    const plan = await InstallmentPlan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ message: "Plan not found" });
 
-    if (!plan) return res.status(404).json({ message: "Unable to update plan" });
+    // Business guard: prevent edits after admin approval or after DP paid
+    if (plan.adminApproved || plan.downPaymentPaid) {
+      return res.status(400).json({ message: "Plan cannot be edited after approval or once down payment is paid" });
+    }
+
+    // Compute remainingAmount excluding any already approved items (shouldn't exist for pending plans)
+    const approvedSum = (plan.schedule || [])
+      .filter((i) => i.status === "Approved")
+      .reduce((sum, i) => sum + Number(i.amount || 0), 0);
+    let remainingAmount = Number(totalAmount) - Number(downPayment) - approvedSum;
+    if (remainingAmount < 0) remainingAmount = 0;
+
+    // Regenerate schedule for new config only when there are no approved installments
+    let newSchedule = plan.schedule;
+    const hasApproved = (plan.schedule || []).some((i) => i.status === "Approved");
+    if (!hasApproved) {
+      const n = Number(totalInstallments);
+      const start = new Date(startDate);
+      const base = Math.floor((remainingAmount / n) * 100) / 100; // 2dp floor
+      let remainderCents = Math.round(remainingAmount * 100) - Math.round(base * 100) * n;
+      newSchedule = Array.from({ length: n }).map((_, idx) => {
+        const due = new Date(start);
+        due.setMonth(due.getMonth() + idx);
+        const extra = remainderCents > 0 ? 0.01 : 0;
+        if (remainderCents > 0) remainderCents -= 1;
+        return {
+          installmentNumber: idx + 1,
+          amount: Number((base + extra).toFixed(2)),
+          dueDate: due,
+          status: "Pending",
+        };
+      });
+    }
+
+    plan.totalAmount = Number(totalAmount);
+    plan.downPayment = Number(downPayment);
+    plan.totalInstallments = Number(totalInstallments);
+    plan.startDate = new Date(startDate);
+    plan.remainingAmount = Number(remainingAmount);
+    plan.schedule = newSchedule;
+    // Any student edit should place plan back to review state
+    plan.adminApproved = false;
+    plan.rejectionReason = undefined;
+
+    await plan.save();
     return res.status(200).json({ plan });
   } catch (err) {
     console.error("❌ Error in updatePlan:", err);

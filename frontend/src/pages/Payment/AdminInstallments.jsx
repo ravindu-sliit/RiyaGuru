@@ -170,6 +170,8 @@ const AdminInstallments = () => {
     }
     // Also treat plain status field as rejected when present
     if (plan?.status === "Rejected") return "Rejected";
+    // Backward compatibility: some older records may only have rejectionReason
+    if (plan?.rejectionReason) return "Rejected";
     return "Pending"; // default
   }
 
