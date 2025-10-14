@@ -16,11 +16,13 @@ import {
   Phone,
   Award,
   Check,
+  ChevronLeft,
 } from "lucide-react";
 import ProgressHero from "../../components/ProgressHero";
 
 const AddBookingPage = () => {
   const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
   const [instructors, setInstructors] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -37,6 +39,9 @@ const AddBookingPage = () => {
   const [availableDates, setAvailableDates] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const prevStep = () => setCurrentStep((s) => Math.max(1, s - 1));
+  const nextStep = () => setCurrentStep((s) => Math.min(5, s + 1));
 
   const fetchInitialData = async () => {
     const [courses, instructors, vehicles] = await Promise.all([
@@ -107,6 +112,7 @@ const AddBookingPage = () => {
   const handleCourseSelect = (courseName) => {
     setFormData((prev) => ({ ...prev, courseName }));
     validateField("courseName", courseName);
+    setCurrentStep(2);
   };
 
   const handleInstructorSelect = (instructor) => {
@@ -122,12 +128,14 @@ const AddBookingPage = () => {
 
     const dates = instructor.availability.map((avail) => avail.date);
     setAvailableDates(dates);
+    setCurrentStep(3);
   };
 
   const handleVehicleSelect = (vehicle) => {
     setSelectedVehicle(vehicle);
     setFormData((prev) => ({ ...prev, vehicleRegNo: vehicle.regNo }));
     validateField("vehicleRegNo", vehicle.regNo);
+    setCurrentStep(4);
   };
 
   const handleDateSelect = (date) => {
@@ -216,12 +224,21 @@ const AddBookingPage = () => {
           subtitle="Schedule your next learning session"
           icon={<Calendar className="w-8 h-8 text-white" />}
         />
+        <div className="mt-4">
+          <button
+            onClick={() => navigate("/student/bookings")}
+            className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100"
+          >
+            <ChevronLeft className="w-4 h-4" /> Back to Bookings
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="space-y-8">
           {/* Step 1: Course Selection */}
+          {currentStep === 1 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
@@ -267,8 +284,10 @@ const AddBookingPage = () => {
               </div>
             )}
           </div>
+          )}
 
           {/* Step 2: Instructor Selection */}
+          {currentStep === 2 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -348,9 +367,20 @@ const AddBookingPage = () => {
                 <p className="text-red-600 text-sm">{errors.instructorName}</p>
               </div>
             )}
+            <div className="mt-6 flex justify-between">
+              <button
+                onClick={prevStep}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <ChevronLeft className="w-4 h-4" /> Previous
+              </button>
+              <div />
+            </div>
           </div>
+          )}
 
           {/* Step 3: Vehicle Selection */}
+          {currentStep === 3 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
@@ -438,9 +468,20 @@ const AddBookingPage = () => {
                 <p className="text-red-600 text-sm">{errors.vehicleRegNo}</p>
               </div>
             )}
+            <div className="mt-6 flex justify-between">
+              <button
+                onClick={prevStep}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <ChevronLeft className="w-4 h-4" /> Previous
+              </button>
+              <div />
+            </div>
           </div>
+          )}
 
           {/* Step 4: Date and Time Selection */}
+          {currentStep === 4 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
@@ -567,34 +608,96 @@ const AddBookingPage = () => {
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-orange-500" />
-              <p className="text-sm text-gray-600">
-                Please review all details before booking
-              </p>
+            <div className="mt-6 flex justify-between">
+              <button
+                onClick={prevStep}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <ChevronLeft className="w-4 h-4" /> Previous
+              </button>
+              <div>
+                <button
+                  onClick={nextStep}
+                  disabled={!formData.date || !formData.time}
+                  className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white disabled:bg-purple-300 hover:bg-purple-700"
+                >
+                  Next
+                </button>
+              </div>
             </div>
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-xl transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl"
-            >
-              {loading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Creating Booking...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-5 h-5" />
-                  Confirm Booking
-                </>
-              )}
-            </button>
           </div>
+          )}
+
+          {/* Step 5: Summary & Confirm */}
+          {currentStep === 5 && (
+            <>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Step 5: Review & Confirm</h2>
+                    <p className="text-sm text-gray-600">Double-check your details</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-gray-500">Course</p>
+                    <p className="font-medium text-gray-900">{formData.courseName || "-"}</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-gray-500">Instructor</p>
+                    <p className="font-medium text-gray-900">{selectedInstructor?.name || "-"}</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-gray-500">Vehicle</p>
+                    <p className="font-medium text-gray-900">{selectedVehicle ? `${selectedVehicle.regNo} — ${selectedVehicle.brand} ${selectedVehicle.model}` : "-"}</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-gray-500">Date</p>
+                    <p className="font-medium text-gray-900">{formData.date ? new Date(formData.date).toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" }) : "-"}</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-gray-500">Time</p>
+                    <p className="font-medium text-gray-900">{formData.time || "-"}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-orange-500" />
+                  <p className="text-sm text-gray-600">Make sure everything looks correct</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={prevStep}
+                    className="inline-flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Previous
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-xl transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Creating Booking...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-5 h-5" />
+                        Confirm Booking
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
