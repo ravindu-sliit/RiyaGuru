@@ -8,8 +8,10 @@ import {
   User,
   Filter,
 } from "lucide-react";
+import InstructorNav from "../../components/InstructorNav";
 import { toast } from "react-toastify";
 import LessonProgressCard from "../../components/LessonProgressCard";
+import ProgressHero from "../../components/ProgressHero";
 
 export default function StudentLessons() {
   const { studentId } = useParams();
@@ -72,37 +74,8 @@ export default function StudentLessons() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-10 shadow">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2 font-bold text-lg">
-            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
-            <span>
-              Riya<span className="text-orange-400">Guru</span>.lk
-            </span>
-          </div>
-          <Link
-            to="/lesson-progress"
-            className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-lg text-sm hover:bg-white/20 transition"
-          >
-            <ArrowLeft size={16} />
-            Back to Dashboard
-          </Link>
-        </div>
-      </div>
-
-      {/* Student Info + Filters */}
-      <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-800">
-            <User className="w-6 h-6 text-gray-600" />
-            Student {studentId} - Lessons
-          </h1>
-          <p className="text-gray-600 text-sm">
-            {lessons.length} lesson{lessons.length !== 1 ? "s" : ""} recorded
-          </p>
-        </div>
+      <InstructorNav />
+      <ProgressHero title={`Student ${studentId} - Lessons`} subtitle={`${lessons.length} lesson${lessons.length !== 1 ? "s" : ""} recorded`}>
         <div className="flex items-center gap-3">
           <Filter size={18} className="text-gray-500" />
           <select
@@ -129,7 +102,7 @@ export default function StudentLessons() {
             ))}
           </select>
         </div>
-      </div>
+      </ProgressHero>
 
       {/* Summary per vehicle */}
       {uniqueVehicleTypes.length > 0 && (

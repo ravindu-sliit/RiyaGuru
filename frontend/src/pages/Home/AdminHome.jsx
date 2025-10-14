@@ -37,6 +37,33 @@ export default function AdminHome() {
       hoverColor: "hover:bg-green-100"
     },
     {
+      title: "Instructor Lessons",
+      description: "View all lessons and add entries as admin",
+      icon: <BookOpen className="w-8 h-8 text-indigo-600" />,
+      path: "/admin/instructor/lesson-progress",
+      bgColor: "bg-indigo-50",
+      borderColor: "border-indigo-100",
+      hoverColor: "hover:bg-indigo-100"
+    },
+    {
+      title: "Progress Tracking",
+      description: "View overall progress and issue certificates",
+      icon: <BookOpen className="w-8 h-8 text-purple-600" />,
+      path: "/admin/instructor/progress-tracking",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-100",
+      hoverColor: "hover:bg-purple-100"
+    },
+    {
+      title: "Add Lesson (Admin)",
+      description: "Create a new lesson and assign to an instructor",
+      icon: <BookOpen className="w-8 h-8 text-orange-600" />,
+      path: "/admin/instructor/lesson-entry",
+      bgColor: "bg-orange-50",
+      borderColor: "border-orange-100",
+      hoverColor: "hover:bg-orange-100"
+    },
+    {
       title: "Payments",
       description: "Oversee transactions and fees",
       icon: <CreditCard className="w-8 h-8 text-pink-600" />,

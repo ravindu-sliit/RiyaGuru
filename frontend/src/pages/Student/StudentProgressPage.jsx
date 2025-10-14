@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, CheckCircle, Award, TrendingUp, X, ChevronDown, ChevronUp } from "lucide-react";
 import { lessonProgressService } from "../../services/lessonProgressService";
 import InstructorAPI from "../../api/instructorApi";
+import ProgressHero from "../../components/ProgressHero";
 
 export default function StudentProgressPage() {
   const [studentId, setStudentId] = useState(null);
@@ -146,13 +147,7 @@ export default function StudentProgressPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto p-6">
-        {/* Header - match landing page hero */}
-        <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl shadow-lg p-8 mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-2">Student Dashboard</h2>
-          <p className="text-blue-200 font-medium">
-            {full_name} <span className="text-white/80">(ID: {student_id})</span>
-          </p>
-        </div>
+        <ProgressHero title="Student Dashboard" subtitle={`${full_name} (ID: ${student_id})`} />
 
         {/* Stats Cards (landing style) */}
         <div className="px-6 -mt-6 relative z-10">

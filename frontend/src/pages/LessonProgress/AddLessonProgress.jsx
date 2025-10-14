@@ -3,14 +3,32 @@ import { useNavigate, Link } from "react-router-dom";
 import { lessonProgressService } from "../../services/lessonProgressService";
 import { BookOpen, ArrowLeft, Save, X } from "lucide-react";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 export default function AddLessonProgress() {
   const navigate = useNavigate();
+  const [instructors, setInstructors] = useState([]);
+
+  useEffect(() => {
+    const role = localStorage.getItem("rg_role");
+    // Allow Admins and Instructors; redirect others
+    if (role !== "Instructor" && role !== "Admin") {
+      toast.error("Only instructors or admins can add lesson progress");
+      navigate("/instructor/lesson-progress");
+    }
+
+    // If Admin, fetch instructors to allow selection
+    if (role === "Admin") {
+      import("../../api/instructorApi").then((mod) => {
+        mod.default.getAll().then((res) => setInstructors(res.data)).catch(() => setInstructors([]));
+      });
+    }
+  }, [navigate]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     student_id: "",
     student_course_id: "",
-    instructor_id: "",
+    instructor_id: localStorage.getItem("rg_userId") || "",
     vehicle_type: "",
     lesson_number: "",
     status: "Completed",
@@ -45,9 +63,9 @@ export default function AddLessonProgress() {
         lesson_number: parseInt(formData.lesson_number),
       };
 
-      await lessonProgressService.addLessonProgress(lessonData);
-      toast.success("Lesson progress added successfully!");
-      navigate("/lesson-progress");
+  await lessonProgressService.addLessonProgress(lessonData);
+  toast.success("Lesson progress added successfully!");
+  navigate("/instructor/lesson-progress");
     } catch (error) {
       toast.error(error.message || "Failed to add lesson progress");
     } finally {
@@ -56,7 +74,7 @@ export default function AddLessonProgress() {
   }
 
   function handleCancel() {
-    navigate("/lesson-progress");
+    navigate("/instructor/lesson-progress");
   }
 
   return (
@@ -68,7 +86,7 @@ export default function AddLessonProgress() {
           <span>DriveSchool - Add Lesson Progress</span>
         </div>
         <Link
-          to="/lesson-progress"
+          to="/instructor/lesson-progress"
           className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600"
         >
           <ArrowLeft size={16} />
@@ -126,15 +144,30 @@ export default function AddLessonProgress() {
             <label className="block text-sm font-medium text-gray-700">
               Instructor ID *
             </label>
-            <input
-              type="text"
-              name="instructor_id"
-              value={formData.instructor_id}
-              onChange={handleInputChange}
-              placeholder="e.g., I001"
-              required
-              className="mt-1 w-full border rounded-lg px-3 py-2"
-            />
+            {localStorage.getItem("rg_role") === "Admin" ? (
+              <select
+                name="instructor_id"
+                value={formData.instructor_id}
+                onChange={handleInputChange}
+                required
+                className="mt-1 w-full border rounded-lg px-3 py-2"
+              >
+                <option value="">Select Instructor</option>
+                {instructors.map((i) => (
+                  <option key={i._id} value={i.instructorId}>{i.name} ({i.instructorId})</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                name="instructor_id"
+                value={formData.instructor_id}
+                onChange={handleInputChange}
+                placeholder="e.g., I001"
+                required
+                className="mt-1 w-full border rounded-lg px-3 py-2"
+              />
+            )}
           </div>
 
           {/* Vehicle Type */}

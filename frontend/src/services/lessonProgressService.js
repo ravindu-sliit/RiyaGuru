@@ -3,7 +3,17 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 export const lessonProgressService = {
   // ✅ Get all lesson progress
   async getAllLessonProgress() {
-    const res = await fetch(`${API_URL}/lesson-progress`);
+    const rawAuth = localStorage.getItem("rg_auth") || localStorage.getItem("rg_token");
+    let token = null;
+    try {
+      const parsed = JSON.parse(rawAuth || "null");
+      token = parsed?.token || rawAuth;
+    } catch (e) {
+      token = rawAuth;
+    }
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const res = await fetch(`${API_URL}/lesson-progress`, { headers });
     if (!res.ok) throw new Error("Failed to fetch lesson progress");
     return res.json();
   },
@@ -46,9 +56,19 @@ export const lessonProgressService = {
 
   // ✅ Add a new lesson progress record
   async addLessonProgress(lessonData) {
+    const rawAuth = localStorage.getItem("rg_auth") || localStorage.getItem("rg_token");
+    let token = null;
+    try {
+      const parsed = JSON.parse(rawAuth || "null");
+      token = parsed?.token || rawAuth;
+    } catch (e) {
+      token = rawAuth;
+    }
+    const headers = { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+
     const res = await fetch(`${API_URL}/lesson-progress/add`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(lessonData),
     });
     if (!res.ok) throw new Error("Failed to add lesson progress");
