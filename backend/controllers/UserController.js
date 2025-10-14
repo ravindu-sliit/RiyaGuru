@@ -42,13 +42,24 @@ export const addUser = async (req, res) => {
   }
 };
 
-// Get all users
+// Get all users (with optional userId filter)
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const { userId } = req.query;
+    
+    // If userId query param is provided, filter by it
+    const query = userId ? { userId } : {};
+    const users = await User.find(query);
+    
     if (!users || users.length === 0) {
       return res.status(404).json({ message: "No users found" });
     }
+    
+    // If filtering by userId, return single user object
+    if (userId && users.length === 1) {
+      return res.status(200).json(users[0]);
+    }
+    
     res.status(200).json({ users });
   } catch (err) {
     console.error(err);
