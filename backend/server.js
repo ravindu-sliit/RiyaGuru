@@ -38,6 +38,7 @@ import inquiryRoutes from "./route/inquiryroutes.js";
 import maintenanceRoutes from "./route/maintenanceroutes.js"; // ✅ your maintenance routes (with PDF)
 import publicReportRoutes from "./route/reportroutes.js";
 import progressReportRoutes from "./route/progressReportRoutes.js";
+import studentReportRoutes from "./route/studentReportRoutes.js";
 
 dotenv.config();
 
@@ -92,6 +93,7 @@ app.get("/", (req, res) => {
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/maintenance", maintenanceRoutes); // ✅ includes your new /pdf endpoint
 app.use("/api/reports", publicReportRoutes);
+app.use("/api/reports", studentReportRoutes);
 app.use("/api/progress-reports", progressReportRoutes);
 app.use("/api/instructors", instructorRoutes);
 app.use("/api/vehicles", vehicleRoutes);

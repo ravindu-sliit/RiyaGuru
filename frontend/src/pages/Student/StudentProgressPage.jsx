@@ -4,6 +4,7 @@ import { BookOpen, CheckCircle, Award, TrendingUp, X, ChevronDown, ChevronUp } f
 import { lessonProgressService } from "../../services/lessonProgressService";
 import InstructorAPI from "../../api/instructorApi";
 import ProgressHero from "../../components/ProgressHero";
+import { toast } from "react-toastify";
 
 export default function StudentProgressPage() {
   const [studentId, setStudentId] = useState(null);
@@ -147,7 +148,35 @@ export default function StudentProgressPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto p-6">
-        <ProgressHero title="Student Dashboard" subtitle={`${full_name} (ID: ${student_id})`} />
+        <ProgressHero title="Student Dashboard" subtitle={`${full_name} (ID: ${student_id})`}>
+          <div>
+            <button
+              onClick={async () => {
+                try {
+                  toast.info("Generating report, please wait...");
+                  const res = await fetch("/api/reports/student/progress", {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${localStorage.getItem("rg_token")}` },
+                  });
+                  const json = await res.json();
+                  if (!res.ok) throw new Error(json.message || "Failed to generate report");
+                  toast.success("Report generated and emailed to your address");
+                  if (json.previewUrl) {
+                    // open Ethereal preview in a new tab for developer debugging
+                    toast.info("Preview available (dev): opening in new tab");
+                    try { window.open(json.previewUrl, "_blank"); } catch (e) { console.log("Preview URL:", json.previewUrl); }
+                  }
+                } catch (err) {
+                  console.error(err);
+                  toast.error(err.message || "Failed to generate report");
+                }
+              }}
+              className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-lg"
+            >
+              Generate Report
+            </button>
+          </div>
+        </ProgressHero>
 
         {/* Stats Cards (landing style) */}
         <div className="px-6 -mt-6 relative z-10">
