@@ -22,6 +22,7 @@ const CreatePayment = () => {
           title="Make a Payment"
           subtitle={`${courseName || "Course"} • Total: ${totalAmount || 0}`}
           icon={<CreditCard className="w-8 h-8 text-white" />}
+          transparent
         />
       </div>
 

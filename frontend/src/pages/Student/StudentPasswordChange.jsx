@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { apiFetch, API_BASE } from "../../services/api";
+import ProgressHero from "../../components/ProgressHero";
+import { LockIcon } from "lucide-react";
 import "../../styles/student-password-change.css";
 
 export default function StudentPasswordChange() {
@@ -88,20 +90,18 @@ export default function StudentPasswordChange() {
   if (loading) return <div className="spc-loading">Loading…</div>;
 
   return (
-    <div className="spc">
-      {/* Header styled like StudentDetailsEdit */}
-      <header className="spc-header">
-        <div className="spc-header-left">
-          <h1>Update Password</h1>
-          <p className="spc-subtitle">Change your password.</p>
-        </div>
-        {/*<div className="spc-header-actions">
-          <Link to={`/student/${id}/dashboard`} className="btn btn-outline">
-            ← Back to Dashboard
-          </Link>
-        </div>*/}
-      </header>
+    <div className="min-h-screen bg-gray-50 student-surface">
+      {/* Hero — match Progress/My Enrollments */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="Update Password"
+          subtitle="Change your password."
+          icon={<LockIcon className="w-8 h-8 text-white" />}
+        />
+      </div>
 
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="spc">
       <div className="spc-messages">
         {err && <div className="alert error">{err}</div>}
         {ok && <div className="alert success">{ok}</div>}
@@ -160,6 +160,8 @@ export default function StudentPasswordChange() {
           </div>
         </form>
       </section>
+        </div>
+      </div>
     </div>
   );
 }

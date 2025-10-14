@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import InstructorAPI from "../../api/instructorApi";
+import ProgressHero from "../../components/ProgressHero";
+import { User as UserIcon } from "lucide-react";
 
 export default function AvailabilityPage() {
   const [date, setDate] = useState("");
@@ -61,25 +63,17 @@ export default function AvailabilityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Student Navigation */}
-      <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
-          <span className="text-orange-500 text-2xl">🚘</span>
-          Instructor Availability
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-50 student-surface">
+      {/* Hero — match Progress page */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="Find Your Instructor"
+          subtitle="Search for instructors available on specific dates and times"
+          icon={<UserIcon className="w-8 h-8 text-white" />}
+        />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Find Your Instructor
-          </h1>
-          <p className="text-slate-600 text-lg">
-            Search for instructors available on specific dates and times
-          </p>
-        </div>
+      <div className="max-w-7xl mx-auto px-6 py-8">
 
         {/* Search Filters */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">

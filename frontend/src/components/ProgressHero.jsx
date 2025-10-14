@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
 
-export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, children, padY, iconContainerClass, transparent }) {
+export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, children, padY, iconContainerClass, transparent, tint }) {
   const Icon = icon || <Calendar className="w-8 h-8 text-white" />;
   const innerPadY = padY || "py-8";
   const iconWrap = iconContainerClass || "w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center";
-  const baseClass = transparent ? "bg-white" : "";
+  const chosenTint = tint || "dark"; // 'dark' | 'light'
+  const baseClass = transparent ? (chosenTint === "dark" ? "bg-black/40" : "bg-white") : "";
   const baseStyle = transparent
-    ? { border: "1px solid rgba(255,255,255,0.28)" }
+    ? { border: "1px solid rgba(255,255,255,0.28)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }
     : {
         backgroundImage:
           "linear-gradient(90deg, rgba(10,26,47,0.55) 0%, rgba(10,26,47,0.45) 100%)",

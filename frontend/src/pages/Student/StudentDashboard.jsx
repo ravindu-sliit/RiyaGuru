@@ -69,6 +69,7 @@ export default function StudentDashboard() {
               icon={heroIcon}
               padY="py-10"
               iconContainerClass="w-20 h-20 bg-white bg-opacity-20 rounded-full overflow-hidden flex items-center justify-center"
+              transparent
             />
           );
         })()}
