@@ -8,6 +8,7 @@ import { CreditCard, FileText, Car } from "lucide-react";
 import AdminHome from "../pages/Home/AdminHome";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import AdminViewStudents from "../pages/Admin/AdminViewStudents";
+import AdminStudentDetails from "../pages/Admin/AdminStudentDetails";
 
 // Payment
 import AdminPayments from "../pages/Payment/AdminPayments";
@@ -47,6 +48,7 @@ export default function AdminRoutes() {
         <Route path="dashboard" element={<AdminDashboard />} />
         {/* Students */}
         <Route path="students" element={<AdminViewStudents />} />
+        <Route path="students/:id" element={<AdminStudentDetails />} />
 
         {/* Payments - with route-level header */}
         <Route
