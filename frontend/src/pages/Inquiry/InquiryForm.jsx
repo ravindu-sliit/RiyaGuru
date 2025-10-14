@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ Import navigation hook
-import { validateInquiryForm } from "../../validation/inquiryValidation"; // ✅ Import central validator
+import { useNavigate } from "react-router-dom";
+import { validateInquiryForm } from "../../validation/inquiryValidation";
 
 const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = false }) => {
   const [form, setForm] = useState({ userId: "", subject: "", message: "" });
-  const [userKey, setUserKey] = useState(""); 
+  const [userKey, setUserKey] = useState("");
   const [errors, setErrors] = useState({});
   const [resolvedUserName, setResolvedUserName] = useState("");
   const [userLookupStatus, setUserLookupStatus] = useState("idle");
 
-  const navigate = useNavigate(); // ✅ For Back button navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (item) {
@@ -48,7 +48,7 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
   const isValidObjectId = (val) => /^[a-fA-F0-9]{24}$/.test(val);
 
   const validate = () => {
-    const e = validateInquiryForm(form); 
+    const e = validateInquiryForm(form);
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -58,204 +58,116 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
     if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
   };
 
-  const fetchAllUsers = async () => {
-    const res = await fetch(`/api/users`);
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
-    const list = Array.isArray(data) ? data : data.data || data.users || [];
-    return Array.isArray(list) ? list : [];
-  };
-
-  const fetchAllStudents = async () => {
-    const res = await fetch(`/api/students`);
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
-    const list = Array.isArray(data) ? data : data.data || data.students || [];
-    return Array.isArray(list) ? list : [];
-  };
-
-  const fetchStudentByCode = async (code) => {
-    try {
-      const res = await fetch(`/api/students/${encodeURIComponent(code)}`);
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) return null; 
-      const student = data?.student || data?.data || data;
-      return student && (student.studentId || student.email) ? student : null;
-    } catch {
-      return null;
-    }
-  };
-
-  const fetchUserById = async (id) => {
-    try {
-      const res = await fetch(`/api/users/${id}`);
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
-      const user = data?.data || data?.user || data;
-      return user && user._id ? user : null;
-    } catch {
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    let active = true;
-    const run = async () => {
-      setResolvedUserName("");
-      setUserLookupStatus("resolving");
-      if (!userKey) {
-        setForm((p) => ({ ...p, userId: "" }));
-        setUserLookupStatus("idle");
-        return;
-      }
-      if (isValidObjectId(userKey)) {
-        const localId = userOptions.find((u) => u._id === userKey);
-        if (localId) {
-          active && setResolvedUserName(displayUserName(localId));
-          active && setUserLookupStatus("resolved");
-        } else {
-          const fetched = await fetchUserById(userKey);
-          if (active && fetched) {
-            setResolvedUserName(displayUserName(fetched));
-            setUserLookupStatus("resolved");
-          } else if (active) {
-            setResolvedUserName("");
-            setErrors((prev) => ({ ...prev, userId: "User ID not found in database" }));
-            setUserLookupStatus("not_found");
-          }
-        }
-        active && setForm((p) => ({ ...p, userId: userKey }));
-        return;
-      }
-
-      let list = userOptions;
-      if (!list || list.length === 0) {
-        try { list = await fetchAllUsers(); } catch { list = []; }
-      }
-      const keyLower = String(userKey).trim().toLowerCase();
-      let found = (list || []).find((u) => {
-        const checks = [u.userId, u.code, u.email, u.username, u.name, u.fullName];
-        return checks.some((v) => typeof v === "string" && v.trim().toLowerCase() === keyLower);
-      });
-      if (found) {
-        active && setResolvedUserName(displayUserName(found));
-        active && setForm((p) => ({ ...p, userId: found._id }));
-        setErrors((prev) => ({ ...prev, userId: "" }));
-        active && setUserLookupStatus("resolved");
-      } else {
-        let students = [];
-        const looksLikeStudentCode = /^s\d+$/i.test(String(userKey).trim());
-        if (looksLikeStudentCode) {
-          const one = await fetchStudentByCode(userKey.trim());
-          if (one) students = [one];
-        }
-        if (students.length === 0) {
-          try { students = await fetchAllStudents(); } catch { students = []; }
-        }
-        const sFound = (students || []).find((s) => {
-          const checks = [s.studentId, s.email];
-          return checks.some((v) => typeof v === "string" && v.trim().toLowerCase() === keyLower);
-        });
-        if (sFound) {
-          let users = list;
-          if (!users || users.length === 0) {
-            try { users = await fetchAllUsers(); } catch { users = []; }
-          }
-          const userByUserId = (users || []).find((u) => typeof u.userId === "string" && u.userId.trim().toLowerCase() === String(sFound.studentId).trim().toLowerCase());
-          const userByEmail = (users || []).find((u) => typeof u.email === "string" && u.email.trim().toLowerCase() === String(sFound.email).trim().toLowerCase());
-          const resolvedUser = userByUserId || userByEmail || null;
-          if (resolvedUser) {
-            active && setResolvedUserName(displayUserName(resolvedUser));
-            active && setForm((p) => ({ ...p, userId: resolvedUser._id }));
-            setErrors((prev) => ({ ...prev, userId: "" }));
-            active && setUserLookupStatus("resolved");
-          } else {
-            active && setForm((p) => ({ ...p, userId: "" }));
-            setErrors((prev) => ({ ...prev, userId: "No user account linked to this student (matched by userId/email)." }));
-            active && setUserLookupStatus("not_found");
-          }
-        } else {
-          active && setForm((p) => ({ ...p, userId: "" }));
-          setErrors((prev) => ({ ...prev, userId: "User not found. Enter a valid ObjectId, user code/email, or a studentId/email." }));
-          active && setUserLookupStatus("not_found");
-        }
-      }
-    };
-    run();
-    return () => {
-      active = false;
-    };
-  }, [userKey, userOptions]);
-
   const handleSubmit = () => {
     if (!validate()) return;
-    const payload = { userId: form.userId, subject: form.subject.trim(), message: form.message.trim() };
+    const payload = {
+      userId: form.userId,
+      subject: form.subject.trim(),
+      message: form.message.trim(),
+    };
     onSubmit(payload);
   };
 
   return (
-    <div className="form-container">
-      <div className="form-header">
-        <h2 className="form-title">{item ? "Edit Inquiry" : "Create Inquiry"}</h2>
+    <div className="form-container" style={{ position: "relative" }}>
+      {/* 🔹 Back button INSIDE header */}
+      <div
+        style={{
+          position: "absolute",
+          top: "25px",
+          right: "40px",
+          zIndex: "10",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => navigate("/student")}
+          style={{
+            backgroundColor: "#F47C20",
+            color: "#fff",
+            border: "none",
+            padding: "8px 18px",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "0.3s ease",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2D74C4")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#F47C20")}
+        >
+          Back
+        </button>
       </div>
-      <div className="form-content">
+
+      {/* 🔹 Form */}
+      <div className="form-content" style={{ padding: "40px" }}>
+        <h2 className="form-title">{item ? "Edit Inquiry" : "Create Inquiry"}</h2>
         <div className="form-grid">
-          {/* Fields unchanged */}
           <div className="form-group">
-            <label className="form-label">User ID or Code *</label>
-            {(() => {
-              const showUserIdError = userLookupStatus === "not_found"; 
-              return (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Paste a user _id or code/email"
-                    className={`form-input ${showUserIdError ? "error" : ""}`}
-                    value={userKey}
-                    onChange={(e) => handleUserKeyChange(e.target.value)}
-                  />
-                  {showUserIdError && errors.userId && (
-                    <p className="error-message">{errors.userId}</p>
-                  )}
-                </>
-              );
-            })()}
+            <label>User ID or Code *</label>
+            <input
+              type="text"
+              placeholder="Paste a user _id or code/email"
+              className={`form-input ${userLookupStatus === "not_found" ? "error" : ""}`}
+              value={userKey}
+              onChange={(e) => handleUserKeyChange(e.target.value)}
+            />
+            {userLookupStatus === "not_found" && errors.userId && (
+              <p className="error-message">{errors.userId}</p>
+            )}
           </div>
 
           <div className="form-group">
-            <label className="form-label">User Name (auto)</label>
-            <input type="text" readOnly className="form-input" value={resolvedUserName} placeholder="Will auto-fill after User ID" />
+            <label>User Name (auto)</label>
+            <input
+              type="text"
+              readOnly
+              className="form-input"
+              value={resolvedUserName}
+              placeholder="Will auto-fill after User ID"
+            />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Subject *</label>
-            <input className={`form-input ${errors.subject ? "error" : ""}`} type="text" value={form.subject} maxLength={150} onChange={(e) => handleChange("subject", e.target.value)} placeholder="Subject" />
+            <label>Subject *</label>
+            <input
+              className={`form-input ${errors.subject ? "error" : ""}`}
+              type="text"
+              value={form.subject}
+              maxLength={150}
+              onChange={(e) => handleChange("subject", e.target.value)}
+              placeholder="Subject"
+            />
             {errors.subject && <p className="error-message">{errors.subject}</p>}
           </div>
 
           <div className="form-group full-width">
-            <label className="form-label">Message *</label>
-            <textarea className={`form-textarea ${errors.message ? "error" : ""}`} rows={4} value={form.message} onChange={(e) => handleChange("message", e.target.value)} placeholder="Describe the inquiry..." />
+            <label>Message *</label>
+            <textarea
+              className={`form-textarea ${errors.message ? "error" : ""}`}
+              rows={4}
+              value={form.message}
+              onChange={(e) => handleChange("message", e.target.value)}
+              placeholder="Describe the inquiry..."
+            />
             {errors.message && <p className="error-message">{errors.message}</p>}
           </div>
         </div>
 
         <div className="form-actions">
-          <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
             {item ? "Update Inquiry" : "Create Inquiry"}
           </button>
           {!hideCancel && (
-            <button type="button" className="btn btn-secondary" onClick={onCancel}>Cancel</button>
+            <button type="button" className="btn btn-secondary" onClick={onCancel}>
+              Cancel
+            </button>
           )}
-
-          {/* 🔹 New Back Button */}
-          <button
-            type="button"
-            className="btn btn-warning"
-            onClick={() => navigate("/student")}
-          >
-            Back
-          </button>
         </div>
       </div>
     </div>
