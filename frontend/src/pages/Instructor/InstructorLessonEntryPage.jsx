@@ -1,5 +1,6 @@
 // src/pages/Instructor/InstructorLessonEntryPage.jsx
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Users,
   BookOpen,
@@ -11,6 +12,7 @@ import { lessonProgressService } from "../../services/lessonProgressService";
 import { getAuthToken } from "../../services/authHeader";
 
 export default function InstructorLessonEntryPage() {
+  const location = useLocation();
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
 
@@ -52,6 +54,22 @@ export default function InstructorLessonEntryPage() {
     }
     loadStudents();
   }, []);
+
+  // Prefill student/course from query params (e.g., ?studentId=I001&student_course_id=SC123)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search || window.location.search);
+      const sid = params.get("studentId") || params.get("student_id");
+      const scid = params.get("student_course_id") || params.get("courseId");
+      if (sid) {
+        setForm((f) => ({ ...f, student_id: sid, student_course_id: scid || f.student_course_id }));
+        // clear related errors if any
+        setErrors((prev) => ({ ...prev, student_id: undefined, student_course_id: undefined }));
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [location.search]);
 
   // Load courses when student changes
   useEffect(() => {
