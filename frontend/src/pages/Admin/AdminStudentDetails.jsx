@@ -1,7 +1,7 @@
 // frontend/src/pages/Admin/AdminStudentDetails.jsx
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, User, CreditCard, Edit, Trash2, Download } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, User, CreditCard, Edit, Trash2, Download, Users } from "lucide-react";
 import { exportStudentDetailsToPDF } from "../../utils/pdfExportSimple";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
@@ -117,8 +117,25 @@ export default function AdminStudentDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        {/* Orange Header */}
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-8 shadow-md">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/admin/students")}
+              className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </button>
+            <Users className="w-8 h-8" />
+            <div>
+              <h1 className="text-2xl font-bold">Student Details</h1>
+              <p className="text-orange-100">View and manage student information</p>
+            </div>
+          </div>
+        </div>
+        <div className="p-6">
           <p className="text-gray-600">Loading student details…</p>
         </div>
       </div>
@@ -127,55 +144,71 @@ export default function AdminStudentDetails() {
 
   if (err && !student) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-4 rounded-md bg-red-50 text-red-700 px-4 py-2 border border-red-200">
+      <div className="min-h-screen bg-gray-50">
+        {/* Orange Header */}
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-8 shadow-md">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/admin/students")}
+              className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </button>
+            <Users className="w-8 h-8" />
+            <div>
+              <h1 className="text-2xl font-bold">Student Details</h1>
+              <p className="text-orange-100">View and manage student information</p>
+            </div>
+          </div>
+        </div>
+        <div className="p-6">
+          <div className="mb-4 rounded-lg bg-red-50 text-red-700 px-4 py-3 border border-red-200 shadow-sm">
             {err}
           </div>
-          <Link
-            to="/admin/students"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Students
-          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <Link
-            to="/admin/students"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
+    <div className="min-h-screen bg-gray-50">
+      {/* Orange Header Banner */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-8 shadow-md">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate("/admin/students")}
+            className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to All Students
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-800">Student Details</h1>
-          <p className="text-gray-600">View and manage student information</p>
+            <span>Back</span>
+          </button>
+          <Users className="w-8 h-8" />
+          <div>
+            <h1 className="text-2xl font-bold">Student Details</h1>
+            <p className="text-orange-100">View and manage student information</p>
+          </div>
         </div>
+      </div>
 
-        {/* Messages */}
-        {err && (
-          <div className="mb-4 rounded-md bg-red-50 text-red-700 px-4 py-2 border border-red-200">
-            {err}
-          </div>
-        )}
-        {opMsg && (
-          <div className="mb-4 rounded-md bg-green-50 text-green-700 px-4 py-2 border border-green-200">
-            {opMsg}
-          </div>
-        )}
+      <div className="p-6">
+        <div className="max-w-5xl mx-auto">
+          {/* Messages */}
+          {err && (
+            <div className="mb-4 rounded-lg bg-red-50 text-red-700 px-4 py-3 border border-red-200 shadow-sm">
+              {err}
+            </div>
+          )}
+          {opMsg && (
+            <div className="mb-4 rounded-lg bg-green-50 text-green-700 px-4 py-3 border border-green-200 shadow-sm">
+              {opMsg}
+            </div>
+          )}
 
-        {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          {/* Profile Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-8">
+          {/* Main Content */}
+          <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+            {/* Profile Header */}
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-8">
             <div className="flex items-center gap-6">
               <img
                 src={
@@ -187,7 +220,7 @@ export default function AdminStudentDetails() {
               />
               <div className="text-white">
                 <h2 className="text-3xl font-bold mb-2">{student.full_name}</h2>
-                <div className="flex items-center gap-2 text-blue-100">
+                <div className="flex items-center gap-2 text-orange-100">
                   <CreditCard className="w-4 h-4" />
                   <span className="text-lg">ID: {student.studentId}</span>
                 </div>
@@ -195,101 +228,103 @@ export default function AdminStudentDetails() {
             </div>
           </div>
 
-          {/* Details Grid */}
-          <div className="p-8">
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Email */}
-              <div className="flex items-start gap-3">
-                <div className="mt-1 p-2 bg-blue-50 rounded-lg">
-                  <Mail className="w-5 h-5 text-blue-600" />
+            {/* Details Grid */}
+            <div className="p-8">
+              <h3 className="text-lg font-bold text-gray-800 mb-6">Student Information</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Email */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-2 bg-orange-50 rounded-lg">
+                    <Mail className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500 font-medium">Email</div>
+                    <div className="text-gray-900">{student.email || "Not provided"}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium">Email</div>
-                  <div className="text-gray-900">{student.email || "Not provided"}</div>
+
+                {/* Phone */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-2 bg-orange-50 rounded-lg">
+                    <Phone className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500 font-medium">Phone</div>
+                    <div className="text-gray-900">{student.phone || "Not provided"}</div>
+                  </div>
+                </div>
+
+                {/* NIC */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-2 bg-orange-50 rounded-lg">
+                    <CreditCard className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500 font-medium">NIC</div>
+                    <div className="text-gray-900">{student.nic || "Not provided"}</div>
+                  </div>
+                </div>
+
+                {/* Birth Year */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-2 bg-orange-50 rounded-lg">
+                    <Calendar className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500 font-medium">Birth Year</div>
+                    <div className="text-gray-900">{student.birthyear || "Not provided"}</div>
+                  </div>
+                </div>
+
+                {/* Gender */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-2 bg-orange-50 rounded-lg">
+                    <User className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500 font-medium">Gender</div>
+                    <div className="text-gray-900">{student.gender || "Not provided"}</div>
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-2 bg-orange-50 rounded-lg">
+                    <MapPin className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500 font-medium">Address</div>
+                    <div className="text-gray-900">{student.address || "Not provided"}</div>
+                  </div>
                 </div>
               </div>
 
-              {/* Phone */}
-              <div className="flex items-start gap-3">
-                <div className="mt-1 p-2 bg-green-50 rounded-lg">
-                  <Phone className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium">Phone</div>
-                  <div className="text-gray-900">{student.phone || "Not provided"}</div>
-                </div>
+              {/* Action Buttons */}
+              <div className="mt-8 pt-6 border-t border-gray-200 flex flex-wrap gap-3">
+                <button
+                  onClick={handleExportPDF}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors shadow-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Export Details
+                </button>
+
+                <button
+                  onClick={() => setShowPwdModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition-colors shadow-sm"
+                >
+                  <Edit className="w-4 h-4" />
+                  Change Password
+                </button>
+
+                <button
+                  onClick={handleDelete}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors shadow-sm"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Student
+                </button>
               </div>
-
-              {/* NIC */}
-              <div className="flex items-start gap-3">
-                <div className="mt-1 p-2 bg-purple-50 rounded-lg">
-                  <CreditCard className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium">NIC</div>
-                  <div className="text-gray-900">{student.nic || "Not provided"}</div>
-                </div>
-              </div>
-
-              {/* Birth Year */}
-              <div className="flex items-start gap-3">
-                <div className="mt-1 p-2 bg-orange-50 rounded-lg">
-                  <Calendar className="w-5 h-5 text-orange-600" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium">Birth Year</div>
-                  <div className="text-gray-900">{student.birthyear || "Not provided"}</div>
-                </div>
-              </div>
-
-              {/* Gender */}
-              <div className="flex items-start gap-3">
-                <div className="mt-1 p-2 bg-pink-50 rounded-lg">
-                  <User className="w-5 h-5 text-pink-600" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium">Gender</div>
-                  <div className="text-gray-900">{student.gender || "Not provided"}</div>
-                </div>
-              </div>
-
-              {/* Address */}
-              <div className="flex items-start gap-3">
-                <div className="mt-1 p-2 bg-yellow-50 rounded-lg">
-                  <MapPin className="w-5 h-5 text-yellow-600" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium">Address</div>
-                  <div className="text-gray-900">{student.address || "Not provided"}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="mt-8 pt-6 border-t border-gray-200 flex flex-wrap gap-3">
-              <button
-                onClick={handleExportPDF}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Export Details
-              </button>
-
-              <button
-                onClick={() => setShowPwdModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
-              >
-                <Edit className="w-4 h-4" />
-                Change Password
-              </button>
-
-              <button
-                onClick={handleDelete}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete Student
-              </button>
             </div>
           </div>
         </div>
@@ -310,7 +345,7 @@ export default function AdminStudentDetails() {
                   type="password"
                   value={pwd1}
                   onChange={(e) => setPwd1(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Enter new password"
                 />
               </div>
@@ -323,7 +358,7 @@ export default function AdminStudentDetails() {
                   type="password"
                   value={pwd2}
                   onChange={(e) => setPwd2(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Re-enter new password"
                 />
               </div>
@@ -332,7 +367,7 @@ export default function AdminStudentDetails() {
             <div className="mt-6 flex gap-3">
               <button
                 onClick={handleResetPassword}
-                className="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors"
               >
                 Save Password
               </button>

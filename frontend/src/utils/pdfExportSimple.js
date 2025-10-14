@@ -93,18 +93,34 @@ export async function exportStudentDetailsToPDF(student) {
       creator: "RiyaGuru Admin System"
     });
 
-    // Add header with blue background
-    doc.setFillColor(37, 99, 235); // Blue color
-    doc.rect(0, 0, 210, 40, "F");
+    // Add dark blue header background (matching booking confirmation)
+    doc.setFillColor(20, 40, 70); // Dark blue color #142846
+    doc.rect(0, 0, 210, 35, "F");
     
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
+    // Add orange title
+    doc.setTextColor(255, 140, 0); // Orange color
+    doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.text("RiyaGuru Driving School", 105, 20, { align: "center" });
+    doc.text("RiyaGuru.lk Driving School", 20, 18);
     
-    doc.setFontSize(14);
+    // Add subtitle
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("Student Details Report", 105, 30, { align: "center" });
+    doc.setTextColor(255, 255, 255);
+    doc.text("Professional Driving Education", 20, 26);
+    
+    // Add "STUDENT DETAILS" on the right
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(255, 255, 255);
+    doc.text("STUDENT DETAILS", 210 - 20, 18, { align: "right" });
+    
+    // Add date on the right
+    const headerDate = new Date();
+    const headerDateStr = headerDate.toLocaleDateString('en-GB').replace(/\//g, '/');
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(headerDateStr, 210 - 20, 26, { align: "right" });
 
     // Reset text color for body
     doc.setTextColor(0, 0, 0);
@@ -147,95 +163,169 @@ export async function exportStudentDetailsToPDF(student) {
 
     // Add student name as main heading (to the right of profile picture)
     const textStartX = imgX + imgSize + 8; // 8mm gap after image
-    doc.setFontSize(18);
+    doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
     doc.text(student.full_name || "N/A", textStartX, imgY + 10);
 
     // Add student ID (below name, aligned with name)
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 100, 100);
-    doc.text(`Student ID: ${student.studentId || "N/A"}`, textStartX, imgY + 17);
+    doc.text(`ID: ${student.studentId || "N/A"}`, textStartX, imgY + 17);
 
     // Reset text color
     doc.setTextColor(0, 0, 0);
 
-    // Add details manually
+    // Add "STUDENT INFORMATION" section header with gray background
     let yPos = 85;
-    const lineHeight = 10;
-    
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("Student Information", 20, yPos);
-    
-    yPos += lineHeight + 5;
+    doc.setFillColor(240, 240, 240); // Light gray background
+    doc.rect(15, yPos - 5, 180, 10, "F");
     doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    doc.text("STUDENT INFORMATION", 20, yPos + 2);
+    
+    yPos += 15;
+    const lineHeight = 9;
+    doc.setFontSize(10);
     
     // Email
     doc.setFont("helvetica", "bold");
-    doc.text("Email:", 20, yPos);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Full Name:", 20, yPos);
     doc.setFont("helvetica", "normal");
-    doc.text(student.email || "Not provided", 60, yPos);
-    yPos += lineHeight;
-    
-    // Phone
-    doc.setFont("helvetica", "bold");
-    doc.text("Phone:", 20, yPos);
-    doc.setFont("helvetica", "normal");
-    doc.text(student.phone || "Not provided", 60, yPos);
+    doc.setTextColor(0, 0, 0);
+    doc.text(student.full_name || "Not provided", 70, yPos);
     yPos += lineHeight;
     
     // NIC
     doc.setFont("helvetica", "bold");
+    doc.setTextColor(100, 100, 100);
     doc.text("NIC:", 20, yPos);
     doc.setFont("helvetica", "normal");
-    doc.text(student.nic || "Not provided", 60, yPos);
+    doc.setTextColor(0, 0, 0);
+    doc.text(student.nic || "Not provided", 70, yPos);
     yPos += lineHeight;
+    
+    // Phone
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(100, 100, 100);
+    doc.text("Phone:", 20, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
+    doc.text(student.phone || "Not provided", 70, yPos);
+    yPos += lineHeight;
+    
+    // Email
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(100, 100, 100);
+    doc.text("Email:", 20, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
+    const email = student.email || "Not provided";
+    const emailLines = doc.splitTextToSize(email, 120);
+    doc.text(emailLines, 70, yPos);
+    yPos += lineHeight * Math.max(1, emailLines.length);
+    
+    // Address
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(100, 100, 100);
+    doc.text("Address:", 20, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
+    const address = student.address || "Not provided";
+    const addressLines = doc.splitTextToSize(address, 120);
+    doc.text(addressLines, 70, yPos);
+    yPos += lineHeight * Math.max(1, addressLines.length) + 5;
+    
+    // Add "ADDITIONAL INFORMATION" section header
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, yPos - 5, 180, 10, "F");
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    doc.text("ADDITIONAL INFORMATION", 20, yPos + 2);
+    
+    yPos += 15;
+    doc.setFontSize(10);
     
     // Birth Year
     doc.setFont("helvetica", "bold");
+    doc.setTextColor(100, 100, 100);
     doc.text("Birth Year:", 20, yPos);
     doc.setFont("helvetica", "normal");
-    doc.text(student.birthyear ? String(student.birthyear) : "Not provided", 60, yPos);
+    doc.setTextColor(0, 0, 0);
+    doc.text(student.birthyear ? String(student.birthyear) : "Not provided", 70, yPos);
     yPos += lineHeight;
     
     // Gender
     doc.setFont("helvetica", "bold");
+    doc.setTextColor(100, 100, 100);
     doc.text("Gender:", 20, yPos);
     doc.setFont("helvetica", "normal");
-    doc.text(student.gender || "Not provided", 60, yPos);
+    doc.setTextColor(0, 0, 0);
+    doc.text(student.gender || "Not provided", 70, yPos);
     yPos += lineHeight;
-    
-    // Address
-    doc.setFont("helvetica", "bold");
-    doc.text("Address:", 20, yPos);
-    doc.setFont("helvetica", "normal");
-    const address = student.address || "Not provided";
-    // Split long addresses
-    const addressLines = doc.splitTextToSize(address, 130);
-    doc.text(addressLines, 60, yPos);
 
-    // Add footer
+    // Add VEHICLE PREFERENCES section only if student has selected a category
+    if (student.vehicleCategory) {
+      yPos += 5; // Extra spacing before new section
+      
+      // Add "VEHICLE PREFERENCES" section header
+      doc.setFillColor(240, 240, 240);
+      doc.rect(15, yPos - 5, 180, 10, "F");
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text("VEHICLE PREFERENCES", 20, yPos + 2);
+      
+      yPos += 15;
+      doc.setFontSize(10);
+      
+      // Vehicle Category
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(100, 100, 100);
+      doc.text("Vehicle Category:", 20, yPos);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(0, 0, 0);
+      doc.text(student.vehicleCategory, 70, yPos);
+      yPos += lineHeight;
+      
+      // Vehicle Types (only for Light vehicles)
+      if (student.vehicleCategory === "Light" && student.vehicleType && student.vehicleType.length > 0) {
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(100, 100, 100);
+        doc.text("Vehicle Types:", 20, yPos);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0, 0, 0);
+        
+        // Format vehicle types as comma-separated list
+        const vehicleTypesText = student.vehicleType.join(", ");
+        const vehicleTypeLines = doc.splitTextToSize(vehicleTypesText, 120);
+        doc.text(vehicleTypeLines, 70, yPos);
+        yPos += lineHeight * Math.max(1, vehicleTypeLines.length);
+      }
+    }
+
+    // Add footer with dark blue background
     const pageHeight = doc.internal.pageSize.height;
-    doc.setFontSize(9);
-    doc.setTextColor(150, 150, 150);
+    const footerHeight = 20;
+    const footerY = pageHeight - footerHeight;
     
-    // Add date and time
-    const now = new Date();
-    const dateStr = now.toLocaleDateString();
-    const timeStr = now.toLocaleTimeString();
-    doc.text(
-      `Generated on ${dateStr} at ${timeStr}`,
-      20,
-      pageHeight - 10
-    );
+    // Dark blue footer background
+    doc.setFillColor(20, 40, 70);
+    doc.rect(0, footerY, 210, footerHeight, "F");
     
-    // Add page number
+    // Orange thank you message
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(255, 140, 0); // Orange
     doc.text(
-      "Page 1 of 1",
-      doc.internal.pageSize.width - 20,
-      pageHeight - 10,
-      { align: "right" }
+      "",
+      105,
+      footerY + 12,
+      { align: "center" }
     );
 
     // Generate filename
