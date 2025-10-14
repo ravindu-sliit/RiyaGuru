@@ -18,6 +18,7 @@ import EnrollmentDetails from "../pages/Enrollment/EnrollmentDetails";
 import Studentvehicle from "../pages/Vehicle/Studentvehicle.jsx";
 import StudentInstructors from "../pages/Instructor/StudentInstructors";
 import StudentInquiry from "../pages/Inquiry/StudentInquiry";
+import CreatePayment from "../pages/Payment/CreatePayment.jsx";
 
 
 export default function StudentRoutes() {
@@ -46,6 +47,7 @@ export default function StudentRoutes() {
         <Route path="my-enrollments" element={<MyEnrollments />} />
         <Route path="my-payments" element={<PaymentsHub />} />
         <Route path="enrollments/:id" element={<EnrollmentDetails />} />
+        <Route path="create-payment" element={<CreatePayment />} />
 
         <Route path="inquiry" element={<StudentInquiry />} />
 

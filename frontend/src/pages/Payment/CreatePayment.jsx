@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import NormalPayment from "./NormalPayment";
 import InstallmentPayment from "./InstallmentPayment";
+import ProgressHero from "../../components/ProgressHero";
+import { CreditCard } from "lucide-react";
 
 const CreatePayment = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -13,9 +15,18 @@ const CreatePayment = () => {
   const [showTabs, setShowTabs] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-screen-2xl mx-auto px-2 sm:px-3 lg:px-4 xl:px-6 py-6 lg:py-10">
-        <div className="bg-white/95 rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <div className="min-h-screen bg-gray-50 student-surface">
+      {/* Hero — match Progress/My Enrollments */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="Make a Payment"
+          subtitle={`${courseName || "Course"} • Total: ${totalAmount || 0}`}
+          icon={<CreditCard className="w-8 h-8 text-white" />}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* Tab Navigation */}
           {showTabs && (
           <div className="flex border-b border-gray-200 bg-gray-50">

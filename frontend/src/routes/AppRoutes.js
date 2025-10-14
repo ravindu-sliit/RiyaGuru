@@ -59,6 +59,11 @@ export default function AppRoutes() {
     const search = location?.search || "";
     return <Navigate to={`/student/enrollments/${encodeURIComponent(id)}${search}`} replace />;
   };
+  const CreatePaymentRedirect = () => {
+    const location = useLocation();
+    const search = location?.search || "";
+    return <Navigate to={`/student/create-payment${search}`} replace />;
+  };
   return (
     <Routes>
 
@@ -118,7 +123,7 @@ export default function AppRoutes() {
        {/* Payments */}
       <Route path="/make-payment" element={<MakePayment />} />
       <Route path="/payment-list" element={<PaymentList />} />
-      <Route path="/create-payment" element={<CreatePayment />} />
+      <Route path="/create-payment" element={<CreatePaymentRedirect />} />
       {/* Redirect student payment/enrollment pages to nested routes so sidebar shows */}
       <Route path="/my-enrollments" element={<Navigate to="/student/my-enrollments" replace />} />
       <Route path="/enrollments/:id" element={<EnrollRedirect />} />
