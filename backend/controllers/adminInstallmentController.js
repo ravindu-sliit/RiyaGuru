@@ -19,7 +19,7 @@ export const approvePlan = async (req, res) => {
   try {
     const plan = await InstallmentPlan.findByIdAndUpdate(
       req.params.id,
-      { adminApproved: true, adminComment: adminComment || undefined },
+      { adminApproved: true, adminRejected: false, adminStatus: "Approved", adminDecision: "Approved", adminComment: adminComment || undefined },
       { new: true }
     );
     if (!plan) return res.status(404).json({ message: "Plan not found" });
@@ -51,7 +51,7 @@ export const rejectPlan = async (req, res) => {
   try {
     const plan = await InstallmentPlan.findByIdAndUpdate(
       req.params.id,
-      { adminApproved: false, rejectionReason: reason || "Rejected by admin" },
+      { adminApproved: false, adminRejected: true, adminStatus: "Rejected", adminDecision: "Rejected", rejectionReason: reason || "Rejected by admin" },
       { new: true }
     );
     if (!plan) return res.status(404).json({ message: "Plan not found" });

@@ -108,7 +108,7 @@ export async function adminRejectPlan(id, adminComment = "") {
   const res = await fetch(`${ADMIN_URL}/${id}/reject`, {
     method: "PATCH",
     headers: authHeaders({ "Content-Type": "application/json" }),
-    body: JSON.stringify({ adminComment }),
+    body: JSON.stringify({ reason: adminComment }),
   });
   if (!res.ok) throw new Error((await res.text()) || `HTTP ${res.status}`);
   return await res.json();
