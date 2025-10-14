@@ -54,13 +54,12 @@ export default function InstructorPage() {
     })();
   }, []);
   const navigate = useNavigate();
-  const cards = useMemo(
+  const topCards = useMemo(
     () => [
       {
         label: "Total Instructors",
         value: stats.total,
         gradient: "from-blue-500 to-blue-600",
-        type: "hero", // 🔹 main central card
       },
       {
         label: "Active",
@@ -72,6 +71,12 @@ export default function InstructorPage() {
         value: stats.inactive,
         gradient: "from-amber-500 to-amber-600",
       },
+    ],
+    [stats]
+  );
+
+  const specializationCards = useMemo(
+    () => [
       {
         label: "Car",
         value: stats.car,
@@ -173,10 +178,10 @@ export default function InstructorPage() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Stats - Top Row: Total / Active / Not-Active */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {loading
-            ? [...Array(8)].map((_, i) => (
+            ? [...Array(3)].map((_, i) => (
                 <div
                   key={i}
                   className="bg-white rounded-2xl shadow-sm border p-6 animate-pulse"
@@ -185,31 +190,55 @@ export default function InstructorPage() {
                   <div className="h-8 bg-slate-300 rounded w-1/2"></div>
                 </div>
               ))
-            : cards.map((c, i) => (
+            : topCards.map((c, i) => (
                 <div
                   key={i}
-                  className="group bg-white rounded-2xl shadow-sm border p-6 hover:shadow-lg transition-all cursor-pointer relative overflow-hidden"
+                  className="group bg-white rounded-2xl shadow-sm border p-6 hover:shadow-lg transition-all relative overflow-hidden"
                 >
                   <div
                     className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-0 group-hover:opacity-5 transition-opacity`}
                   ></div>
-                  <div className="flex items-center justify-between mb-4 relative z-10">
-                    <div
-                      className={`w-14 h-14 ${c.bg} rounded-xl flex items-center justify-center text-2xl`}
-                    >
-                      {c.icon}
-                    </div>
-                    <div
-                      className={`text-3xl font-bold bg-gradient-to-r ${c.gradient} bg-clip-text text-transparent`}
-                    >
+                  <div className="flex items-center justify-between mb-2 relative z-10">
+                    <div className={`text-3xl font-bold bg-gradient-to-r ${c.gradient} bg-clip-text text-transparent`}>
                       {c.value}
                     </div>
                   </div>
-                  <h3 className="text-slate-700 font-semibold relative z-10">
-                    {c.label}
-                  </h3>
+                  <h3 className="text-slate-700 font-semibold relative z-10">{c.label}</h3>
                 </div>
               ))}
+        </div>
+
+        {/* Specialization Section */}
+        <div className="mt-10">
+          <h2 className="text-xl font-bold text-slate-800 mb-4">Specialization</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {loading
+              ? [...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-2xl shadow-sm border p-6 animate-pulse"
+                  >
+                    <div className="h-4 bg-slate-200 rounded w-1/3 mb-4"></div>
+                    <div className="h-8 bg-slate-300 rounded w-1/2"></div>
+                  </div>
+                ))
+              : specializationCards.map((c, i) => (
+                  <div
+                    key={i}
+                    className="group bg-white rounded-2xl shadow-sm border p-6 hover:shadow-lg transition-all relative overflow-hidden"
+                  >
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-0 group-hover:opacity-5 transition-opacity`}
+                    ></div>
+                    <div className="flex items-center justify-between mb-2 relative z-10">
+                      <div className={`text-3xl font-bold bg-gradient-to-r ${c.gradient} bg-clip-text text-transparent`}>
+                        {c.value}
+                      </div>
+                    </div>
+                    <h3 className="text-slate-700 font-semibold relative z-10">{c.label}</h3>
+                  </div>
+                ))}
+          </div>
         </div>
 
         {/* Recent Updates */}
