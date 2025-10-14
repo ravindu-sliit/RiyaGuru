@@ -81,15 +81,7 @@ export default function AdminHome() {
       borderColor: "border-purple-100",
       hoverColor: "hover:bg-purple-100"
     },
-    {
-      title: "Lesson Tracking",
-      description: "Track lesson progress across students",
-      icon: <BookOpen className="w-8 h-8 text-green-600" />,
-      path: "/lesson-progress",
-      bgColor: "bg-green-50",
-      borderColor: "border-green-100",
-      hoverColor: "hover:bg-green-100"
-    },
+  
     
     /*
     {
@@ -104,26 +96,7 @@ export default function AdminHome() {
     
     */
     
-    // ✅ NEW Inquiry Dashboard
-    {
-      title: "Inquiries",
-      description: "Manage and respond to student inquiries",
-      icon: <MessageSquare className="w-8 h-8 text-indigo-600" />,
-      path: "/inquiries",
-      bgColor: "bg-indigo-50",
-      borderColor: "border-indigo-100",
-      hoverColor: "hover:bg-indigo-100"
-    },
-    // ✅ NEW Maintenance Dashboard
-    {
-      title: "Maintenance",
-      description: "Track and manage vehicle maintenance",
-      icon: <Wrench className="w-8 h-8 text-red-600" />,
-      path: "/maintenance",
-      bgColor: "bg-red-50",
-      borderColor: "border-red-100",
-      hoverColor: "hover:bg-red-100"
-    }
+    
 
     //{ title: "Students", description: "View and manage student records", icon: <Users className="w-8 h-8 text-blue-600" />, path: "/admin/students", bgColor: "bg-blue-50", borderColor: "border-blue-100", hoverColor: "hover:bg-blue-100" },
     //{ title: "Vehicles", description: "Manage the driving school fleet", icon: <Car className="w-8 h-8 text-orange-600" />, path: "/dashboard", bgColor: "bg-orange-50", borderColor: "border-orange-100", hoverColor: "hover:bg-orange-100" },
@@ -144,7 +117,7 @@ export default function AdminHome() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Modern Header with Brand Colors */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
         <div className="px-6 py-6">
@@ -179,90 +152,31 @@ export default function AdminHome() {
         </div>
       </div>
 
-      {/* Top Quick Stats Row (matches reference style) */}
-      <div className="px-6 pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          {/* Total Students */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs text-gray-500">Total Students</div>
-                <div className="text-2xl font-bold text-gray-900">12</div>
-              </div>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600">
-                <Users className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-
-          {/* Active Vehicles */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs text-gray-500">Active Vehicles</div>
-                <div className="text-2xl font-bold text-gray-900">5</div>
-              </div>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-orange-50 text-orange-600">
-                <Car className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-
-          {/* This Month */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs text-gray-500">This Month</div>
-                <div className="text-2xl font-bold text-gray-900">RS 1,24,500</div>
-              </div>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-600">
-                <CreditCard className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-
-          {/* Today's Lessons */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs text-gray-500">Today's Lessons</div>
-                <div className="text-2xl font-bold text-gray-900">2</div>
-              </div>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-violet-50 text-violet-600">
-                <Calendar className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Top Quick Stats removed as requested */}
 
       {/* Quick Actions Grid */}
-      <div className="px-6 pb-8">
+      <div className="px-6 pt-6 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {quickLinks.map((link, idx) => (
             <button
               key={idx}
               onClick={() => navigate(link.path)}
-              className={`${link.bgColor} ${link.borderColor} ${link.hoverColor} group relative overflow-hidden rounded-2xl border-2 p-6 text-left transition-all duration-300 hover:scale-105 hover:shadow-lg`}
+              className={"group relative overflow-hidden rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md p-6 text-left shadow-sm transition-all duration-300 hover:shadow-md"}
             >
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-white rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+                  <div className="p-3 bg-white/80 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
                     {link.icon}
                   </div>
                   <div className="w-2 h-2 bg-gray-300 rounded-full group-hover:bg-gray-400 transition-colors"></div>
                 </div>
-                
                 <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors">
                   {link.title}
                 </h3>
-                
-                <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors leading-relaxed">
+                <p className="text-sm text-gray-700 group-hover:text-gray-800 transition-colors leading-relaxed">
                   {link.description}
                 </p>
               </div>
-              
-              {/* Hover effect overlay */}
               <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
             </button>
           ))}

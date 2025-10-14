@@ -38,6 +38,8 @@ import BookingDashboard from "../pages/Booking/BookingDashboard";
 // Admin-specific instructor pages
 import AdminLessonProgress from "../pages/Admin/AdminLessonProgress";
 import AdminProgressTracking from "../pages/Admin/AdminProgressTracking";
+import InquiryDashboard from "../pages/Inquiry/InquiryDashboard";
+import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
 
 export default function AdminRoutes() {
   return (
@@ -102,10 +104,16 @@ export default function AdminRoutes() {
         {/* Bookings */}
         <Route path="bookings" element={<BookingDashboard />} />
 
+        {/* Inquiries & Maintenance */}
+        <Route path="inquiries" element={<InquiryDashboard />} />
+        <Route path="maintenance" element={<MaintenanceDashboard />} />
+
         {/* Reports & Settings removed */}
 
         {/* Vehicles (redirect to admin nested for sidebar) */}
         <Route path="/vehicles" element={<Navigate to="/admin/vehicles" replace />} />
+        <Route path="/inquiries" element={<Navigate to="/admin/inquiries" replace />} />
+        <Route path="/maintenance" element={<Navigate to="/admin/maintenance" replace />} />
         <Route path="/vehicles/add" element={<AddVehicle />} />
         <Route path="/vehicles/:id" element={<VehicleDetails />} />
         <Route path="/vehicles/:id/edit" element={<EditVehicle />} />
