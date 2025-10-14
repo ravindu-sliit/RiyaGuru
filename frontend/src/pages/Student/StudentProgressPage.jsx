@@ -148,8 +148,8 @@ export default function StudentProgressPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero (full width like other pages) */}
-      <div className="px-6 pt-6">
-        <ProgressHero title="Student Dashboard" subtitle={`${full_name} (ID: ${student_id})`}>
+      <div className="px-4 pt-4">
+        <ProgressHero title="Student Dashboard" subtitle={`${full_name} (ID: ${student_id})`} padY="py-6">
           <div>
             <button
               onClick={async () => {
@@ -172,7 +172,7 @@ export default function StudentProgressPage() {
                   toast.error(err.message || "Failed to generate report");
                 }
               }}
-              className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-lg"
+              className="bg-white/10 border border-white/20 text-white px-3 py-1.5 rounded-md text-sm"
             >
               Generate Report
             </button>
@@ -181,16 +181,16 @@ export default function StudentProgressPage() {
       </div>
 
       {/* Page content wrapper */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-4">
 
         {/* Stats Cards (landing style) */}
-        <div className="-mt-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div className="-mt-2 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
             <StatCard
               title="Courses Enrolled"
               value={totalCourses}
               subtitle="Active courses"
-              icon={<BookOpen size={24} />}
+              icon={<BookOpen size={20} />}
               gradient="from-blue-500 to-blue-600"
               bgColor="bg-blue-50"
               textColor="text-blue-600"
@@ -201,7 +201,7 @@ export default function StudentProgressPage() {
               title="Lessons Completed"
               value={lessonsCompleted}
               subtitle="Completed lessons"
-              icon={<CheckCircle size={24} />}
+              icon={<CheckCircle size={20} />}
               gradient="from-green-500 to-emerald-600"
               bgColor="bg-green-50"
               textColor="text-green-600"
@@ -212,7 +212,7 @@ export default function StudentProgressPage() {
               title="Certificates Issued"
               value={certificatesIssued}
               subtitle="Available certificates"
-              icon={<Award size={24} />}
+              icon={<Award size={20} />}
               gradient="from-yellow-500 to-orange-500"
               bgColor="bg-yellow-50"
               textColor="text-yellow-600"
@@ -223,7 +223,7 @@ export default function StudentProgressPage() {
               title="Average Progress"
               value={`${avgProgress}%`}
               subtitle="Average across courses"
-              icon={<TrendingUp size={24} />}
+              icon={<TrendingUp size={20} />}
               gradient="from-purple-500 to-indigo-600"
               bgColor="bg-purple-50"
               textColor="text-purple-600"
@@ -256,32 +256,32 @@ export default function StudentProgressPage() {
             return (
               <div
                 key={c.course_name}
-                className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 mb-6 hover:shadow-2xl transition"
+                className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 mb-3 hover:shadow-xl transition"
               >
                 {/* Header */}
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-bold text-gray-800">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-lg font-bold text-gray-800">
                     {c.course_name}
                   </h3>
-                  <span className="text-sm bg-gray-100 px-3 py-1 rounded-lg text-gray-700">
+                  <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-md text-gray-700">
                     {c.completed_lessons}/{c.total_lessons} lessons
                   </span>
                 </div>
 
                 {/* Progress Bar (click to view completed lessons) */}
-                <div className="mb-4">
+                <div className="mb-3">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1">
                       <div
-                        className="h-3 bg-gray-200 rounded-full overflow-hidden"
+                        className="h-2 bg-gray-200 rounded-full overflow-hidden"
                         title={`${pct}% completed`}
                       >
                         <div
-                          className="h-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
+                          className="h-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <p className="text-sm text-gray-600 mt-2 font-medium">{pct}% completed</p>
+                      <p className="text-xs text-gray-600 mt-1 font-medium">{pct}% completed</p>
                     </div>
                     <div>
                       <button
@@ -290,17 +290,17 @@ export default function StudentProgressPage() {
                           handleToggleExpand(c);
                         }}
                         aria-expanded={expandedCourses[c.course_name] && expandedCourses[c.course_name].open}
-                        className={`flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition border ${
+                        className={`flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-md transition border ${
                           expandedCourses[c.course_name] && expandedCourses[c.course_name].open
-                            ? "bg-white text-gray-800 border-gray-200"
-                            : "bg-indigo-600 text-white hover:bg-indigo-700 border-indigo-600"
+                            ? "bg-white text-orange-700 border-orange-200"
+                            : "bg-orange-600 text-white hover:bg-orange-700 border-orange-600"
                         }`}
                       >
                         <span className="sr-only">Toggle lessons</span>
                         {expandedCourses[c.course_name] && expandedCourses[c.course_name].open ? (
-                          <ChevronUp className="w-4 h-4" />
+                          <ChevronUp className="w-3.5 h-3.5" />
                         ) : (
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown className="w-3.5 h-3.5" />
                         )}
                       </button>
                     </div>
@@ -328,7 +328,7 @@ export default function StudentProgressPage() {
                         ) : (
                           <div className="space-y-2">
                             {/* Header row */}
-                            <div className="hidden md:grid grid-cols-12 gap-4 text-sm text-gray-500 px-3 py-2 border-b">
+                            <div className="hidden md:grid grid-cols-12 gap-3 text-xs text-gray-500 px-3 py-2 border-b">
                               <div className="col-span-1 font-medium">#</div>
                               <div className="col-span-3">Date</div>
                               <div className="col-span-3">Instructor</div>
@@ -339,11 +339,11 @@ export default function StudentProgressPage() {
                             {state.lessons
                               .sort((a, b) => a.lesson_number - b.lesson_number)
                               .map((l) => (
-                                <div key={l._id} className="grid grid-cols-12 gap-4 items-center px-3 py-3 bg-gray-50 border rounded-lg">
+                                <div key={l._id} className="grid grid-cols-12 gap-3 items-center px-3 py-2 bg-gray-50 border rounded-lg">
                                   <div className="col-span-1 font-semibold">{l.lesson_number}</div>
-                                  <div className="col-span-3 text-sm text-gray-600">{new Date(l.date).toLocaleString()}</div>
-                                  <div className="col-span-3 text-sm text-gray-800">{(instructorCache[l.instructor_id] && instructorCache[l.instructor_id].name) || l.instructor_id}</div>
-                                  <div className="col-span-5 text-sm text-gray-700 truncate">{l.feedback || "No feedback"}</div>
+                                  <div className="col-span-3 text-xs text-gray-600">{new Date(l.date).toLocaleString()}</div>
+                                  <div className="col-span-3 text-xs text-gray-800">{(instructorCache[l.instructor_id] && instructorCache[l.instructor_id].name) || l.instructor_id}</div>
+                                  <div className="col-span-5 text-xs text-gray-700 truncate">{l.feedback || "No feedback"}</div>
                                 </div>
                               ))}
                           </div>
@@ -375,8 +375,8 @@ export default function StudentProgressPage() {
                 )}
 
                 {/* Certificate Section */}
-                <div className="flex justify-between items-center bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm font-medium text-gray-700">
+                <div className="flex justify-between items-center bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs font-medium text-gray-700">
                     Certificate Status:{" "}
                     {c.certificate_status === "Issued" && certificateHref ? (
                       <span className="text-green-600">Available</span>
@@ -395,7 +395,7 @@ export default function StudentProgressPage() {
                       href={certificateHref}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                      className="text-xs bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-green-700 transition"
                     >
                       Download
                     </a>
@@ -443,7 +443,7 @@ export default function StudentProgressPage() {
                           alert(err.message);
                         }
                       }}
-                      className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                      className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 transition"
                     >
                       Generate Certificate
                     </button>
@@ -461,16 +461,16 @@ export default function StudentProgressPage() {
 /* Styled Stat Card */
 function StatCard({ title, value, icon, gradient }) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition">
-      <div className="flex justify-between items-center mb-3">
-        <span className="text-sm font-medium text-gray-500">{title}</span>
+    <div className="bg-white rounded-xl shadow-md p-3 hover:shadow-lg transition">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-xs font-medium text-gray-500">{title}</span>
         <div
-          className={`p-3 rounded-lg text-white bg-gradient-to-r ${gradient}`}
+          className={`p-2 rounded-md text-white bg-gradient-to-r ${gradient}`}
         >
           {icon}
         </div>
       </div>
-      <div className="text-2xl font-bold text-gray-800">{value}</div>
+      <div className="text-xl font-bold text-gray-800">{value}</div>
     </div>
   );
 }

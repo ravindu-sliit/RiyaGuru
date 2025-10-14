@@ -120,7 +120,7 @@ export default function InstructorDetailsPage() {
     ? rec.image.startsWith("http")
       ? rec.image
       : `${API_URL}${rec.image}`
-    : "/avatar.png";
+    : "/avatar.svg";
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -181,7 +181,7 @@ export default function InstructorDetailsPage() {
                      src={`${process.env.REACT_APP_API_URL.replace("/api", "")}${rec.image}`}
                     alt={rec.name}
                     className="w-full h-full object-cover rounded-full border-4 border-white"
-                    onError={(e) => (e.currentTarget.src = "/avatar.png")}
+                    onError={(e) => (e.currentTarget.src = "/avatar.svg")}
                     />
                     
                   </div>

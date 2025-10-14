@@ -325,7 +325,7 @@ const AddBookingPage = () => {
                           alt={instructor.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.currentTarget.src = "/avatar.png";
+                            e.currentTarget.src = "/avatar.svg";
                           }}
                         />
                       ) : (

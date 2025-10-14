@@ -243,7 +243,7 @@ export default function AvailabilityPage() {
         alt={r.name}
         className="w-full h-full object-cover"
         onError={(e) => {
-          e.currentTarget.src = "/avatar.png"; // fallback image
+          e.currentTarget.src = "/avatar.svg"; // fallback image
         }}
       />
     ) : (

@@ -115,11 +115,25 @@ export default function InstructorDetailsPage() {
     );
 
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+  const defaultAvatar =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stop-color="#e2e8f0"/>
+            <stop offset="100%" stop-color="#cbd5e1"/>
+          </linearGradient>
+        </defs>
+        <rect width="256" height="256" fill="url(#g)"/>
+        <circle cx="128" cy="96" r="44" fill="#94a3b8"/>
+        <path d="M32 224c12-40 52-64 96-64s84 24 96 64" fill="#94a3b8"/>
+      </svg>`
+    );
+
   const imageUrl = rec.image
-    ? rec.image.startsWith("http")
-      ? rec.image
-      : `${API_URL}${rec.image}`
-    : "../avatar.png";
+    ? (rec.image.startsWith("http") ? rec.image : `${API_URL}${rec.image}`)
+    : defaultAvatar;
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -158,7 +172,7 @@ export default function InstructorDetailsPage() {
                       alt={rec.name}
                       className="w-full h-full object-cover rounded-full border-4 border-white"
                       onError={(e) => {
-                        e.currentTarget.src = "/avatar.png";
+                        e.currentTarget.src = defaultAvatar;
                       }}
                     />
                   </div>

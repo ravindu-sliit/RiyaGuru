@@ -36,6 +36,21 @@ export default function StudentDashboard() {
 
   const firstName = student.full_name?.split(" ")[0] || "Student";
   const rawAvatar = student.profilePicUrl || student.image || null;
+  const defaultAvatar =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 256 256">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stop-color="#e2e8f0"/>
+            <stop offset="100%" stop-color="#cbd5e1"/>
+          </linearGradient>
+        </defs>
+        <rect width="256" height="256" rx="24" fill="url(#g)"/>
+        <circle cx="128" cy="100" r="42" fill="#94a3b8"/>
+        <path d="M40 224c12-38 52-60 88-60s76 22 88 60" fill="#94a3b8"/>
+      </svg>`
+    );
   const safeAvatar = (() => {
     if (!rawAvatar) return null;
     const s = String(rawAvatar);
@@ -52,12 +67,12 @@ export default function StudentDashboard() {
         {/* Constrain hero width to match profile card width (≈880px) */}
         <div style={{ maxWidth: 880, margin: "0 auto", padding: "0 18px" }}>
         {(() => {
-          const heroIcon = safeAvatar ? (
+          const heroIcon = (safeAvatar || defaultAvatar) ? (
             <img
-              src={safeAvatar}
+              src={safeAvatar || defaultAvatar}
               alt={`${firstName}'s profile`}
               className="w-20 h-20 rounded-full object-cover"
-              onError={(e) => { e.currentTarget.src = "/avatar.png"; }}
+              onError={(e) => { e.currentTarget.src = defaultAvatar; }}
             />
           ) : (
             <User className="w-8 h-8 text-white" />
