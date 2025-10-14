@@ -1,8 +1,64 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./DriveManagerLanding.css";
 import { Link } from "react-router-dom";
 
 export default function DriveManagerLanding() {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const heroImages = [
+    "/images/hero/instructor-student.jpg",
+    "/images/hero/hero2.jpg",
+    "/images/hero/hero3.jpg",
+  ];
+
+  // Testimonials data (4 reviews)
+  const testimonials = [
+    {
+      name: "Pasindu Sankalpa",
+      location: "Galle, SRI LANKA",
+      avatar: "/images/testimonials/pasindu.jpg",
+      quote:
+        "RiyaGuru feels like home! I love the experienced instructors, friendly staff, and practicing with my fellow learners after learning new driving techniques every day.",
+    },
+    {
+      name: "Nimesha Basnayaka",
+      location: "Kandy, SRI LANKA",
+      avatar: "/images/testimonials/sandani.jpg",
+      quote:
+        "I like RiyaGuru because I learn new driving skills and the instructors are really kind and supportive.",
+    },
+    {
+      name: "Tharindu Perera",
+      location: "Colombo, SRI LANKA",
+      avatar: "/images/testimonials/pasindu.jpg",
+      quote:
+        "Booking lessons online is super easy and the schedules are flexible around my work hours. Highly recommended!",
+    },
+    {
+      name: "Ishara Fernando",
+      location: "Matara, SRI LANKA",
+      avatar: "/images/testimonials/sandani.jpg",
+      quote:
+        "Great instructors and well-maintained vehicles. I felt confident by the time I did my driving test.",
+    },
+    {
+      name: "Chamodi Wijesinghe",
+      location: "Kurunegala, SRI LANKA",
+      avatar: "/images/testimonials/sandani.jpg",
+      quote:
+        "The progress tracking helped me understand exactly what to improve. Super professional team!",
+    },
+    {
+      name: "Ravindu Jayasuriya",
+      location: "Gampaha, SRI LANKA",
+      avatar: "/images/testimonials/pasindu.jpg",
+      quote:
+        "From booking to payments, everything is smooth. My instructor was patient and motivating.",
+    },
+  ];
+  // Horizontal slider state (slides of 2 cards) with seamless loop
+  const [slideIndex, setSlideIndex] = useState(1); // start at first REAL slide (after leading clone)
+  const [transitionEnabled, setTransitionEnabled] = useState(true);
+
   useEffect(() => {
     // Scroll animations
     function isElementInViewport(el) {
@@ -53,22 +109,56 @@ export default function DriveManagerLanding() {
       });
     }
 
-    // Init
-    window.addEventListener("scroll", () => {
+    // Init: register listeners and run once immediately (SPA friendly)
+    const onScroll = () => {
       handleScrollAnimations();
       handleNavbarScroll();
-    });
-
-    window.addEventListener("load", () => {
-      handleScrollAnimations();
-      setupSmoothScrolling();
-    });
+    };
+    window.addEventListener("scroll", onScroll);
+    // Run once on mount so content is visible without user interaction
+    handleScrollAnimations();
+    handleNavbarScroll();
+    setupSmoothScrolling();
 
     return () => {
-      window.removeEventListener("scroll", handleScrollAnimations);
-      window.removeEventListener("scroll", handleNavbarScroll);
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    const id = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, [heroImages.length]);
+
+  // Build slides with 2 testimonials per slide
+  const slides = [];
+  for (let i = 0; i < testimonials.length; i += 2) {
+    slides.push([testimonials[i], testimonials[i + 1]]);
+  }
+
+  // Add clones for seamless looping: [last, ...slides, first]
+  const slidesWithClones = slides.length > 0
+    ? [slides[slides.length - 1], ...slides, slides[0]]
+    : [];
+
+  // Auto-rotate whole slides
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const id = setInterval(() => {
+      setSlideIndex((prev) => prev + 1);
+    }, 5000);
+    return () => clearInterval(id);
+  }, [slides.length]);
+
+  const prevTestimonials = () => {
+    setSlideIndex((prev) => prev - 1);
+  };
+  const nextTestimonials = () => {
+    setSlideIndex((prev) => prev + 1);
+  };
 
   return (
     <>
@@ -91,9 +181,26 @@ export default function DriveManagerLanding() {
 
       {/* Hero Section */}
       <section className="hero" id="home">
-        <div className="hero-background">
-          <img src="/images/hero/instructor-student.jpg" alt="RiyaGuru Driving Instructor with Student" className="hero-image" />
+        <div className="hero-background hero-slideshow">
+          {heroImages.map((src, idx) => (
+            <div
+              key={idx}
+              className={`hero-slide ${activeSlide === idx ? "is-active" : ""}`}
+            >
+              <img src={src} alt="Hero" className="hero-image kenburns" />
+            </div>
+          ))}
           <div className="hero-overlay"></div>
+          <div className="hero-dots">
+            {heroImages.map((_, i) => (
+              <button
+                key={i}
+                className={`dot ${activeSlide === i ? "active" : ""}`}
+                onClick={() => setActiveSlide(i)}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
         <div className="hero-container">
           <div className="hero-content fade-in">
@@ -242,37 +349,52 @@ export default function DriveManagerLanding() {
           </div>
           
           <div className="testimonials-container">
-            <button className="testimonial-nav prev"></button>
-            
-            <div className="testimonials-grid">
-              <div className="testimonial-card fade-in">
-                <div className="testimonial-header">
-                  <img src="/images/testimonials/pasindu.jpg" alt="Pasindu Sankalpa" className="testimonial-avatar" />
-                  <div className="testimonial-info">
-                    <h4>Pasindu Sankalpa</h4>
-                    <p>Galle, SRI LANKA</p>
+            <button className="testimonial-nav prev" onClick={prevTestimonials}></button>
+
+            <div className="testimonials-viewport">
+              <div
+                className="testimonials-track"
+                style={{
+                  transform: `translateX(-${slideIndex * 100}%)`,
+                  transition: transitionEnabled ? "transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1)" : "none",
+                }}
+                onTransitionEnd={() => {
+                  // If we've moved to the trailing clone (last index), snap to real first
+                  if (slideIndex === slidesWithClones.length - 1) {
+                    setTransitionEnabled(false);
+                    setSlideIndex(1);
+                    setTimeout(() => setTransitionEnabled(true), 20);
+                  }
+                  // If we've moved to the leading clone (index 0), snap to real last
+                  if (slideIndex === 0) {
+                    setTransitionEnabled(false);
+                    setSlideIndex(slides.length);
+                    setTimeout(() => setTransitionEnabled(true), 20);
+                  }
+                }}
+              >
+                {slidesWithClones.map((pair, sIdx) => (
+                  <div className="testimonials-slide" key={sIdx}>
+                    {pair.filter(Boolean).map((t, idx) => (
+                      <div className="testimonial-card" key={idx}>
+                        <div className="testimonial-header">
+                          <img src={t.avatar} alt={t.name} className="testimonial-avatar" />
+                          <div className="testimonial-info">
+                            <h4>{t.name}</h4>
+                            <p>{t.location}</p>
+                          </div>
+                        </div>
+                        <div className="testimonial-content">
+                          <p>"{t.quote}"</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-                <div className="testimonial-content">
-                  <p>"RiyaGuru feels like home! I love the experienced instructors, friendly staff, and practicing with my fellow learners after learning new driving techniques every day."</p>
-                </div>
-              </div>
-              
-              <div className="testimonial-card fade-in">
-                <div className="testimonial-header">
-                  <img src="/images/testimonials/sandani.jpg" alt="Nimesha Basnayaka" className="testimonial-avatar" />
-                  <div className="testimonial-info">
-                    <h4>Nimesha Basnayaka</h4>
-                    <p>Kandy, SRI LANKA</p>
-                  </div>
-                </div>
-                <div className="testimonial-content">
-                  <p>"I like RiyaGuru because I learn new driving skills and the instructors are really kind and supportive."</p>
-                </div>
+                ))}
               </div>
             </div>
-            
-            <button className="testimonial-nav next"></button>
+
+            <button className="testimonial-nav next" onClick={nextTestimonials}></button>
           </div>
         </div>
       </section>
