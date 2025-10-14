@@ -2,6 +2,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { API_BASE } from "../../services/api";
+import ProgressHero from "../../components/ProgressHero";
+import { Settings } from "lucide-react";
 import "../../styles/student-preferences.css";
 
 const VEHICLE_TYPES = ["Car", "Motorcycle", "ThreeWheeler"];
@@ -150,17 +152,20 @@ export default function StudentPreferences() {
   if (loading) return <div className="spf-loading">Loading…</div>;
 
   return (
-    <div className="spf">
-      {/* Header — same pattern as other pages */}
-      <header className="spf-header">
-        <div className="spf-header-left">
-          <h1>{prefExists ? "Edit Preferences" : "Select Preferences"}</h1>
-          <p className="spf-subtitle">
-            Choose your vehicle category, types, and preferred schedule.
-          </p>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50 student-surface">
+      {/* Hero — transparent like other cards */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title={prefExists ? "Edit Preferences" : "Select Preferences"}
+          subtitle="Choose your vehicle category, types, and preferred schedule."
+          icon={<Settings className="w-8 h-8 text-white" />}
+          padY="py-8"
+        />
+      </div>
 
+      {/* Page content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="spf">
       {/* Alerts */}
       <div className="spf-messages">
         {error && (
@@ -300,6 +305,8 @@ export default function StudentPreferences() {
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }

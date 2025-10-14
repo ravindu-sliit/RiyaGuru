@@ -176,12 +176,13 @@ export default function StudentLayout() {
       <div className="flex-1 ml-64 h-screen flex flex-col">
         {/* Top header — same height as sidebar brand */}
         <header
-          className="h-16 flex items-center px-6 sticky top-0 z-20"
+          className="h-16 flex items-center px-6 sticky top-0 z-20 bg-transparent shadow-none"
           style={{
             backgroundColor: "transparent",
             backdropFilter: "none",
             WebkitBackdropFilter: "none",
             borderColor: "transparent",
+            boxShadow: "none",
           }}
         >
           <div className="flex items-center justify-between w-full">
@@ -198,8 +199,8 @@ export default function StudentLayout() {
               <img
                 src={avatar || "https://via.placeholder.com/40x40.png?text=%F0%9F%91%A4"}
                 alt="Profile"
-                className="w-9 h-9 rounded-full object-cover border border-gray-200 bg-transparent"
-                style={{ background: "transparent" }}
+                className="w-9 h-9 rounded-full object-cover bg-transparent"
+                style={{ background: "transparent", border: "none", boxShadow: "none" }}
                 loading="lazy"
                 decoding="async"
               />

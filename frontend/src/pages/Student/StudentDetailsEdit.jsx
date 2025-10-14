@@ -2,6 +2,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { apiFetch, API_BASE } from "../../services/api";
+import ProgressHero from "../../components/ProgressHero";
+import { User as UserIcon } from "lucide-react";
 import "../../styles/student-details-edit.css";
 
 export default function StudentDetailsEdit() {
@@ -274,15 +276,18 @@ export default function StudentDetailsEdit() {
   if (loading) return <div className="sde-loading">Loading…</div>;
 
   return (
-    <div className="sde">
-      <header className="sde-header">
-        <div className="sde-header-left">
-          <h1>Profile Settings</h1>
-          <p className="sde-subtitle">Update your profile.</p>
-        </div>
-        {/* Keeping actions empty for consistency with other pages */}
-      </header>
+    <div className="min-h-screen bg-gray-50 student-surface">
+      {/* Hero — match Progress/My Enrollments */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="Profile Settings"
+          subtitle="Update your profile."
+          icon={<UserIcon className="w-8 h-8 text-white" />}
+        />
+      </div>
 
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="sde">
       <div className="sde-messages">
         {err && (
           <div className="alert error" role="alert" aria-live="assertive">
@@ -474,6 +479,8 @@ export default function StudentDetailsEdit() {
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }
