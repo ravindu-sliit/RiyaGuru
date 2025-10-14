@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MyPayments from "./MyPayments";
 import MyInstallments from "./MyInstallments";
+import ProgressHero from "../../components/ProgressHero";
+import { CreditCard } from "lucide-react";
 
 const PaymentsHub = () => {
   // Tabs with deep-link support (?tab=full|installment)
@@ -26,40 +28,46 @@ const PaymentsHub = () => {
   };
 
   return (
-      <div className="px-6 py-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Payments</h1>
-          <p className="text-gray-600 mt-1">Manage Full payments and Installment plans in one place.</p>
-        </div>
-
-        {/* Tabs header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2">
-          <div className="flex gap-2">
-            <button
-              onClick={() => switchTab("full")}
-              className={`flex-1 py-3 text-center text-sm font-semibold rounded-md border transition-colors ${tab === "full" ? "bg-orange-500 text-white border-orange-500" : "bg-white text-gray-800 hover:bg-gray-50 border-gray-200"}`}
-            >
-              Full Payments
-            </button>
-            <button
-              onClick={() => switchTab("installment")}
-              className={`flex-1 py-3 text-center text-sm font-semibold rounded-md border transition-colors ${tab === "installment" ? "bg-orange-500 text-white border-orange-500" : "bg-white text-gray-800 hover:bg-gray-50 border-gray-200"}`}
-            >
-              Installments
-            </button>
-          </div>
-        </div>
-
-        {/* Spacer */}
-        <div className="mt-8" />
-
-        {/* Tab Content */}
-        {tab === "full" ? (
-          <MyPayments />
-        ) : (
-          <MyInstallments />
-        )}
+    <div className="min-h-screen bg-gray-50">
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="My Payments"
+          subtitle="View and manage your payment history."
+          icon={<CreditCard className="w-8 h-8 text-white" />}
+        />
       </div>
+
+      {/* Tabs under hero */}
+      <div className="px-6 mt-4">
+        <div className="max-w-7xl mx-auto flex gap-2">
+          <button
+            onClick={() => switchTab("full")}
+            className={`flex-1 py-3 text-center text-sm font-semibold rounded-lg border transition-colors ${
+              tab === "full"
+                ? "bg-orange-500 text-white border-orange-500"
+                : "bg-white text-gray-800 hover:bg-gray-50 border-gray-200"
+            }`}
+          >
+            Full Payments
+          </button>
+          <button
+            onClick={() => switchTab("installment")}
+            className={`flex-1 py-3 text-center text-sm font-semibold rounded-lg border transition-colors ${
+              tab === "installment"
+                ? "bg-orange-500 text-white border-orange-500"
+                : "bg-white text-gray-800 hover:bg-gray-50 border-gray-200"
+            }`}
+          >
+            Installments
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="px-6 py-6">
+        {tab === "full" ? <MyPayments /> : <MyInstallments />}
+      </div>
+    </div>
   );
 }
 ;

@@ -4,7 +4,16 @@ import { Calendar } from "lucide-react";
 export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, children }) {
   const Icon = icon || <Calendar className="w-8 h-8 text-white" />;
   return (
-    <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
+    <div
+      className="shadow-lg rounded-2xl overflow-hidden"
+      style={{
+        backgroundImage:
+          "linear-gradient(90deg, rgba(10,26,47,0.55) 0%, rgba(10,26,47,0.45) 100%)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+        border: "1px solid rgba(255,255,255,0.28)",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
@@ -12,7 +21,7 @@ export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, ch
           </div>
           <div>
             <h1 className="text-3xl font-bold text-white">{title}</h1>
-            {subtitle && <p className="text-orange-100 mt-1">{subtitle}</p>}
+            {subtitle && <p className="text-gray-200 mt-1">{subtitle}</p>}
           </div>
         </div>
 

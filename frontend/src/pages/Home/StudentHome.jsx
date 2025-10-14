@@ -96,11 +96,6 @@ export default function StudentHome() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Welcome Student</h1>
-      <p className="text-sm text-gray-600 mb-6">
-        Manage your learning journey with quick access
-      </p>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {quickLinks.map((link, idx) => (
           <Link

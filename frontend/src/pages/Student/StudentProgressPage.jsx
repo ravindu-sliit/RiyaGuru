@@ -147,7 +147,8 @@ export default function StudentProgressPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto p-6">
+      {/* Hero (full width like other pages) */}
+      <div className="px-6 pt-6">
         <ProgressHero title="Student Dashboard" subtitle={`${full_name} (ID: ${student_id})`}>
           <div>
             <button
@@ -178,9 +179,13 @@ export default function StudentProgressPage() {
           </div>
         </ProgressHero>
 
+      </div>
+
+      {/* Page content wrapper */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Stats Cards (landing style) */}
-        <div className="px-6 -mt-6 relative z-10">
-          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div className="-mt-6 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
             <StatCard
               title="Courses Enrolled"
               value={totalCourses}

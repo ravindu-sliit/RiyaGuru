@@ -1,6 +1,8 @@
 // src/pages/Student/StudentDocUpload.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { BookOpen } from "lucide-react";
+import ProgressHero from "../../components/ProgressHero";
 import { apiFetch, API_BASE } from "../../services/api";
 import "../../styles/student-doc-upload.css";
 
@@ -156,27 +158,18 @@ export default function StudentDocUpload() {
   const isLight = pref?.vehicleCategory === "Light";
 
   return (
-    <div className="sdu">
-      {/* Header */}
-      <header className="sdu-header">
-        <div className="sdu-header-left">
-          <h1>My Documents</h1>
-          <p className="sdu-subtitle">
-            {pref?.vehicleCategory ? (
-              <>Vehicle Category: <b>{pref.vehicleCategory}</b></>
-            ) : (
-              "Set your preference to see required documents."
-            )}
-          </p>
-        </div>
-        <div className="sdu-header-actions">
-          <Link to={`/student`} className="btn btn-outline">
-            Back to Dashboard
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header — match MyEnrollments */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="My Documents"
+          subtitle={pref?.vehicleCategory ? `Vehicle Category: ${pref.vehicleCategory}` : "Set your preference to see required documents."}
+          icon={<BookOpen className="w-8 h-8 text-white" />}
+        />
+      </div>
 
-      {/* Alerts */}
+      {/* Content */}
+      <div className="px-6 py-8">
       <div className="sdu-messages">
         {loading && <div className="alert info">Loading…</div>}
         {err && <div className="alert error" role="alert">{err}</div>}
@@ -304,6 +297,7 @@ export default function StudentDocUpload() {
           </div>
         </section>
       )}
+      </div>
     </div>
   );
 }
