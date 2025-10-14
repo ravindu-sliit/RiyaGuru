@@ -133,7 +133,9 @@ const EnrollmentDetails = () => {
 
   const toCurrency = (amount) => {
     const a = parseFloat(String(amount)) || 0;
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(a);
+    return new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" })
+      .format(a)
+      .replace("LKR", "Rs.");
   };
 
   if (loading) {
@@ -283,9 +285,8 @@ const EnrollmentDetails = () => {
                 onClick={() => {
                   navigate(`/create-payment?totalAmount=${price}&courseName=${encodeURIComponent(courseName)}&courseId=${id}`);
                 }}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl"
               >
-                <DollarSign className="w-5 h-5" />
                 Pay Now - {toCurrency(price)}
               </button>
             </div>

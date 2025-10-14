@@ -7,7 +7,7 @@ import { CourseAPI } from "../../api/courseApi";
 
 const MyEnrollments = () => {
   const navigate = useNavigate();
-  const studentId = localStorage.getItem("rg_userId");
+  const studentId = localStorage.getItem("rg_id") || localStorage.getItem("rg_userId");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [courses, setCourses] = useState([]);
@@ -130,18 +130,18 @@ const MyEnrollments = () => {
           </button>
         </div>
       ) : (
-        <div className="px-6 py-8 grid md:grid-cols-2 gap-6">
+        <div className="px-6 py-8 grid md:grid-cols-2 gap-5">
           {courses.map((c, idx) => (
-            <div key={c._id || idx} className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 hover:shadow-xl hover:border-blue-300 transition-all duration-200">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
-                  <BookOpen className="w-8 h-8 text-white" />
+            <div key={c._id || idx} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md">
+                  <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-lg mb-1" style={{ color: "#0A1A2F" }}>
+                  <h4 className="font-semibold text-base md:text-lg mb-0.5" style={{ color: "#0A1A2F" }}>
                     {c.course_name || c.course_id || `Course #${idx + 1}`}
                   </h4>
-                  <div className="text-sm text-gray-600">Course ID: {c.course_id || "N/A"}</div>
+                  <div className="text-xs md:text-sm text-gray-600">Course ID: {c.course_id || "N/A"}</div>
                 </div>
               </div>
 
@@ -155,18 +155,20 @@ const MyEnrollments = () => {
                   coursePriceMap[keyName] ??
                   c?.price ?? c?.amount ?? c?.fee ?? c?.fees ?? c?.cost ?? null;
                 return (
-                  <div className="mb-4 min-h-[60px] flex flex-col justify-end">
+                  <div className="mb-3 min-h-[56px] flex flex-col justify-end">
                     {price != null ? (
-                      <div className="bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-200 rounded-lg p-3 shadow-sm">
-                        <span className="text-xs font-bold text-green-800 uppercase tracking-wider">Price</span>
-                        <div className="text-xl font-bold text-green-700">
-                          {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(price)}
+                      <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
+                        <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Price</span>
+                        <div className="text-lg font-semibold text-slate-900">
+                          {new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" })
+                            .format(price)
+                            .replace("LKR", "Rs.")}
                         </div>
                       </div>
                     ) : (
-                      <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-200 rounded-lg p-3 shadow-sm">
-                        <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">Price</span>
-                        <div className="text-xl font-bold text-gray-500">$</div>
+                      <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-lg p-3 shadow-sm">
+                        <span className="text-[11px] font-medium text-gray-600 uppercase tracking-wider">Price</span>
+                        <div className="text-lg font-semibold text-gray-600">Rs.</div>
                       </div>
                     )}
                   </div>
@@ -174,9 +176,9 @@ const MyEnrollments = () => {
               })()}
 
               <div className="flex justify-between items-center">
-                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg px-4 py-2 shadow-sm">
-                  <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">Status</span>
-                  <div className="text-sm font-bold text-blue-700">{c.status || "Active"}</div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200 px-3 py-1.5 shadow-sm">
+                  <span className="text-[11px] font-medium text-blue-700 uppercase tracking-wider">Status</span>
+                  <div className="text-xs font-semibold text-blue-700">{c.status || "Active"}</div>
                 </div>
                 <button
                   onClick={() => {
@@ -190,7 +192,7 @@ const MyEnrollments = () => {
                     }).toString();
                     navigate(`/enrollments/${encodeURIComponent(c.course_id)}?${qs}`);
                   }}
-                  className="group bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="group bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm font-medium py-2 px-4 rounded-md transition-all duration-200 flex items-center gap-1.5 shadow-sm hover:shadow-md"
                 >
                   View Details
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
