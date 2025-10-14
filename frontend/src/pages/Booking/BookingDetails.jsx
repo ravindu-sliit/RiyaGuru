@@ -193,13 +193,13 @@ const BookingDetails = () => {
                           onClick={() =>
                             navigate(`/student/edit-booking/${booking._id}`)
                           }
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition"
                         >
                           <Edit3 className="w-4 h-4" /> Edit
                         </button>
                         <button
                           onClick={() => handleDelete(booking._id)}
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition"
                         >
                           <Trash2 className="w-4 h-4" /> Delete
                         </button>
@@ -213,28 +213,28 @@ const BookingDetails = () => {
                           onClick={() =>
                             handleDownloadReceipt(booking.bookingId)
                           }
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 rounded-lg"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition"
                         >
                           <Download className="w-4 h-4" /> Receipt
                         </button>
-                      <button
-  onClick={() => handleSendEmail(booking.bookingId)}
-  className="..."
->
-  <Send className="w-4 h-4" /> Send Email
-</button>
+                        <button
+                          onClick={() => handleSendEmail(booking.bookingId)}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition"
+                        >
+                          <Send className="w-4 h-4" /> Send Email
+                        </button>
 
                         <button
                           onClick={() =>
                             navigate(`/student/edit-booking/${booking._id}`)
                           }
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition"
                         >
                           <Edit3 className="w-4 h-4" /> Edit
                         </button>
                         <button
                           onClick={() => handleDelete(booking._id)}
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition"
                         >
                           <Trash2 className="w-4 h-4" /> Delete
                         </button>

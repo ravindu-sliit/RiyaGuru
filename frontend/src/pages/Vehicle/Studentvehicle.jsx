@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { vehicleService } from '../../services/vehicleService';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import ProgressHero from "../../components/ProgressHero";
 
 import { 
   Search, 
@@ -136,21 +137,26 @@ const VehicleList = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b pb-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Vehicle Details</h1>
-        </div>
-        <div className="flex gap-2">
-          
+    <div className="min-h-screen bg-gray-50 student-surface">
+      {/* Hero — match Progress page */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="Vehicle Details"
+          subtitle="Export and review your vehicles"
+          icon={<Car className="w-8 h-8 text-white" />}
+          tint="dark"
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Actions bar */}
+        <div className="flex justify-end items-center gap-2 mb-6">
           <button
-          onClick={exportPDF}
+            onClick={exportPDF}
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-medium px-4 py-2 rounded-md shadow-sm transition"
-           >
-           Download PDF
-            </button>
-          {/* ✅ Dashboard button in header */}
+          >
+            Download PDF
+          </button>
           <button
             onClick={() => navigate('/student')}
             className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-800 text-white font-medium px-4 py-2 rounded-md shadow-sm transition"
@@ -159,25 +165,24 @@ const VehicleList = () => {
             Dashboard
           </button>
         </div>
-      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center mb-4">
-        <div className="relative flex-1 min-w-[250px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <div className="relative flex-1 min-w-[280px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/80" size={18} />
           <input
             type="text"
             placeholder="Search by registration, model, or brand..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full pl-10 pr-3 py-2 rounded-lg border border-white/40 bg-white/40 backdrop-blur text-sm placeholder-white/70 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:border-transparent shadow-sm"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+          className="rounded-lg px-3 py-2 text-sm border border-white/40 bg-white/40 backdrop-blur text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:border-transparent shadow-sm"
         >
           <option value="all">All Status</option>
           <option value="Active">Active</option>
@@ -188,7 +193,7 @@ const VehicleList = () => {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+          className="rounded-lg px-3 py-2 text-sm border border-white/40 bg-white/40 backdrop-blur text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:border-transparent shadow-sm"
         >
           <option value="all">All Types</option>
           <option value="Car">Car</option>
@@ -204,7 +209,7 @@ const VehicleList = () => {
               setStatusFilter('all');
               setTypeFilter('all');
             }}
-            className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-100"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm border border-white/40 bg-white/30 hover:bg-white/40 backdrop-blur text-gray-900 transition shadow-sm"
           >
             <Filter size={16} />
             Clear
@@ -213,9 +218,12 @@ const VehicleList = () => {
       </div>
 
       {/* Results Count */}
-      <p className="text-sm text-gray-500 mb-4">
-        Showing {filteredVehicles.length} of {vehicles.length} vehicles
-      </p>
+      <div className="mb-4">
+        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/40 bg-white/40 backdrop-blur text-gray-900 text-sm font-medium">
+          <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+          Showing <span className="font-semibold text-orange-700">{filteredVehicles.length}</span> of <span className="font-semibold text-orange-700">{vehicles.length}</span> vehicles
+        </span>
+      </div>
 
       {/* Vehicle Grid */}
       {filteredVehicles.length > 0 ? (
@@ -290,6 +298,7 @@ const VehicleList = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

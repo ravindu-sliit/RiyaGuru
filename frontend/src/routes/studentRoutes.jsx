@@ -11,6 +11,7 @@ import BookingDetails from "../pages/Booking/BookingDetails";
 import AddBookingPage from "../pages/Booking/AddBookingPage";
 
 import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
+import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
 
 import MyEnrollments from "../pages/Enrollment/MyEnrollments";
 import PaymentsHub from "../pages/Payment/PaymentsHub";
@@ -33,13 +34,15 @@ export default function StudentRoutes() {
 
         <Route path=":id/docs/upload" element={<StudentDocUpload />} />
 
-        <Route path="/studVehicle" element={<Studentvehicle />} />
+        <Route path="studVehicle" element={<Studentvehicle />} />
 
-           <Route path="/student-instructors" element={<StudentInstructors />} />
+           <Route path="student-instructors" element={<StudentInstructors />} />
 
         <Route path=":id/preferences" element={<StudentPreferences />} />
 
         <Route path=":id/password" element={<StudentPasswordChange />} />
+
+        <Route path=":id/edit" element={<StudentDetailsEdit />} />
 
         <Route path="bookings" element={<BookingDetails />} />
         <Route path="Addbookings" element={<AddBookingPage />} />
