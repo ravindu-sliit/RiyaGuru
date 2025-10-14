@@ -1,21 +1,22 @@
 import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
 
-export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, children, padY, iconContainerClass }) {
+export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, children, padY, iconContainerClass, transparent }) {
   const Icon = icon || <Calendar className="w-8 h-8 text-white" />;
   const innerPadY = padY || "py-8";
   const iconWrap = iconContainerClass || "w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center";
-  return (
-    <div
-      className="shadow-lg rounded-2xl overflow-hidden"
-      style={{
+  const baseClass = transparent ? "bg-white" : "";
+  const baseStyle = transparent
+    ? { border: "1px solid rgba(255,255,255,0.28)" }
+    : {
         backgroundImage:
           "linear-gradient(90deg, rgba(10,26,47,0.55) 0%, rgba(10,26,47,0.45) 100%)",
         backdropFilter: "blur(4px)",
         WebkitBackdropFilter: "blur(4px)",
         border: "1px solid rgba(255,255,255,0.28)",
-      }}
-    >
+      };
+  return (
+    <div className={`shadow-lg rounded-2xl overflow-hidden ${baseClass}`} style={baseStyle}>
       <div className={`max-w-7xl mx-auto px-6 ${innerPadY} flex justify-between items-center`}>
         <div className="flex items-center gap-4">
           <div className={iconWrap}>

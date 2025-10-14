@@ -159,8 +159,8 @@ export default function StudentLayout() {
               to={item.to}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium ${
                 location.pathname === item.to
-                  ? "bg-indigo-50 text-indigo-600 border border-indigo-200"
-                  : "text-gray-600 hover:text-indigo-600 hover:bg-indigo-50"
+                  ? "bg-white/30 text-orange-700 border border-white/40"
+                  : "text-gray-700 hover:text-orange-600 hover:bg-white/20"
               }`}
             >
               {item.icon}
@@ -215,11 +215,11 @@ export default function StudentLayout() {
             {/* Dropdown */}
             {menuOpen && (
               <div
-                className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden"
-                style={{ background: "white" }}
+                className="absolute right-0 mt-2 w-80 bg-white/40 backdrop-blur-md rounded-xl shadow-xl border border-white/30 overflow-hidden"
+                style={{ background: "rgba(255,255,255,0.40)" }}
               >
                 {/* Top user panel */}
-                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50">
+                <div className="flex items-center gap-3 px-4 py-3 bg-transparent">
                   <img
                     src={avatar || "https://via.placeholder.com/48x48.png?text=%F0%9F%91%A4"}
                     alt="Profile"
@@ -239,18 +239,18 @@ export default function StudentLayout() {
                 {/* Actions — no default background, only hover */}
                 <button
                   onClick={goProfile}
-                  className="w-full text-left px-4 py-3 flex items-center gap-2 text-gray-700 bg-transparent hover:bg-gray-50"
+                  className="w-full text-left px-4 py-3 flex items-center gap-2 text-gray-800 bg-transparent hover:bg-white/15"
                   style={{ background: "transparent" }}
                 >
                   <User className="w-4 h-4" />
                   View Profile
                 </button>
 
-                <div className="h-px bg-gray-100" />
+                <div className="h-px bg-white/30" />
 
                 <button
                   onClick={handleSignOut}
-                  className="w-full text-left px-4 py-3 flex items-center gap-2 text-gray-700 bg-transparent hover:bg-gray-50 hover:text-red-600"
+                  className="w-full text-left px-4 py-3 flex items-center gap-2 text-gray-800 bg-transparent hover:bg-white/15 hover:text-red-600"
                   style={{ background: "transparent" }}
                 >
                   <LogOut className="w-4 h-4" />
