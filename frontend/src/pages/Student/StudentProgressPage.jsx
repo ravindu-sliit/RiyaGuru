@@ -1,19 +1,18 @@
 // src/pages/Student/StudentProgressPage.jsx
 import { useEffect, useState } from "react";
-import { BookOpen, CheckCircle, Award, TrendingUp, X } from "lucide-react";
+import { BookOpen, CheckCircle, Award, TrendingUp, X, ChevronDown, ChevronUp } from "lucide-react";
 import { lessonProgressService } from "../../services/lessonProgressService";
+import InstructorAPI from "../../api/instructorApi";
 
 export default function StudentProgressPage() {
   const [studentId, setStudentId] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  // Modal state for showing completed lessons
-  const [showModal, setShowModal] = useState(false);
-  const [modalLessons, setModalLessons] = useState([]);
-  const [modalCourseName, setModalCourseName] = useState("");
-  const [modalLoading, setModalLoading] = useState(false);
-
+  // Expanded cards state: { [courseName]: { open, loading, lessons, error } }
+  const [expandedCourses, setExpandedCourses] = useState({});
+  // Cache for instructor names: { [instructorId]: { name, error } }
+  const [instructorCache, setInstructorCache] = useState({});
   useEffect(() => {
     async function load() {
       try {
@@ -100,52 +99,53 @@ export default function StudentProgressPage() {
         )
       : 0;
 
-  // Completed Lessons Modal (renders when showModal is true)
-  const CompletedLessonsModal = (
-    showModal && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div
-          className="absolute inset-0 bg-black/40"
-          onClick={() => setShowModal(false)}
-        />
-        <div className="bg-white rounded-2xl shadow-xl p-6 z-10 w-11/12 max-w-2xl">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">Completed lessons — {modalCourseName}</h3>
-            <button onClick={() => setShowModal(false)} className="p-2">
-              <X />
-            </button>
-          </div>
+  // Helper: toggle expansion for a course card (fetch completed lessons when opening)
+  async function handleToggleExpand(course) {
+    const name = course.course_name;
+    const existing = expandedCourses[name];
+    // If already open, collapse
+    if (existing && existing.open) {
+      setExpandedCourses((prev) => ({ ...prev, [name]: { ...existing, open: false } }));
+      return;
+    }
 
-          {modalLessons.length === 0 ? (
-            modalLoading ? (
-              <p className="text-sm text-gray-500">Loading...</p>
-            ) : (
-              <p className="text-sm text-gray-500">No completed lessons found.</p>
-            )
-          ) : (
-            <div className="grid gap-3">
-              {modalLessons.map((l) => (
-                <div key={l._id} className="p-3 border rounded-lg bg-gray-50">
-                  <div className="flex justify-between">
-                    <div>
-                      <div className="font-semibold">Lesson #{l.lesson_number}</div>
-                      <div className="text-sm text-gray-600">{new Date(l.date).toLocaleDateString()}</div>
-                    </div>
-                    <div className="text-sm text-gray-700">{l.feedback || "No feedback"}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    )
-  );
+    // Open and set loading
+    setExpandedCourses((prev) => ({ ...prev, [name]: { open: true, loading: true, lessons: [] } }));
+
+    try {
+      const all = await lessonProgressService.getLessonsByStudentAndCourse(studentId, name);
+      const completed = Array.isArray(all) ? all.filter((l) => l.status === "Completed") : [];
+      setExpandedCourses((prev) => ({ ...prev, [name]: { open: true, loading: false, lessons: completed } }));
+
+      // Fetch instructor names for lessons (cache by instructor_id)
+      const instructorIds = [...new Set(completed.map((l) => l.instructor_id).filter(Boolean))];
+      const missing = instructorIds.filter((id) => !instructorCache[id]);
+      if (missing.length > 0) {
+        // fetch in parallel and update cache
+        const promises = missing.map((id) =>
+          InstructorAPI.getById(id)
+            .then((res) => res.data || res)
+            .then((inst) => ({ id, name: inst?.name || inst?.fullName || inst?.instructorId || id }))
+            .catch((err) => ({ id, name: id, error: err.message || String(err) }))
+        );
+
+        const results = await Promise.all(promises);
+        setInstructorCache((prev) => {
+          const next = { ...prev };
+          for (const r of results) next[r.id] = { name: r.name, error: r.error };
+          return next;
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load lessons for", name, err);
+      setExpandedCourses((prev) => ({ ...prev, [name]: { open: true, loading: false, lessons: [], error: err.message || String(err) } }));
+    }
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto p-6">
-        {CompletedLessonsModal}
         {/* Header - match landing page hero */}
         <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl shadow-lg p-8 mb-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-2">Student Dashboard</h2>
@@ -256,49 +256,93 @@ export default function StudentProgressPage() {
                     </div>
                     <div>
                       <button
-                        onClick={async () => {
+                        onClick={() => {
                           if (!studentId) return alert("Student not loaded yet.");
-                          try {
-                            setModalLoading(true);
-                            const filtered = await lessonProgressService.getLessonsByStudentAndCourse(
-                              studentId,
-                              c.course_name
-                            );
-                            setModalCourseName(c.course_name);
-                            setModalLessons(filtered);
-                            setShowModal(true);
-                          } catch (err) {
-                            console.error("Failed to load lessons:", err);
-                            alert("Failed to load lessons: " + err.message);
-                          } finally {
-                            setModalLoading(false);
-                          }
+                          handleToggleExpand(c);
                         }}
-                        className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+                        aria-expanded={expandedCourses[c.course_name] && expandedCourses[c.course_name].open}
+                        className={`flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition border ${
+                          expandedCourses[c.course_name] && expandedCourses[c.course_name].open
+                            ? "bg-white text-gray-800 border-gray-200"
+                            : "bg-indigo-600 text-white hover:bg-indigo-700 border-indigo-600"
+                        }`}
                       >
-                        View Lessons
+                        <span className="sr-only">Toggle lessons</span>
+                        {expandedCourses[c.course_name] && expandedCourses[c.course_name].open ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
                       </button>
                     </div>
                   </div>
                 </div>
+                {/* Expanded area: show completed lessons inline when the card is expanded (animated) */}
+                {
+                  (() => {
+                    const key = c.course_name;
+                    const state = expandedCourses[key] || { open: false, loading: false, lessons: [] };
+                    const isOpen = !!state.open;
+                    return (
+                      <div
+                        className={`mt-4 border-t pt-4 overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+                          isOpen ? "max-h-96" : "max-h-0"
+                        }`}
+                        aria-hidden={!isOpen}
+                      >
+                        {state.loading ? (
+                          <p className="text-sm text-gray-500">Loading completed lessons...</p>
+                        ) : state.error ? (
+                          <p className="text-sm text-red-600">Error: {state.error}</p>
+                        ) : state.lessons.length === 0 ? (
+                          <p className="text-sm text-gray-500">No completed lessons found for this course.</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {/* Header row */}
+                            <div className="hidden md:grid grid-cols-12 gap-4 text-sm text-gray-500 px-3 py-2 border-b">
+                              <div className="col-span-1 font-medium">#</div>
+                              <div className="col-span-3">Date</div>
+                              <div className="col-span-3">Instructor</div>
+                              <div className="col-span-5">Feedback</div>
+                            </div>
 
-                {/* Last Lesson */}
-                {c.last_lesson ? (
-                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-gray-700">
-                      Last Lesson:{" "}
-                      <span className="font-semibold">
-                        #{c.last_lesson.lesson_number}
-                      </span>{" "}
-                      on{" "}
-                      {new Date(c.last_lesson.date).toLocaleDateString()} –{" "}
-                      <em>{c.last_lesson.feedback || "No feedback"}</em>
+                            {/* Rows */}
+                            {state.lessons
+                              .sort((a, b) => a.lesson_number - b.lesson_number)
+                              .map((l) => (
+                                <div key={l._id} className="grid grid-cols-12 gap-4 items-center px-3 py-3 bg-gray-50 border rounded-lg">
+                                  <div className="col-span-1 font-semibold">{l.lesson_number}</div>
+                                  <div className="col-span-3 text-sm text-gray-600">{new Date(l.date).toLocaleString()}</div>
+                                  <div className="col-span-3 text-sm text-gray-800">{(instructorCache[l.instructor_id] && instructorCache[l.instructor_id].name) || l.instructor_id}</div>
+                                  <div className="col-span-5 text-sm text-gray-700 truncate">{l.feedback || "No feedback"}</div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()
+                }
+
+                {/* Last Lesson (hidden when the card is expanded) */}
+                {!expandedCourses[c.course_name]?.open && (
+                  c.last_lesson ? (
+                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-gray-700">
+                        Last Lesson:{" "}
+                        <span className="font-semibold">
+                          #{c.last_lesson.lesson_number}
+                        </span>{" "}
+                        on{" "}
+                        {new Date(c.last_lesson.date).toLocaleDateString()} –{" "}
+                        <em>{c.last_lesson.feedback || "No feedback"}</em>
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 mb-4">
+                      No lessons recorded yet.
                     </p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500 mb-4">
-                    No lessons recorded yet.
-                  </p>
+                  )
                 )}
 
                 {/* Certificate Section */}

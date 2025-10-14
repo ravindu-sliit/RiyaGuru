@@ -20,13 +20,15 @@ export default function LoginPage() {
 
   const validateEmailFormat = (val) => {
     const v = String(val || "").trim();
-    if (!v) return "Email is required";
+    if (!v) return "Email or ID is required";
 
-    // Accept pure-numeric student IDs
-    if (/^\d+$/.test(v)) return "";
+    // If it looks like an email, validate with regex
+    if (v.includes("@")) return EMAIL_RE.test(v) ? "" : "Enter a valid email";
 
-    // Otherwise validate email with letters-only final TLD
-    return EMAIL_RE.test(v) ? "" : "Enter a valid email";
+    // Accept pure-numeric student IDs (e.g. 12345) or alphanumeric IDs (e.g. I001)
+    if (/^[A-Za-z0-9]+$/.test(v)) return "";
+
+    return "Enter a valid email or ID";
   };
 
   const handleSubmit = async (e) => {
@@ -35,9 +37,11 @@ export default function LoginPage() {
     setEmailError("");
     setPasswordError("");
 
-    const normalizedEmail = email.trim().toLowerCase();
+  const raw = email.trim();
 
-    const emailFmtErr = validateEmailFormat(normalizedEmail);
+  const emailFmtErr = validateEmailFormat(raw);
+  // Only lowercase when the identifier is an email address; preserve case for IDs like 'I001'
+  const normalizedEmail = raw.includes("@") ? raw.toLowerCase() : raw;
     if (emailFmtErr) setEmailError(emailFmtErr);
     if (!password) setPasswordError("Passcode is required");
     if (emailFmtErr || !password) return;

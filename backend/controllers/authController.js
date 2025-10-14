@@ -5,10 +5,17 @@ import jwt from "jsonwebtoken";
 // ✅ User Login
 export const loginUser = async (req, res) => {
   try {
+    // The frontend may send either an email or a numeric/alphanumeric ID (students/instructors sometimes use IDs)
     const { email, password } = req.body;
+    const identifier = String(email || "").trim();
 
-    // Find user
-    const user = await User.findOne({ email });
+    // Find user by email OR userId (allow login using instructorId/userId)
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase() },
+        { userId: identifier },
+      ],
+    });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Compare password

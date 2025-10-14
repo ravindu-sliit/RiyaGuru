@@ -17,6 +17,8 @@ import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
 // Student
 
 import StudentRoutes from "./studentRoutes";
+// Instructor
+import InstructorRoutes from "./instructorRoutes";
 //import StudentPasswordChange from "../pages/Student/StudentPasswordChange";
 import StudentDetailsEdit from "../pages/Student/StudentDetailsEdit";
 
@@ -63,6 +65,9 @@ export default function AppRoutes() {
 
        {/* Student Routes*/}
       <Route path="/student/*" element={<StudentRoutes />} />
+
+  {/* Instructor routes (top-level) */}
+  <Route path="/instructor/*" element={<InstructorRoutes />} />
 
 
 
