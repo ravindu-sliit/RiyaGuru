@@ -11,13 +11,13 @@ import {
   User,
   Car,
   BookOpen,
-  ArrowLeft,
   CheckCircle,
   AlertCircle,
   Phone,
   Award,
   Check,
 } from "lucide-react";
+import ProgressHero from "../../components/ProgressHero";
 
 const AddBookingPage = () => {
   const navigate = useNavigate();
@@ -209,28 +209,13 @@ const AddBookingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Modern Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate(-1)}
-                className="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-lg flex items-center justify-center transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 text-white" />
-              </button>
-              <div>
-                <h1 className="text-3xl font-bold text-white">
-                  Book a Driving Lesson
-                </h1>
-                <p className="text-orange-100 mt-1">
-                  Schedule your next learning session
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Header — match Progress/My Enrollments */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="Book a Driving Lesson"
+          subtitle="Schedule your next learning session"
+          icon={<Calendar className="w-8 h-8 text-white" />}
+        />
       </div>
 
       {/* Main Content */}

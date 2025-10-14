@@ -1,0 +1,80 @@
+/* Scoped translucent surfaces for student pages */
+
+/* Make common white surfaces translucent and slightly blurred for readability */
+.student-surface .bg-white {
+  background-color: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Many pages use a .card class in CSS files */
+.student-surface .card {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Alerts and panels often use solid white */
+.student-surface .alert,
+.student-surface .panel,
+.student-surface .container-white {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Optional: tweak shadows so surfaces remain recognizable over busy backgrounds */
+.student-surface .bg-white,
+.student-surface .card,
+.student-surface .alert {
+  box-shadow: 0 8px 24px rgba(10, 26, 47, 0.18), 0 2px 8px rgba(10, 26, 47, 0.12) !important;
+}
+
+/* Make common gray backgrounds translucent as well (Progress page containers, rows, pills) */
+.student-surface .bg-gray-50 {
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.student-surface .bg-gray-100 {
+  background-color: rgba(255, 255, 255, 0.34) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Lighten borders so they don't look harsh on translucent backgrounds */
+.student-surface .border,
+.student-surface .border-gray-100,
+.student-surface .border-gray-200,
+.student-surface .border-blue-100 {
+  border-color: rgba(255, 255, 255, 0.38) !important;
+}
+
+/* Progress rows: ensure readable contrast against photo background */
+.student-surface .text-gray-800 { color: #1b2638 !important; }
+.student-surface .text-gray-700 { color: #25344b !important; }
+.student-surface .text-gray-600 { color: #2c3e55 !important; }
+.student-surface .text-gray-500 { color: #3a4e6a !important; }
+
+/* Headings over the hero area or directly on background should be white with subtle shadow */
+.student-surface h1,
+.student-surface h2,
+.student-surface h3 {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+
+/* Progress percentage text contrast bump */
+.student-surface p,
+.student-surface span,
+.student-surface small,
+.student-surface .text-sm {
+  text-shadow: 0 1px 1px rgba(255,255,255,0.15);
+}
+
+/* Chips and badges that previously used solid gray get translucency */
+.student-surface .bg-blue-50 { background-color: rgba(59, 130, 246, 0.10) !important; }
+.student-surface .bg-green-50 { background-color: rgba(16, 185, 129, 0.10) !important; }
+.student-surface .bg-yellow-50 { background-color: rgba(234, 179, 8, 0.12) !important; }
+.student-surface .bg-purple-50 { background-color: rgba(139, 92, 246, 0.12) !important; }

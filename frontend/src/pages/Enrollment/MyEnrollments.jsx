@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { StudentCourseAPI } from "../../api/studentCourseApi";
 import { AlertCircle, BookOpen, Loader2, ArrowRight } from "lucide-react";
+import ProgressHero from "../../components/ProgressHero";
 import { CourseAPI } from "../../api/courseApi";
 
 const MyEnrollments = () => {
@@ -108,10 +109,13 @@ const MyEnrollments = () => {
   }
 
   return (
-    <div className="px-6 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold" style={{ color: "#0A1A2F" }}>My Enrollments</h1>
-        <p className="text-gray-600 mt-1">View your enrolled courses and proceed to payment.</p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="My Enrollments"
+          subtitle="View your enrolled courses and proceed to payment."
+          icon={<BookOpen className="w-8 h-8 text-white" />}
+        />
       </div>
 
       {courses.length === 0 ? (
@@ -126,7 +130,7 @@ const MyEnrollments = () => {
           </button>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="px-6 py-8 grid md:grid-cols-2 gap-6">
           {courses.map((c, idx) => (
             <div key={c._id || idx} className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 hover:shadow-xl hover:border-blue-300 transition-all duration-200">
               <div className="flex items-center gap-4 mb-4">

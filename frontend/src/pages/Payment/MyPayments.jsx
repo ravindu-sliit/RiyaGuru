@@ -245,15 +245,8 @@ const MyPayments = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 bg-gradient-to-b from-slate-50 to-white">
-      <div className="px-6">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Payments</h1>
-          <p className="text-gray-600 mt-1">
-            View and manage your payment history.
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="px-6 py-8">
 
         {/* No Payments */}
         {payments.length === 0 ? (

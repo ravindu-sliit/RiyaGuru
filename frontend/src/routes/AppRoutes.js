@@ -101,9 +101,9 @@ export default function AppRoutes() {
       <Route path="/otp-request" element={<OtpRequest />} />
 
 
-      {/* Inquiry (⭐ added before catch-all) */}
+      {/* Inquiry (redirect /inquiry to student-scoped for sidebar) */}
       <Route path="/inquiries" element={<InquiryDashboard />} />
-      <Route path="/inquiry" element={<StudentInquiry />} />
+      <Route path="/inquiry" element={<Navigate to="/student/inquiry" replace />} />
 
 
 

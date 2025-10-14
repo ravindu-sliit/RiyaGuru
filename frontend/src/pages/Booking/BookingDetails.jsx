@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { BookingAPI } from "../../api/bookingsApi";
+import ProgressHero from "../../components/ProgressHero";
 import {
   Calendar,
   Plus,
@@ -116,27 +117,20 @@ const BookingDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
-              <Calendar className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white">My Bookings</h1>
-              <p className="text-orange-100 mt-1">
-                Manage your driving lesson appointments
-              </p>
-            </div>
-          </div>
+      {/* Header — match Progress page (navy translucent) */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title="My Bookings"
+          subtitle="Manage your driving lesson appointments"
+          icon={<Calendar className="w-8 h-8 text-white" />}
+        >
           <button
             onClick={() => navigate("/student/Addbookings")}
             className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200"
           >
             <Plus className="w-5 h-5" /> New Booking
           </button>
-        </div>
+        </ProgressHero>
       </div>
 
       {/* Content */}
@@ -152,7 +146,7 @@ const BookingDetails = () => {
             </p>
             <button
               onClick={() => navigate("/student/Addbookings")}
-              className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg"
+              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg"
             >
               <Plus className="w-5 h-5" /> Create Your First Booking
             </button>
@@ -162,7 +156,7 @@ const BookingDetails = () => {
             {filteredBookings.map((booking) => (
               <div
                 key={booking._id}
-                className="border rounded-xl p-6 bg-white hover:shadow-lg transition"
+                className="border rounded-2xl p-6 bg-white hover:shadow-lg transition"
               >
                 <div className="flex flex-col lg:flex-row justify-between gap-6">
                   {/* Info */}

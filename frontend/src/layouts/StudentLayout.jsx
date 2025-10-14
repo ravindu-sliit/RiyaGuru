@@ -16,6 +16,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { apiFetch } from "../services/api";
+import "../styles/student-overlay.css";
 
 export default function StudentLayout() {
   const location = useLocation();
@@ -73,16 +74,30 @@ export default function StudentLayout() {
     { to: `/student`, label: "Dashboard", icon: <LayoutDashboardIcon size={18} /> },
     { to: `/student/progress`, label: "Progress", icon: <BookOpen size={18} /> },
     { to: "/student/bookings", label: "Bookings", icon: <Calendar size={18} /> },
-    { to: "/student/student-instructors", label: "Instructors", icon: <User size={18} /> },
-    { to: "/student/studVehicle", label: "Vehicles", icon: <Car size={18} /> },
     { to: "/student/my-enrollments", label: "Enrollments", icon: <User size={18} /> },
     { to: "/payments", label: "Payments", icon: <CreditCard size={18} /> },
-    { to: `/student/${studentId}/dashboard`, label: "Profile", icon: <User size={18} /> },
     { to: `/student/${studentId}/docs/upload`, label: "Documents", icon: <FileText size={18} /> },
-    { to: `/student/${studentId}/preferences`, label: "Preferences", icon: <Settings size={18} /> },
-    { to: `/student/${studentId}/password`, label: "Passwords", icon: <LockIcon size={18} /> },
     { to: "/inquiry", label: "Inquiries", icon: <HelpCircle size={18} /> },
   ];
+
+  // Derive a readable page title for the header based on the current route
+  const pageTitle = (() => {
+    const p = location.pathname || "";
+    if (p === "/student") return "Dashboard";
+    if (p.startsWith("/student/progress")) return "Progress";
+    if (p.startsWith("/student/bookings")) return "Bookings";
+    if (p.startsWith("/student/my-enrollments")) return "Enrollments";
+    if (p === `/student/${studentId}/docs/upload`) return "Documents";
+    if (p.startsWith("/payments")) return "Payments";
+    if (p.startsWith("/inquiry")) return "Inquiries";
+    // Fallback: last path segment, capitalized
+    const parts = p.split("/").filter(Boolean);
+    const last = parts[parts.length - 1] || "";
+    return last
+      .split("-")
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(" ") || "";
+  })();
 
   const handleSignOut = () => {
     if (window.confirm("Are you sure you want to sign out?")) {
@@ -100,11 +115,34 @@ export default function StudentLayout() {
   };
 
   return (
-    <div className="flex">
+    <div
+      className="flex"
+      style={{
+        minHeight: "100vh",
+        backgroundImage:
+          "linear-gradient(rgba(10,26,47,0.55), rgba(10,26,47,0.55)), url(/images/hero/instructor-student.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       {/* ----- Sidebar (fixed, full height) ----- */}
-      <aside className="fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col">
+      <aside
+        className="fixed top-0 left-0 h-screen w-64 flex flex-col"
+        style={{
+          backgroundColor: "rgba(255,255,255,0.45)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          borderRight: "none",
+          borderColor: "transparent",
+          boxShadow: "none",
+          outline: "none",
+          marginRight: "-1px",
+        }}
+      >
         {/* Branding (match header height) */}
-        <div className="h-16 px-6 flex items-center font-bold text-lg border-b gap-2">
+        <div className="h-16 px-6 flex items-center font-bold text-lg gap-2">
           <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-lg flex items-center justify-center">
             <BookOpen className="w-4 h-4 text-white" />
           </div>
@@ -131,26 +169,29 @@ export default function StudentLayout() {
           ))}
         </nav>
 
-        {/* Sign Out (bottom, always visible) */}
-        <div className="p-4 border-t">
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-2 w-full px-4 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all font-medium"
-          >
-            <LogOut size={18} />
-            Sign Out
-          </button>
-        </div>
+        {/* Sign Out removed as requested */}
       </aside>
 
       {/* ----- Right side: header + scrollable content ----- */}
       <div className="flex-1 ml-64 h-screen flex flex-col">
         {/* Top header — same height as sidebar brand */}
-        <header className="h-16 flex items-center justify-end px-6 border-b bg-white sticky top-0 z-20">
-          <div className="relative" ref={menuRef}>
+        <header
+          className="h-16 flex items-center px-6 sticky top-0 z-20"
+          style={{
+            backgroundColor: "transparent",
+            backdropFilter: "none",
+            WebkitBackdropFilter: "none",
+            borderColor: "transparent",
+          }}
+        >
+          <div className="flex items-center justify-between w-full">
+            <div className="min-w-0">
+              <h1 className="text-white font-semibold text-lg truncate">{pageTitle}</h1>
+            </div>
+            <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex items-center gap-3 rounded-full px-3 py-1.5 transition border border-transparent hover:border-gray-200 hover:bg-gray-50 bg-transparent"
+              className="flex items-center gap-3 rounded-full px-3 py-1.5 transition border border-transparent bg-transparent"
               style={{ background: "transparent" }} // hard override against any global orange
             >
               {/* Avatar — force transparent background */}
@@ -217,11 +258,12 @@ export default function StudentLayout() {
                 </button>
               </div>
             )}
+            </div>
           </div>
         </header>
 
         {/* Scrollable page content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+        <main className="flex-1 overflow-y-auto p-6 student-surface">
           <Outlet />
         </main>
       </div>
