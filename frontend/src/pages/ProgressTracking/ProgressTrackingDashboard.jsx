@@ -8,7 +8,6 @@ import {
   Filter,
   Search,
 } from "lucide-react";
-import InstructorNav from "../../components/InstructorNav";
 import { toast } from "react-toastify";
 import ProgressChart from "../../components/ProgressChart";
 import ProgressHero from "../../components/ProgressHero";
@@ -99,7 +98,6 @@ export default function ProgressTrackingDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <InstructorNav />
       <ProgressHero title="Progress Tracking Dashboard" subtitle="Monitor course completion, track progress, and issue certificates">
         <div className="flex gap-3">
           <div className="relative">

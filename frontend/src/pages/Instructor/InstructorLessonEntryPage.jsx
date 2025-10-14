@@ -7,9 +7,10 @@ import {
   CheckCircle,
   ClipboardList,
 } from "lucide-react";
-import InstructorNav from "../../components/InstructorNav";
 import { lessonProgressService } from "../../services/lessonProgressService";
+import ProgressHero from "../../components/ProgressHero";
 import { getAuthToken } from "../../services/authHeader";
+import { toast } from "react-toastify";
 
 export default function InstructorLessonEntryPage() {
   const location = useLocation();
@@ -43,10 +44,17 @@ export default function InstructorLessonEntryPage() {
       try {
         const res = await fetch("http://localhost:5000/api/students");
         const data = await res.json();
-        setStudents(data.students || []);
+        const list = Array.isArray(data?.students)
+          ? data.students
+          : Array.isArray(data)
+          ? data
+          : Array.isArray(data?.data)
+          ? data.data
+          : [];
+        setStudents(list);
         setStats((prev) => ({
           ...prev,
-          students: data.students?.length || 0,
+          students: list.length,
         }));
       } catch (err) {
         console.error("Failed to load students", err);
@@ -84,9 +92,17 @@ export default function InstructorLessonEntryPage() {
           `http://localhost:5000/api/studentcourses/${form.student_id}`
         );
         const data = await res.json();
-        const courseList = Array.isArray(data) ? data : data.courses || [];
-        setCourses(courseList);
-        setStats((prev) => ({ ...prev, courses: courseList.length }));
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.courses)
+          ? data.courses
+          : Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data?.studentCourses)
+          ? data.studentCourses
+          : [];
+        setCourses(list);
+        setStats((prev) => ({ ...prev, courses: list.length }));
       } catch (err) {
         console.error("Failed to load courses", err);
         setCourses([]);
@@ -151,7 +167,8 @@ export default function InstructorLessonEntryPage() {
     const data = await lessonProgressService.addLessonProgress(form);
     // success
     setErrors({});
-    setMessage("✅ Lesson saved and progress updated!");
+    setMessage("");
+    toast.success("Lesson saved and progress updated!");
     setStats((prev) => ({
       ...prev,
       lessonsCompleted: prev.lessonsCompleted + 1,
@@ -245,56 +262,16 @@ async function validateLessonNumberUnique() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <InstructorNav />
-      {/* Hero Header */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-10">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Instructor Lesson Entry</h1>
-          <p className="text-blue-200">
-            Record lessons, track student progress, and update reports
-          </p>
-        </div>
-      </div>
+      <ProgressHero
+        title="Instructor Lesson Entry"
+        subtitle="Record lessons, track student progress, and update reports"
+      />
 
-      <div className="max-w-5xl mx-auto p-6 -mt-8 space-y-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <StatCard
-            title="Students"
-            value={stats.students}
-            icon={<Users size={22} />}
-            gradient="from-blue-500 to-blue-600"
-            bgColor="bg-blue-50"
-            textColor="text-blue-600"
-          />
-          <StatCard
-            title="Courses"
-            value={stats.courses}
-            icon={<BookOpen size={22} />}
-            gradient="from-green-500 to-emerald-600"
-            bgColor="bg-green-50"
-            textColor="text-green-600"
-          />
-          <StatCard
-            title="Lessons Completed"
-            value={stats.lessonsCompleted}
-            icon={<CheckCircle size={22} />}
-            gradient="from-yellow-500 to-orange-500"
-            bgColor="bg-yellow-50"
-            textColor="text-yellow-600"
-          />
-          <StatCard
-            title="Pending Entries"
-            value={stats.pendingEntries}
-            icon={<ClipboardList size={22} />}
-            gradient="from-purple-500 to-indigo-600"
-            bgColor="bg-purple-50"
-            textColor="text-purple-600"
-          />
-        </div>
-
-        {/* Lesson Form */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <div className="max-w-7xl mx-auto p-6 mt-6 md:mt-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+          {/* Left: Lesson Form */}
+          <div className="md:col-span-2 h-full">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 h-full">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <ClipboardList className="text-blue-600" size={20} />
             Record a Lesson
@@ -370,7 +347,7 @@ async function validateLessonNumberUnique() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition disabled:opacity-60"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-semibold transition disabled:opacity-60"
               disabled={Object.keys(errors).some((k) => errors[k]) || pendingValidation}
             >
               Save Lesson
@@ -389,6 +366,56 @@ async function validateLessonNumberUnique() {
               {message}
             </div>
           )}
+            </div>
+          </div>
+
+          {/* Right: Compact sticky overview panel */}
+          <div className="h-full md:sticky md:top-6">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 h-full md:max-w-xs ml-auto">
+              <div className="text-sm font-semibold text-gray-700 mb-3">Overview</div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                      <Users size={18} />
+                    </div>
+                    <div className="text-xs font-medium text-gray-600 uppercase">Students</div>
+                  </div>
+                  <div className="text-lg font-bold text-gray-800">{stats.students}</div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                      <BookOpen size={18} />
+                    </div>
+                    <div className="text-xs font-medium text-gray-600 uppercase">Courses</div>
+                  </div>
+                  <div className="text-lg font-bold text-gray-800">{stats.courses}</div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center">
+                      <CheckCircle size={18} />
+                    </div>
+                    <div className="text-xs font-medium text-gray-600 uppercase">Lessons Completed</div>
+                  </div>
+                  <div className="text-lg font-bold text-gray-800">{stats.lessonsCompleted}</div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
+                      <ClipboardList size={18} />
+                    </div>
+                    <div className="text-xs font-medium text-gray-600 uppercase">Pending Entries</div>
+                  </div>
+                  <div className="text-lg font-bold text-gray-800">{stats.pendingEntries}</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateInquiryForm } from "../../validation/inquiryValidation";
 
-const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = false }) => {
+const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = false, studentInfo = null }) => {
   const [form, setForm] = useState({ userId: "", subject: "", message: "" });
   const [userKey, setUserKey] = useState("");
   const [errors, setErrors] = useState({});
@@ -19,11 +19,20 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
         message: item.message || "",
       });
       setUserKey(item.userId?._id || "");
+    } else if (studentInfo) {
+      // Auto-fill for student inquiry
+      // Use userMongoId (MongoDB ObjectId) for the inquiry, but display studentId
+      const userMongoId = studentInfo.userMongoId || "";
+      const displayId = studentInfo.studentId || "";
+      setForm({ userId: userMongoId, subject: "", message: "" });
+      setUserKey(displayId); // Display the student ID (e.g., S001)
+      setResolvedUserName(studentInfo.full_name || studentInfo.name || "");
+      setUserLookupStatus("resolved");
     } else {
       setForm({ userId: "", subject: "", message: "" });
       setUserKey("");
     }
-  }, [item]);
+  }, [item, studentInfo]);
 
   const userOptions = useMemo(() => users || [], [users]);
 
@@ -111,6 +120,8 @@ const InquiryForm = ({ item, users, onSubmit, onCancel, loading, hideCancel = fa
               className={`form-input ${userLookupStatus === "not_found" ? "error" : ""}`}
               value={userKey}
               onChange={(e) => handleUserKeyChange(e.target.value)}
+              readOnly={!!studentInfo}
+              style={studentInfo ? { backgroundColor: "#f3f4f6", cursor: "not-allowed" } : {}}
             />
             {userLookupStatus === "not_found" && errors.userId && (
               <p className="error-message">{errors.userId}</p>

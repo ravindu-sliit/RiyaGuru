@@ -1,5 +1,5 @@
 // src/layouts/InstructorLayout.jsx
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   BookOpen,
@@ -9,11 +9,14 @@ import {
   Calendar,
   User,
   LogOut,
+  ChevronDown,
 } from "lucide-react";
 
 export default function InstructorLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   const navItems = [
     { to: "/instructor", label: "Dashboard", icon: <BookOpen size={18} /> },
@@ -36,15 +39,40 @@ export default function InstructorLayout() {
   };
 
   return (
-    <div className="flex bg-gray-50">
+    <div
+      className="flex"
+      style={{
+        minHeight: "100vh",
+        backgroundImage:
+          "linear-gradient(rgba(10,26,47,0.55), rgba(10,26,47,0.55)), url(/images/hero/instructor-student.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       {/* Sidebar (fixed) */}
-      <aside className="fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col">
+      <aside
+        className="fixed top-0 left-0 h-screen w-64 flex flex-col"
+        style={{
+          backgroundColor: "rgba(255,255,255,0.45)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          borderRight: "none",
+          borderColor: "transparent",
+          boxShadow: "none",
+          outline: "none",
+          marginRight: "-1px",
+        }}
+      >
         {/* Branding */}
-        <div className="px-6 py-4 font-bold text-lg border-b flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+        <div className="h-16 px-6 flex items-center font-bold text-lg gap-2">
+          <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-lg flex items-center justify-center">
             <BookOpen className="w-4 h-4 text-white" />
           </div>
-          Riya<span className="text-orange-500">Guru</span>
+          <span className="text-gray-800">
+            Riya<span className="text-indigo-600">Guru.lk</span>
+          </span>
         </div>
 
         {/* Navigation */}
@@ -55,8 +83,8 @@ export default function InstructorLayout() {
               to={item.to}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium ${
                 location.pathname === item.to
-                  ? "bg-orange-50 text-orange-600 border border-orange-200"
-                  : "text-gray-600 hover:text-orange-600 hover:bg-orange-50"
+                  ? "bg-white/30 text-orange-700 border border-white/40"
+                  : "text-gray-700 hover:text-orange-600 hover:bg-white/20"
               }`}
             >
               {item.icon}
@@ -64,23 +92,14 @@ export default function InstructorLayout() {
             </Link>
           ))}
         </nav>
-
-        {/* Sign Out */}
-        <div className="p-4 border-t">
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-2 w-full px-4 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all font-medium"
-          >
-            <LogOut size={18} />
-            Sign Out
-          </button>
-        </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 ml-64 p-6 overflow-y-auto">
-        <Outlet />
-      </main>
+      {/* Right side: scrollable content */}
+      <div className="flex-1 ml-64 h-screen flex flex-col">
+        <main className="flex-1 overflow-y-auto p-6 student-surface">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

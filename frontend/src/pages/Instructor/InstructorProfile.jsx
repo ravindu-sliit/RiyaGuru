@@ -1,6 +1,7 @@
 // src/pages/Instructor/InstructorDetailsPage.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import ProgressHero from "../../components/ProgressHero";
 import { StarIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 
@@ -121,55 +122,34 @@ export default function InstructorDetailsPage() {
     : "../avatar.png";
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Navbar */}
-      <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="flex items-center gap-3 font-bold text-xl text-gray-800">
-          <span className="text-orange-500 text-2xl"></span>
-          Instructor Profile
-        </div>
-        <div className="flex items-center gap-6">
+    <div className="min-h-screen bg-transparent">
+      <ProgressHero
+        title="My Profile"
+        subtitle="Complete instructor information and performance details"
+      >
+        <div className="flex flex-wrap gap-3">
           <Link
-            to="/Instructordashboard"
-            className="px-4 py-2 rounded-lg text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
+            to={`/instructors/${rec.instructorId}/edit`}
+            className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-lg"
           >
-            Back To DashBoard
+            Edit Profile
           </Link>
+          <button
+            onClick={printProfile}
+            className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-lg"
+          >
+            Print / Save PDF
+          </button>
         </div>
-      </nav>
+      </ProgressHero>
 
-      <div className="max-w-6xl mx-auto px-8 py-8">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              My Profile
-            </h1>
-            <p className="text-slate-600 text-lg">
-              Complete instructor information and performance details
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to={`/instructors/${rec.instructorId}/edit`}
-              className="bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
-            >
-              Edit Profile
-            </Link>
-            <button
-              onClick={printProfile}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-sm"
-            >
-              Print / Save PDF
-            </button>
-          </div>
-        </div>
+      <div className="max-w-6xl mx-auto px-8 -mt-6 relative z-10 pb-12">
 
         {/* Profile Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+        <div className="bg-white/40 backdrop-blur-md rounded-xl shadow-xl border border-white/30 overflow-hidden mb-8">
           <div className="flex flex-col lg:flex-row">
             {/* Left */}
-            <div className="lg:w-1/3 p-8 bg-slate-50 border-b lg:border-b-0 lg:border-r border-slate-200">
+            <div className="lg:w-1/3 p-8 bg-white/30 backdrop-blur-sm border-b lg:border-b-0 lg:border-r border-white/30">
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-6">
                   <div className="w-48 h-48 rounded-full bg-orange-500 p-1 shadow-lg">
@@ -198,7 +178,7 @@ export default function InstructorDetailsPage() {
                 <h2 className="text-2xl font-bold text-slate-800 mb-2">
                   {rec.name}
                 </h2>
-                <div className="bg-slate-200 px-4 py-2 rounded-lg mb-4">
+                <div className="bg-white/40 backdrop-blur-sm px-4 py-2 rounded-lg mb-4 border border-white/30">
                   <span className="text-sm font-mono text-slate-700">
                     ID: {rec.instructorId || "N/A"}
                   </span>
@@ -227,19 +207,19 @@ export default function InstructorDetailsPage() {
                   Contact Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-slate-50 p-4 rounded-lg border">
+                  <div className="bg-white/30 backdrop-blur-sm p-4 rounded-lg border border-white/30">
                     <p className="text-xs text-slate-500 uppercase mb-1">
                       Email
                     </p>
                     <p className="text-slate-800 font-medium">{rec.email}</p>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-lg border">
+                  <div className="bg-white/30 backdrop-blur-sm p-4 rounded-lg border border-white/30">
                     <p className="text-xs text-slate-500 uppercase mb-1">
                       Phone
                     </p>
                     <p className="text-slate-800 font-medium">{rec.phone}</p>
                   </div>
-                  <div className="md:col-span-2 bg-slate-50 p-4 rounded-lg border">
+                  <div className="md:col-span-2 bg-white/30 backdrop-blur-sm p-4 rounded-lg border border-white/30">
                     <p className="text-xs text-slate-500 uppercase mb-1">
                       Address
                     </p>
@@ -256,7 +236,7 @@ export default function InstructorDetailsPage() {
                   Professional Details
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-slate-50 p-4 rounded-lg border">
+                  <div className="bg-white/30 backdrop-blur-sm p-4 rounded-lg border border-white/30">
                     <p className="text-xs text-slate-500 uppercase mb-1">
                       License Number
                     </p>
@@ -264,7 +244,7 @@ export default function InstructorDetailsPage() {
                       {rec.licenseNumber}
                     </p>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-lg border">
+                  <div className="bg-white/30 backdrop-blur-sm p-4 rounded-lg border border-white/30">
                     <p className="text-xs text-slate-500 uppercase mb-1">
                       Experience
                     </p>
@@ -272,13 +252,13 @@ export default function InstructorDetailsPage() {
                       {rec.experienceYears} year(s)
                     </p>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-lg border">
+                  <div className="bg-white/30 backdrop-blur-sm p-4 rounded-lg border border-white/30">
                     <p className="text-xs text-slate-500 uppercase mb-1">
                       Rating
                     </p>
                     {getRatingStars(rec.rating)}
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-lg border">
+                  <div className="bg-white/30 backdrop-blur-sm p-4 rounded-lg border border-white/30">
                     <p className="text-xs text-slate-500 uppercase mb-1">
                       Joined Date
                     </p>
@@ -300,13 +280,13 @@ export default function InstructorDetailsPage() {
                 <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                   Availability Schedule
                 </h3>
-                <div className="bg-slate-50 rounded-lg border p-6">
+                <div className="bg-white/30 backdrop-blur-sm rounded-lg border border-white/30 p-6">
                   {rec.availability?.length ? (
                     <div className="space-y-4">
                       {rec.availability.map((a, idx) => (
                         <div
                           key={idx}
-                          className="flex flex-col sm:flex-row sm:justify-between p-4 bg-white rounded-lg border shadow-sm"
+                          className="flex flex-col sm:flex-row sm:justify-between p-4 bg-white/40 backdrop-blur-sm rounded-lg border border-white/30 shadow-sm"
                         >
                           <div className="font-medium text-slate-800 mb-2 sm:mb-0">
                             {a.date}
@@ -315,7 +295,7 @@ export default function InstructorDetailsPage() {
                             {(a.timeSlots || []).map((slot, i) => (
                               <span
                                 key={i}
-                                className="px-3 py-1 bg-orange-100 text-orange-700 text-sm font-medium rounded-full border border-orange-200"
+                                className="px-3 py-1 bg-orange-100/80 text-orange-700 text-sm font-medium rounded-full border border-orange-200/60"
                               >
                                 {slot}
                               </span>
@@ -342,26 +322,26 @@ export default function InstructorDetailsPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="bg-white/40 backdrop-blur-md rounded-xl shadow-xl border border-white/30 p-6">
           <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
              Quick Actions
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               to={``}
-              className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
+              className="p-4 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg hover:bg-white/30 hover:border-white/40 transition-all"
             >
               Manage Schedule
             </Link>
             <Link
               to={``}
-              className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
+              className="p-4 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg hover:bg-white/30 hover:border-white/40 transition-all"
             >
               View Performance
             </Link>
             <Link
               to=""
-              className="p-4 bg-slate-50 border rounded-lg hover:bg-orange-50 hover:border-orange-500 transition-all"
+              className="p-4 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg hover:bg-white/30 hover:border-white/40 transition-all"
             >
               ← Back to Dashboard
             </Link>
