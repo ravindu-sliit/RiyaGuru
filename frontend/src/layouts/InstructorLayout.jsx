@@ -22,6 +22,8 @@ export default function InstructorLayout() {
     { to: "/instructor/lesson-entry", label: "Add Lesson", icon: <ClipboardList size={18} /> },
     { to: "/instructor/progress-tracking", label: "Progress", icon: <TrendingUp size={18} /> },
     { to: "/instructor/booking", label: "Bookings", icon: <Calendar size={18} /> },
+    { to: "/instructor/inquiries", label: "Inquiries", icon: <ClipboardList size={18} /> },
+    { to: "/instructor/maintenance", label: "Maintenance", icon: <TrendingUp size={18} /> },
     { to: "/instructor/profile", label: "My Profile", icon: <User size={18} /> },
   ];
 

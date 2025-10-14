@@ -15,6 +15,8 @@ export default function AdminLayout({ children }) {
     { to: "/admin/payments", label: "Payments", icon: <CreditCard size={18} /> },
     { to: "/admin/bookings", label: "Bookings", icon: <Calendar size={18} /> },
     { to: "/admin/installments", label: "Installments", icon: <Layers size={18} /> },
+    { to: "/admin/inquiries", label: "Inquiries", icon: <ClipboardList size={18} /> },
+    { to: "/admin/maintenance", label: "Maintenance", icon: <Layers size={18} /> },
   ];
 
   const handleSignOut = () => {
@@ -27,10 +29,18 @@ export default function AdminLayout({ children }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div
+      className="flex min-h-screen"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(10,26,47,.55), rgba(10,26,47,.55)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=60')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col">
-        <div className="px-6 py-4 font-bold text-lg border-b">RiyaGuru.lk Admin</div>
+      <aside className="w-64 border-r border-white/30 bg-white/50 backdrop-blur-md shadow-sm flex flex-col">
+        <div className="px-6 py-4 font-bold text-lg border-b border-white/30 text-gray-900">RiyaGuru.lk Admin</div>
         <nav className="flex flex-col p-4 space-y-2 flex-grow">
           {nav.map((item) => (
             <Link
@@ -38,8 +48,8 @@ export default function AdminLayout({ children }) {
               to={item.to}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium ${
                 location.pathname === item.to
-                  ? "bg-indigo-50 text-indigo-600 border border-indigo-200"
-                  : "text-gray-600 hover:text-indigo-600 hover:bg-indigo-50"
+                  ? "bg-white/60 text-indigo-700 border border-white/40 backdrop-blur-sm"
+                  : "text-gray-700 hover:text-indigo-700 hover:bg-white/50 backdrop-blur-sm"
               }`}
             >
               {item.icon}
@@ -47,10 +57,10 @@ export default function AdminLayout({ children }) {
             </Link>
           ))}
         </nav>
-        <div className="p-4 border-t">
+        <div className="p-4 border-t border-white/30">
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 w-full px-4 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all font-medium"
+            className="flex items-center gap-2 w-full px-4 py-2 rounded-lg text-gray-700 hover:text-red-600 hover:bg-white/50 transition-all font-medium backdrop-blur-sm"
           >
             <LogOut size={18} />
             Sign Out
@@ -60,7 +70,9 @@ export default function AdminLayout({ children }) {
 
       {/* Main content */}
       <main className="flex-1 p-6">
-        {children ? children : <Outlet />}
+        <div className="rounded-2xl border border-white/30 bg-white/50 backdrop-blur-md shadow-sm p-6 min-h-[calc(100vh-48px)]">
+          {children ? children : <Outlet />}
+        </div>
       </main>
     </div>
   );

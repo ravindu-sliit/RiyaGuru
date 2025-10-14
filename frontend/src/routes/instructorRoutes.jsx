@@ -14,6 +14,8 @@ import LessonProgressList from "../pages/LessonProgress/LessonProgressList";
 import StudentList from "../pages/LessonProgress/StudentList";
 import StudentLessons from "../pages/LessonProgress/StudentLessons";
 import ProgressTrackingDashboard from "../pages/ProgressTracking/ProgressTrackingDashboard";
+import InquiryDashboard from "../pages/Inquiry/InquiryDashboard";
+import MaintenanceDashboard from "../pages/Maintenance/MaintenanceDashboard";
 
 export default function InstructorRoutes() {
   return (
@@ -36,6 +38,10 @@ export default function InstructorRoutes() {
 
         {/* Progress Tracking */}
         <Route path="progress-tracking" element={<ProgressTrackingDashboard />} />
+
+        {/* Inquiries & Maintenance */}
+        <Route path="inquiries" element={<InquiryDashboard />} />
+        <Route path="maintenance" element={<MaintenanceDashboard />} />
 
         {/* Profile */}
         <Route path="profile" element={<ProfilePage />} />
