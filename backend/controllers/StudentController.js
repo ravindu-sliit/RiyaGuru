@@ -1,6 +1,7 @@
 import Student from "../models/StudentModel.js";
 import Counter from "../models/Counter.js";
 import User from "../models/UserModel.js";
+import Preference from "../models/PreferenceModel.js";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
@@ -149,10 +150,23 @@ export const getStudentById = async (req, res) => {
   try {
     const student = await Student.findOne({ studentId: req.params.id });
     if (!student) return res.status(404).json({ message: "Student not found" });
+    
     const profilePicUrl = student.profilePicPath
       ? `${req.protocol}://${req.get("host")}/uploads/studentProfPics/${student.profilePicPath}`
       : null;
-    res.status(200).json({ student: { ...student.toObject(), profilePicUrl } });
+    
+    // Fetch student preferences (vehicle category and types)
+    const preference = await Preference.findOne({ studentId: req.params.id });
+    
+    const studentData = {
+      ...student.toObject(),
+      profilePicUrl,
+      vehicleCategory: preference?.vehicleCategory || null,
+      vehicleType: preference?.vehicleType || null,
+      schedulePref: preference?.schedulePref || null,
+    };
+    
+    res.status(200).json({ student: studentData });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error while fetching student" });

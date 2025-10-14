@@ -27,15 +27,9 @@ export default function AdminViewStudents() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  const [opMsg, setOpMsg] = useState("");
   const [students, setStudents] = useState([]);
 
   const [search, setSearch] = useState("");
-
-  // Password reset UI state
-  const [pwdFor, setPwdFor] = useState(null); // studentId currently being edited
-  const [pwd1, setPwd1] = useState("");
-  const [pwd2, setPwd2] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -70,59 +64,6 @@ export default function AdminViewStudents() {
         .some((v) => String(v).toLowerCase().includes(q))
     );
   }, [search, students]);
-
-  // Change password via PUT /api/students/:id
-  // Important: send ALL current fields + new password so we don't wipe anything.
-  async function handleResetPassword(student) {
-    try {
-      setErr("");
-      setOpMsg("");
-
-      if (!pwd1 || !pwd2) throw new Error("Please enter and confirm the new password.");
-      if (pwd1 !== pwd2) throw new Error("Passwords do not match.");
-      if (pwd1.length < 6) throw new Error("Password must be at least 6 characters.");
-
-      const payload = {
-        full_name: student.full_name,
-        nic: student.nic,
-        phone: student.phone,
-        birthyear: student.birthyear,
-        gender: student.gender,
-        address: student.address,
-        email: student.email,
-        password: pwd1, // only field we change
-      };
-
-      await apiFetch(`/api/students/${student.studentId}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
-
-      setOpMsg(`Password updated for ${student.studentId}.`);
-      setPwdFor(null);
-      setPwd1("");
-      setPwd2("");
-    } catch (e) {
-      setErr(e.message);
-    }
-  }
-
-  async function handleDelete(studentId) {
-    const yes = window.confirm(
-      `Are you sure you want to permanently delete student ${studentId}? This cannot be undone.`
-    );
-    if (!yes) return;
-
-    try {
-      setErr("");
-      setOpMsg("");
-      await apiFetch(`/api/students/${studentId}`, { method: "DELETE" });
-      setStudents((prev) => prev.filter((s) => s.studentId !== studentId));
-      setOpMsg(`Deleted student ${studentId}.`);
-    } catch (e) {
-      setErr(e.message);
-    }
-  }
 
   if (loading) {
     return (
@@ -173,11 +114,6 @@ export default function AdminViewStudents() {
             {err}
           </div>
         )}
-        {opMsg && (
-          <div className="mb-4 rounded-lg bg-green-50 text-green-700 px-4 py-3 border border-green-200 shadow-sm">
-            {opMsg}
-          </div>
-        )}
 
         {/* Page Title and Search */}
         <div className="mb-6">
@@ -226,66 +162,6 @@ export default function AdminViewStudents() {
               <div><span className="font-medium">Gender:</span> {s.gender}</div>
               <div><span className="font-medium">Address:</span> {s.address}</div>
             </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPwdFor((prev) => (prev === s.studentId ? null : s.studentId));
-                  setPwd1("");
-                  setPwd2("");
-                  setOpMsg("");
-                  setErr("");
-                }}
-                className="px-3 py-1.5 rounded-md bg-orange-500 text-white text-sm hover:bg-orange-600 transition-colors"
-              >
-                {pwdFor === s.studentId ? "Cancel" : "Change Password"}
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(s.studentId);
-                }}
-                className="px-3 py-1.5 rounded-md bg-red-500 text-white text-sm hover:bg-red-600 transition-colors"
-              >
-                Delete Student
-              </button>
-            </div>
-
-            {pwdFor === s.studentId && (
-              <div className="mt-3 border-t pt-3" onClick={(e) => e.stopPropagation()}>
-                <label className="block text-sm text-gray-700 mb-1">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={pwd1}
-                  onChange={(e) => setPwd1(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Enter new password"
-                />
-                <label className="block text-sm text-gray-700 mb-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  value={pwd2}
-                  onChange={(e) => setPwd2(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Re-enter new password"
-                />
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleResetPassword(s);
-                  }}
-                  className="px-3 py-1.5 rounded-md bg-green-600 text-white text-sm hover:bg-green-700 transition-colors"
-                >
-                  Save New Password
-                </button>
-              </div>
-            )}
           </div>
         ))}
         </div>
