@@ -72,6 +72,14 @@ export default function LoginPage() {
       if (data.userId) localStorage.setItem("rg_userId", data.userId);
       if (data.role) localStorage.setItem("rg_role", data.role);
 
+      // Also save a structured auth object for services that expect rg_auth
+      try {
+        const authObj = { token: data.token, userId: data.userId, role: data.role };
+        localStorage.setItem("rg_auth", JSON.stringify(authObj));
+      } catch (e) {
+        // ignore
+      }
+
       const inferredId =
         data.studentId ??
         data.userId ??

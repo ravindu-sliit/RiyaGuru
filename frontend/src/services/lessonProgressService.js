@@ -1,3 +1,4 @@
+import { authHeaders } from "./authHeader";
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 export const lessonProgressService = {
@@ -56,23 +57,26 @@ export const lessonProgressService = {
 
   // ✅ Add a new lesson progress record
   async addLessonProgress(lessonData) {
-    const rawAuth = localStorage.getItem("rg_auth") || localStorage.getItem("rg_token");
-    let token = null;
-    try {
-      const parsed = JSON.parse(rawAuth || "null");
-      token = parsed?.token || rawAuth;
-    } catch (e) {
-      token = rawAuth;
-    }
-    const headers = { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-
+    const headers = authHeaders("application/json");
     const res = await fetch(`${API_URL}/lesson-progress/add`, {
       method: "POST",
       headers,
       body: JSON.stringify(lessonData),
     });
-    if (!res.ok) throw new Error("Failed to add lesson progress");
-    return res.json();
+    // try to parse response body (may contain structured error message)
+    let data = null;
+    try {
+      data = await res.json();
+    } catch (e) {
+      data = null;
+    }
+
+    if (!res.ok) {
+      const serverMsg = data?.message || data?.error || (typeof data === 'string' ? data : null);
+      throw new Error(serverMsg || "Failed to add lesson progress");
+    }
+
+    return data;
   },
 
   // ❌ Currently your backend does NOT support deleting lessons
