@@ -24,7 +24,8 @@ export default function InstructorRoutes() {
 
        
 
-        <Route path="instructorbooking" element={<InstructorBookings />} />
+        <Route path="booking" element={<InstructorBookings />} />
+        <Route path="instructorbooking" element={<Navigate to="/instructor/booking" replace />} />
 
         {/* Lesson Progress */}
         <Route path="lesson-entry" element={<InstructorLessonEntryPage />} />

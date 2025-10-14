@@ -147,8 +147,7 @@ export default function StudentProgressPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto p-6">
-        <ProgressHero title="Student Dashboard" subtitle={`${full_name} (ID: ${student_id})`}>
+      <ProgressHero title="Student Dashboard" subtitle={`${full_name} (ID: ${student_id})`}>
           <div>
             <button
               onClick={async () => {
@@ -177,6 +176,8 @@ export default function StudentProgressPage() {
             </button>
           </div>
         </ProgressHero>
+
+      <div className="max-w-5xl mx-auto p-6 mt-8 md:mt-12">
 
         {/* Stats Cards (landing style) */}
         <div className="px-6 -mt-6 relative z-10">
