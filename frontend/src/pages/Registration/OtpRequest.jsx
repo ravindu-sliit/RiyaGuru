@@ -22,6 +22,17 @@ function OtpRequest() {
   // success modal
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Redirect to register if email is missing
+  useEffect(() => {
+    if (!email) {
+      setError("Email is missing. Please register again.");
+      const timer = setTimeout(() => {
+        navigate("/register", { replace: true });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [email, navigate]);
+
   // only enable submit when OTP has exactly 6 digits
   const isOtpValidShape = useMemo(() => /^\d{6}$/.test(otp), [otp]);
 
@@ -137,11 +148,12 @@ function OtpRequest() {
   }, [showSuccess, goToLogin]);
 
   return (
-    <div className="otp-request">
-      <h2>Enter OTP</h2>
-      <p>
-        We sent a one-time password to <strong>{email || "(missing email)"}</strong>.
-      </p>
+    <div className="otp-page-container">
+      <div className="otp-request">
+        <h2>Enter OTP</h2>
+        <p>
+          We sent a one-time password to <strong>{email || "(missing email)"}</strong>.
+        </p>
 
       <form onSubmit={handleVerify} noValidate>
         <div>
@@ -173,51 +185,65 @@ function OtpRequest() {
           </p>
         )}
 
-        <button type="submit" disabled={verifying || !isOtpValidShape}>
-          {verifying ? "Verifying..." : "Verify"}
-        </button>
-
-        {showResend && (
-          <div className="resend-section">
-            <button type="button" onClick={requestNewOtp} disabled={resending}>
-              {resending ? "Sending new OTP..." : "Request New OTP"}
+        {!email ? (
+          <button 
+            type="button" 
+            onClick={() => navigate("/register")}
+            style={{ marginTop: "12px" }}
+          >
+            Go to Register
+          </button>
+        ) : (
+          <>
+            <button type="submit" disabled={verifying || !isOtpValidShape}>
+              {verifying ? "Verifying..." : "Verify"}
             </button>
-            {retryAfter != null && (
-              <div className="retry-hint">
-                Try again in about {retryAfter} second{retryAfter === 1 ? "" : "s"}.
+
+            {showResend && (
+              <div className="resend-section">
+                <button type="button" onClick={requestNewOtp} disabled={resending}>
+                  {resending ? "Sending new OTP..." : "Request New OTP"}
+                </button>
+                {retryAfter != null && (
+                  <div className="retry-hint">
+                    Try again in about {retryAfter} second{retryAfter === 1 ? "" : "s"}.
+                  </div>
+                )}
               </div>
             )}
-          </div>
+          </>
         )}
       </form>
 
-      {/* Success Modal */}
+      {/* Success Modal - positioned exactly on top of OTP box */}
       {showSuccess && (
         <div
-          className="otp-modal"
+          className="otp-success-overlay"
           role="dialog"
           aria-modal="true"
           aria-labelledby="otp-success-title"
-          onClick={(e) => {
-            if (e.target.classList.contains("otp-modal")) setShowSuccess(false);
-          }}
           style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,.45)",
-            display: "grid",
-            placeItems: "center",
-            zIndex: 9999,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10,
           }}
         >
           <div
-            className="otp-modal-card"
+            className="otp-success-card"
             style={{
-              background: "#fff",
-              width: "min(560px, 92vw)",
-              borderRadius: 16,
-              padding: 28,
-              boxShadow: "0 20px 60px rgba(0,0,0,.25)",
+              width: "min(500px, 90vw)",
+              background: "rgba(0, 0, 0, 0.75)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              borderRadius: "18px",
+              boxShadow: "0 0 60px rgba(0, 0, 0, 0.5)",
+              padding: "40px",
               textAlign: "center",
             }}
           >
@@ -229,8 +255,8 @@ function OtpRequest() {
                 margin: "0 auto 14px",
                 display: "grid",
                 placeItems: "center",
-                background: "rgba(40,167,69,.08)",
-                border: "2px solid rgba(40,167,69,.35)",
+                background: "rgba(40,167,69,.25)",
+                border: "2px solid rgba(40,167,69,.6)",
               }}
             >
               <svg
@@ -242,7 +268,7 @@ function OtpRequest() {
               >
                 <path
                   d="M20 6L9 17l-5-5"
-                  stroke="#28A745"
+                  stroke="#4ADE80"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -256,12 +282,12 @@ function OtpRequest() {
                 margin: "0 0 6px",
                 fontSize: 22,
                 fontWeight: 800,
-                color: "#0A1A2F",
+                color: "#FFFFFF",
               }}
             >
               Account Successfully Created
             </h3>
-            <p style={{ margin: "0 0 18px", color: "#3a4a62" }}>
+            <p style={{ margin: "0 0 18px", color: "rgba(255, 255, 255, 0.8)" }}>
               {info || "Your email has been verified. You can now log in."}
             </p>
 
@@ -269,15 +295,24 @@ function OtpRequest() {
               onClick={goToLogin}
               autoFocus
               style={{
-                minWidth: 140,
-                padding: "10px 18px",
+                width: "100%",
+                height: "48px",
                 border: "none",
-                borderRadius: 10,
+                borderRadius: "14px",
                 background: "#28A745",
                 color: "#fff",
                 fontWeight: 700,
                 cursor: "pointer",
-                boxShadow: "0 10px 24px rgba(40,167,69,.35)",
+                boxShadow: "0 8px 22px rgba(40,167,69,.35)",
+                transition: "filter .15s ease, box-shadow .2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.filter = "brightness(.96)";
+                e.target.style.boxShadow = "0 12px 30px rgba(40,167,69,.45)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.filter = "brightness(1)";
+                e.target.style.boxShadow = "0 8px 22px rgba(40,167,69,.35)";
               }}
             >
               Login
@@ -285,6 +320,7 @@ function OtpRequest() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

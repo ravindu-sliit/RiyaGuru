@@ -1,13 +1,5 @@
 /* RiyaGuru — OTP Request Page
-   Palette:
-   -- Primary Orange: #F47C20
-   -- Dark Navy:     #0A1A2F
-   -- White:         #FFFFFF
-   -- Light Gray:    #F5F6FA
-   -- Soft Blue:     #2D74C4
-   -- Green:         #28A745
-   -- Red:           #DC3545
-*/
+   Matching LoginPage and RegisterStudent theme */
 
 :root{
   --rg-orange:#F47C20;
@@ -17,36 +9,46 @@
   --rg-blue:#2D74C4;
   --rg-green:#28A745;
   --rg-red:#DC3545;
-
   --rg-border:#E5E8EF;
   --rg-shadow:0 12px 36px rgba(10,26,47,.12);
-  --rg-ring:0 0 0 3px rgba(45,116,196,.25);
+  --rg-ring:0 0 0 3px rgba(244,124,32,.3);
   --rg-font:-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, "Noto Sans";
 }
 
-/* Soft backdrop so the card sits in the middle nicely */
-html, body, #root { min-height: 100%; }
-body{
-  margin: 0;
-  background:
-    radial-gradient(1200px 600px at 20% -20%, rgba(45,116,196,.10), transparent 60%),
-    radial-gradient(1200px 600px at 120% 120%, rgba(244,124,32,.10), transparent 60%),
-    var(--rg-gray);
-  color:#0E223A;
+/* Page container with background image */
+.otp-page-container{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  position:relative;
   font-family: var(--rg-font);
 }
+.otp-page-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    linear-gradient(rgba(10,26,47,.40), rgba(10,26,47,.40)),
+    url("/public/train02.jpg") no-repeat center center/cover;
+  background-attachment: fixed;
+  z-index: -1;
+}
 
-/* The OTP card itself */
+/* The OTP card itself - centered with glass effect */
 .otp-request{
-  /* center on page */
-  margin: 10vh auto !important;          /* vertical & horizontal centering */
-  width: min(600px, 92vw);               /* a little bigger than before */
-  max-width: 600px !important;           /* override inline maxWidth=420 */
-  background: var(--rg-white);
-  border: 1px solid var(--rg-border);
+  position: relative;
+  width: min(500px, 90vw);
+  background:rgba(0, 0, 0, 0.75); /* Semi-transparent black */
+  backdrop-filter: blur(10px); /* Blur effect */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  border:none;
   border-radius: 18px;
-  box-shadow: var(--rg-shadow);
-  padding: 28px 26px;
+  box-shadow:0 0 60px rgba(0, 0, 0, 0.5);
+  padding: 40px;
   text-align: left;
 }
 
@@ -54,13 +56,13 @@ body{
   margin: 0 0 6px 0;
   text-align: center;
   font-weight: 800;
-  color: var(--rg-navy);
+  color: #FFFFFF;
 }
 
 .otp-request > p{
   text-align: center;
   margin: 2px 0 16px 0 !important;
-  color: #4b5a6d !important;
+  color: rgba(255, 255, 255, 0.8) !important;
   font-size: 15px;
 }
 
@@ -73,7 +75,7 @@ body{
   display:block;
   margin-bottom:6px;
   font-weight:600;
-  color:#2a3b54;
+  color:rgba(255, 255, 255, 0.9);
 }
 
 .otp-request input[type="text"],
@@ -83,41 +85,49 @@ body{
   width:100%;
   height:48px;
   padding:0 12px;
-  border:1px solid var(--rg-border);
+  border:1px solid rgba(255, 255, 255, 0.2);
   border-radius:12px;
-  background:#fff;
+  background:rgba(255, 255, 255, 0.1);
+  color:#FFFFFF;
   transition: border .2s, box-shadow .2s, background .2s;
   outline:none;
   font-size:16px;
 }
 
+.otp-request input::placeholder{
+  color:rgba(255, 255, 255, 0.5);
+}
+
 .otp-request input:focus{
-  border-color:#c9d6ea;
+  border-color:rgba(255, 255, 255, 0.4);
+  background:rgba(255, 255, 255, 0.15);
   box-shadow: var(--rg-ring);
 }
 
 .otp-request small{
   display:block;
   margin-top:6px;
-  color:#6a778b !important;
+  color:rgba(255, 255, 255, 0.7) !important;
   font-size:13px;
 }
 
-/* Messages (keep popup styles untouched) */
-.otp-request p[role="alert"]{
-  color: var(--rg-red) !important;
-  background: rgba(220,53,69,.06);
-  border: 1px solid rgba(220,53,69,.25);
+/* Messages */
+.otp-request p[role="alert"],
+.otp-request .form-error{
+  color: #FF6B6B !important;
+  background: rgba(220,53,69,.2);
+  border: 1px solid rgba(220,53,69,.4);
   padding: 8px 10px;
   border-radius: 10px;
   margin: 8px 0 !important;
   text-align: left;
 }
 
-.otp-request p[role="status"]{
-  color: var(--rg-green) !important;
-  background: rgba(40,167,69,.06);
-  border: 1px solid rgba(40,167,69,.25);
+.otp-request p[role="status"],
+.otp-request .form-info{
+  color: #4ADE80 !important;
+  background: rgba(40,167,69,.2);
+  border: 1px solid rgba(40,167,69,.4);
   padding: 8px 10px;
   border-radius: 10px;
   margin: 8px 0 !important;
@@ -176,12 +186,12 @@ body{
 
 .otp-request .retry-hint{
   margin-top: 8px;
-  color:#596a84;
+  color:rgba(255, 255, 255, 0.7);
   font-size: 14px;
 }
 
 /* Responsive tweaks */
 @media (max-width: 480px){
-  .otp-request{ padding: 22px 18px; margin: 7vh auto !important; }
+  .otp-request{ padding: 30px 24px; }
   .otp-request h2{ font-size: 22px; }
 }

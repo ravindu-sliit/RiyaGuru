@@ -22,12 +22,8 @@ export default function LoginPage() {
     const v = String(val || "").trim();
     if (!v) return "Email or ID is required";
 
-    // If it looks like an email, validate with regex
     if (v.includes("@")) return EMAIL_RE.test(v) ? "" : "Enter a valid email";
-
-    // Accept pure-numeric student IDs (e.g. 12345) or alphanumeric IDs (e.g. I001)
-    if (/^[A-Za-z0-9]+$/.test(v)) return "";
-
+    if (/^[A-Za-z0-9]+$/.test(v)) return ""; // allow IDs
     return "Enter a valid email or ID";
   };
 
@@ -37,11 +33,10 @@ export default function LoginPage() {
     setEmailError("");
     setPasswordError("");
 
-  const raw = email.trim();
+    const raw = email.trim();
+    const emailFmtErr = validateEmailFormat(raw);
+    const normalizedEmail = raw.includes("@") ? raw.toLowerCase() : raw;
 
-  const emailFmtErr = validateEmailFormat(raw);
-  // Only lowercase when the identifier is an email address; preserve case for IDs like 'I001'
-  const normalizedEmail = raw.includes("@") ? raw.toLowerCase() : raw;
     if (emailFmtErr) setEmailError(emailFmtErr);
     if (!password) setPasswordError("Passcode is required");
     if (emailFmtErr || !password) return;
@@ -72,13 +67,10 @@ export default function LoginPage() {
       if (data.userId) localStorage.setItem("rg_userId", data.userId);
       if (data.role) localStorage.setItem("rg_role", data.role);
 
-      // Also save a structured auth object for services that expect rg_auth
       try {
         const authObj = { token: data.token, userId: data.userId, role: data.role };
         localStorage.setItem("rg_auth", JSON.stringify(authObj));
-      } catch (e) {
-        // ignore
-      }
+      } catch {}
 
       const inferredId =
         data.studentId ??
@@ -90,10 +82,8 @@ export default function LoginPage() {
       if (inferredId) localStorage.setItem("rg_id", String(inferredId));
 
       if (data.role === "Student") navigate("/student", { replace: true });
-      else if (data.role === "Instructor")
-        navigate("/instructor", { replace: true });
-      else if (data.role === "Admin")
-        navigate("/admin/home/admin", { replace: true });
+      else if (data.role === "Instructor") navigate("/instructor", { replace: true });
+      else if (data.role === "Admin") navigate("/admin/home/admin", { replace: true });
       else navigate("/landing", { replace: true });
     } catch (err) {
       setGeneralError(err.message || "Something went wrong. Please try again.");
@@ -104,7 +94,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-container">
-      {/* Left Panel */}
+      {/* Left Panel (glass / black translucent) */}
       <div className="login-left">
         <h2>Sign In to RiyaGuru.LK</h2>
         <p className="subtitle">
@@ -165,22 +155,14 @@ export default function LoginPage() {
         </p>
 
         <footer>
-          <button type="button" className="link-btn">
-            Terms &amp; Conditions
-          </button>{" "}
-          |{" "}
-          <button type="button" className="link-btn">
-            Privacy Policy
-          </button>{" "}
-          |{" "}
-          <button type="button" className="link-btn">
-            Refund Policy
-          </button>
+          <button type="button" className="link-btn">Terms &amp; Conditions</button> |{" "}
+          <button type="button" className="link-btn">Privacy Policy</button> |{" "}
+          <button type="button" className="link-btn">Refund Policy</button>
           <p>© RiyaGuru LK – Online Portal</p>
         </footer>
       </div>
 
-      {/* Right Panel */}
+      {/* Right Panel (full-bleed image, dark overlay) */}
       <div className="login-right" />
     </div>
   );

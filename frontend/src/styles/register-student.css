@@ -1,5 +1,5 @@
 /* src/styles/register-student.css
-   Register page — two-panel layout with FIXED hero image (non-scrolling) and a scrolling form */
+   Register page — two-panel layout matching LoginPage theme */
 
 :root{
   --rg-orange:#F47C20;
@@ -7,70 +7,70 @@
   --rg-white:#FFFFFF;
   --rg-gray-50:#F5F6FA;
   --rg-blue:#2D74C4;
-
   --rg-green:#28A745;
   --rg-red:#DC3545;
-
   --rg-border:#E5E8EF;
   --rg-shadow:0 12px 36px rgba(10,26,47,.10);
-  --rg-ring:0 0 0 3px rgba(45,116,196,.25);
-
-  /* Wide-layout split (match login feel). Left ~42%, right ~58%. */
-  --rg-right-w: 58vw;
+  --rg-ring:0 0 0 3px rgba(244,124,32,.3);
 }
 
-/* Ensure normal page scroll bar on the right */
-html, body { height: 100%; }
-body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
+/* Page backdrop */
+body{ background:var(--rg-gray-50); color:#0E223A; }
 
 /* ---------- Layout ---------- */
 .register-container{
+  display:flex;
   min-height:100vh;
-  /* Reserve space for the fixed right panel so content doesn't overlap it */
-  padding-right: var(--rg-right-w);
-  position: relative;
   font-family: Inter, Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  position:relative;
 }
-
-/* Left form card (this column scrolls with the page) */
-.register-left{
-  max-width: 560px;
-  margin: 8vh clamp(16px, 4vw, 48px);
-  background: var(--rg-white);
-  padding: 40px;
-}
-
-/* Right hero image — fixed so it DOES NOT SCROLL */
-.register-right{
-  position: fixed;
+.register-container::before {
+  content: '';
+  position: absolute;
   top: 0;
+  left: 0;
   right: 0;
-  width: var(--rg-right-w);
-  height: 100vh;
+  bottom: 0;
   background:
-    linear-gradient(rgba(10,26,47,.55), rgba(10,26,47,.55)),
-    url("/public/car-training - reg page.jpg") no-repeat center center/cover;
-  /* Keep it behind the form */
-  z-index: 0;
+    linear-gradient(rgba(10,26,47,.40), rgba(10,26,47,.40)),
+    url("/public/train04.png") no-repeat center center/cover;
+  background-attachment: fixed;
+  z-index: -1;
 }
 
-/* The form card sits above the fixed image */
-.register-left { position: relative; z-index: 1; }
+/* Right side (background) */
+.register-right{
+  flex:1;
+  position:relative;
+}
+
+/* Left form panel with glass effect */
+.register-left{
+  flex:0 0 42%;
+  display:flex;
+  flex-direction:column;
+  padding:60px 90px;
+  background:rgba(0, 0, 0, 0.75); /* Semi-transparent black */
+  backdrop-filter: blur(10px); /* Blur effect for modern browsers */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  border:none;
+  border-radius:0;
+  box-shadow:0 0 60px rgba(0, 0, 0, 0.5);
+  overflow-y:auto;
+  max-height:100vh;
+}
 
 /* ---------- Responsive: stack on narrow screens ---------- */
 @media (max-width: 900px){
-  .register-container{
-    padding-right: 0;          /* no reserved space needed */
-  }
-  .register-right{
-    position: relative;        /* allow it to scroll in mobile layout */
-    width: 100%;
-    height: 32vh;
-  }
+  .register-container{ flex-direction:column; }
   .register-left{
-    margin: 12px auto 32px auto;
-    padding: 22px;
+    flex:unset;
+    max-width:560px;
+    margin:8vh auto;
+    border-radius:18px;
+    padding:40px;
   }
+  .register-right{ min-height:32vh; }
 }
 
 /* ---------- Headings ---------- */
@@ -78,11 +78,11 @@ body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
   margin: 0 0 8px 0;
   font-size: 24px;
   font-weight: 700;
-  color:#0E223A;
+  color:#FFFFFF;
 }
 .register-left .subtitle{
   font-size: 14px;
-  color:#555;
+  color:rgba(255, 255, 255, 0.8);
   margin-bottom: 18px;
 }
 
@@ -93,7 +93,7 @@ body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
   display:block;
   margin-bottom: 6px;
   font-size:14px;
-  color:#30435C;
+  color:rgba(255, 255, 255, 0.9);
 }
 
 /* Inputs (match Login styling) */
@@ -105,28 +105,38 @@ body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
 .register-left select,
 .register-left textarea{
   width:100%;
-  padding:12px 12px;
-  border:1px solid var(--rg-border);
+  padding:12px;
+  border:1px solid rgba(255, 255, 255, 0.2);
   border-radius:12px;
-  background:#fff;
+  background:rgba(255, 255, 255, 0.1);
+  color:#FFFFFF;
   transition:border .2s, box-shadow .2s, background .2s;
   outline:none;
   font:inherit;
 }
 .register-left input::placeholder,
-.register-left textarea::placeholder{ color:#9AA5B5; }
+.register-left textarea::placeholder,
+.register-left select option:first-child{ 
+  color:rgba(255, 255, 255, 0.5); 
+}
+
+.register-left select option {
+  background:rgba(10, 26, 47, 0.95);
+  color:#FFFFFF;
+}
 
 .register-left input:focus,
 .register-left select:focus,
 .register-left textarea:focus{
-  border-color:#C9D6EA;
+  border-color:rgba(255, 255, 255, 0.4);
+  background:rgba(255, 255, 255, 0.15);
   box-shadow:var(--rg-ring);
 }
 
 /* Small helper text */
 .register-left .help-text{
   display:block;
-  color:#6A778B;
+  color:rgba(255, 255, 255, 0.7);
   margin-top:4px;
   font-size:12.5px;
 }
@@ -134,9 +144,9 @@ body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
 /* ---- Error styles (field + submit) ---- */
 .field-error{
   display:block !important;
-  color:#DC3545 !important;
-  background:rgba(220,53,69,.06);
-  border:1px solid rgba(220,53,69,.25);
+  color:#FF6B6B !important;
+  background:rgba(220,53,69,.2);
+  border:1px solid rgba(220,53,69,.4);
   padding:8px 10px;
   border-radius:10px;
   margin-top:8px !important;
@@ -146,9 +156,9 @@ body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
 .submit-error{
   display:block !important;
   text-align:center;
-  color:#DC3545 !important;
-  background:rgba(220,53,69,.08);
-  border:1px solid rgba(220,53,69,.28);
+  color:#FF6B6B !important;
+  background:rgba(220,53,69,.2);
+  border:1px solid rgba(220,53,69,.4);
   padding:10px 12px;
   border-radius:12px;
   margin-top:12px !important;
@@ -194,12 +204,12 @@ body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
   text-align:center;
   margin-top:14px;
   font-size:14px;
-  color:#30435C;
+  color:rgba(255, 255, 255, 0.8);
 }
 .link-btn{
   background:none;
   border:none;
-  color:#2D74C4;
+  color:#F47C20;
   font-weight:600;
   cursor:pointer;
   text-decoration:underline;
@@ -211,4 +221,5 @@ body{ background:var(--rg-gray-50); color:#0E223A; overflow-y: scroll; }
   outline:none;
   box-shadow:none;
   background:none;
+  color:#FF9A4D;
 }
