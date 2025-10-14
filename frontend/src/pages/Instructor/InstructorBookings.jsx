@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import ProgressHero from "../../components/ProgressHero";
 import { Calendar, Clock, User, Car, AlertTriangle, X } from "lucide-react";
 
 export default function InstructorBookings() {
@@ -119,51 +120,18 @@ export default function InstructorBookings() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="flex justify-between items-center bg-white px-8 py-4 border-b border-gray-200 shadow-sm sticky top-0 z-50">
-        <h1 className="font-bold text-xl text-gray-800">
-          Instructor Booking Details
-        </h1>
-        <div className="flex items-center gap-6">
-          <Link
-            to="/dashboard"
-            className="px-4 py-2 rounded-lg text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/instructor/profile"
-            className="px-4 py-2 rounded-lg text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all font-medium"
-          >
-            My Profile
-          </Link>
-          <Link
-            to="/instructor/bookings"
-            className="px-4 py-2 rounded-lg text-orange-500 bg-orange-50 font-medium"
-          >
-            My Bookings
-          </Link>
-        </div>
-      </nav>
-
-      {/* Header */}
-      <div className="max-w-6xl mx-auto px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">My Bookings</h1>
-            <p className="text-gray-600">
-              All bookings assigned to you as an instructor
-            </p>
-            {instructor && (
-              <p className="mt-2 text-sm text-gray-500">
-                <span className="font-medium">Instructor ID:</span>{" "}
-                {instructor.instructorId} |{" "}
-                <span className="font-medium">Name:</span> {instructor.name}
-              </p>
-            )}
+      <ProgressHero
+        title="My Bookings"
+        subtitle="All bookings assigned to you as an instructor"
+      >
+        {instructor && (
+          <div className="hidden md:block text-white/80 text-sm">
+            ID: {instructor.instructorId} • {instructor.name}
           </div>
-        </div>
+        )}
+      </ProgressHero>
 
+      <div className="max-w-6xl mx-auto px-8 -mt-6 relative z-10 pb-12">
         {/* Bookings List */}
         {bookings.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2">

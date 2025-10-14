@@ -1,7 +1,7 @@
 // src/pages/Instructor/InstructorLessonProgressHome.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import InstructorNav from "../../components/InstructorNav";
+import ProgressHero from "../../components/ProgressHero";
 import {
   BookOpen,
   Plus,
@@ -16,22 +16,13 @@ import {
 export default function InstructorLessonProgressHome() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <InstructorNav />
-
-      {/* Hero Header Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-6 py-12">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">
-            Instructor Dashboard
-          </h1>
-          <p className="text-blue-200 text-lg max-w-2xl mx-auto">
-            Manage lessons, students, bookings, and your profile with a modern dashboard.
-          </p>
-        </div>
-      </div>
+      <ProgressHero
+        title="Instructor Dashboard"
+        subtitle="Manage lessons, students, bookings, and your profile with a modern dashboard."
+      />
 
       {/* Navigation Cards Section */}
-      <div className="px-6 py-12 max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="px-6 -mt-6 relative z-10 max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
         <NavCard
           title="Lesson Dashboard"
           description="Overview of all lessons and stats"
@@ -65,7 +56,7 @@ export default function InstructorLessonProgressHome() {
           description="View and manage your schedule"
           icon={<Calendar className="w-8 h-8" />}
           gradient="from-pink-500 to-rose-600"
-          to="/bookings"
+          to="/instructor/booking"
         />
         <NavCard
           title="My Profile"

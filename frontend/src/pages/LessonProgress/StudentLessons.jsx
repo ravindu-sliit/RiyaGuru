@@ -8,7 +8,6 @@ import {
   User,
   Filter,
 } from "lucide-react";
-import InstructorNav from "../../components/InstructorNav";
 import { toast } from "react-toastify";
 import LessonProgressCard from "../../components/LessonProgressCard";
 import ProgressHero from "../../components/ProgressHero";
@@ -73,40 +72,38 @@ export default function StudentLessons() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <InstructorNav />
       <ProgressHero title={`Student ${studentId} - Lessons`} subtitle={`${lessons.length} lesson${lessons.length !== 1 ? "s" : ""} recorded`}>
         <div className="flex items-center gap-3">
-          <Filter size={18} className="text-gray-500" />
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500"
-          >
-            {statusOptions.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filterVehicle}
-            onChange={(e) => setFilterVehicle(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500"
-          >
-            <option value="All">All Vehicles</option>
-            {uniqueVehicleTypes.map((v) => (
-              <option key={v} value={v}>
-                {v}
-              </option>
-            ))}
-          </select>
-        </div>
+            <Filter size={18} className="text-gray-500" />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500"
+            >
+              {statusOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <select
+              value={filterVehicle}
+              onChange={(e) => setFilterVehicle(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="All">All Vehicles</option>
+              {uniqueVehicleTypes.map((v) => (
+                <option key={v} value={v}>
+                  {v}
+                </option>
+              ))}
+            </select>
+          </div>
       </ProgressHero>
 
       {/* Summary per vehicle */}
       {uniqueVehicleTypes.length > 0 && (
-        <div className="max-w-7xl mx-auto px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="max-w-7xl mx-auto px-6 pb-6 mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {uniqueVehicleTypes.map((vehicleType) => {
             const vehicleLessons = lessons.filter(
               (l) => l.vehicle_type === vehicleType
@@ -133,7 +130,7 @@ export default function StudentLessons() {
       )}
 
       {/* Lessons List */}
-      <div className="max-w-7xl mx-auto px-6 pb-12">
+      <div className="max-w-7xl mx-auto px-6 pb-12 mt-6 md:mt-8">
         {filteredLessons.length > 0 ? (
           <div className="grid md:grid-cols-2 gap-6">
             {filteredLessons

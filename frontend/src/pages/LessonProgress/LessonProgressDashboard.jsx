@@ -15,7 +15,6 @@ import {
 import { toast } from "react-toastify";
 import LessonProgressCard from "../../components/LessonProgressCard";
 
-import InstructorNav from "../../components/InstructorNav";
 import ProgressHero from "../../components/ProgressHero";
 export default function LessonProgressDashboard() {
   const [lessons, setLessons] = useState([]);
@@ -75,7 +74,6 @@ export default function LessonProgressDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <InstructorNav />
       <ProgressHero title="Lesson Progress Management" subtitle="Track and manage student lesson progress with comprehensive analytics and insights">
         <div className="flex gap-3">
           <button className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-3 rounded-xl hover:bg-white/20 transition-all duration-300">
