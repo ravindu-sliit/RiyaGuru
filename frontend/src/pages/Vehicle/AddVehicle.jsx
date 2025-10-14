@@ -457,7 +457,7 @@ const AddVehicle = () => {
               </button>
               <button
                 type="button"
-                onClick={() => navigate("/vehicles")}
+                onClick={() => navigate("/admin/vehicles")}
                 disabled={loading}
                 className="w-full py-2 px-4 rounded-md border border-gray-300 bg-white text-gray-600 font-medium text-sm hover:bg-gray-50 disabled:opacity-60"
               >
