@@ -586,6 +586,31 @@ body {
   margin-top: 60px;
 }
 
+.testimonials-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.testimonials-track {
+  display: flex;
+  width: 100%;
+  transition: transform 600ms ease-in-out;
+}
+
+.testimonials-slide {
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  .testimonials-slide {
+    grid-template-columns: 1fr;
+  }
+}
+
 .testimonial-nav {
   background: var(--primary-purple);
   color: var(--white);
@@ -936,4 +961,68 @@ body {
 .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Hero slideshow (fade + zoom-out) */
+.hero-slideshow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-slide.is-active {
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Only animate when the slide is active so animations restart per slide */
+.kenburns {
+  animation: none;
+  will-change: transform;
+  transform-origin: center center;
+}
+.hero-slide.is-active .kenburns {
+  animation: hero-kenburns 4s ease-in-out forwards;
+}
+
+@keyframes hero-kenburns {
+  0% { transform: scale(1.08); }
+  100% { transform: scale(1.00); }
+}
+
+.hero-dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  z-index: 3;
+}
+
+.hero-dots .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.55);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hero-dots .dot.active {
+  width: 6px;
+  height: 6px;
+  background: #ffffff;
 }
