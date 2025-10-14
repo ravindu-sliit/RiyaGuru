@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
 
-export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, children }) {
+export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, children, padY, iconContainerClass }) {
   const Icon = icon || <Calendar className="w-8 h-8 text-white" />;
+  const innerPadY = padY || "py-8";
+  const iconWrap = iconContainerClass || "w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center";
   return (
     <div
       className="shadow-lg rounded-2xl overflow-hidden"
@@ -14,9 +16,9 @@ export default function ProgressHero({ title, subtitle, icon, ctaText, ctaTo, ch
         border: "1px solid rgba(255,255,255,0.28)",
       }}
     >
-      <div className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
+      <div className={`max-w-7xl mx-auto px-6 ${innerPadY} flex justify-between items-center`}>
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
+          <div className={iconWrap}>
             {Icon}
           </div>
           <div>

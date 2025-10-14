@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CourseAPI } from "../../api/courseApi";
 import { AlertCircle, BookOpen, Loader2, DollarSign, Clock, Users, Award } from "lucide-react";
 import { StudentCourseAPI } from "../../api/studentCourseApi";
+import ProgressHero from "../../components/ProgressHero";
 
 const EnrollmentDetails = () => {
   const { id } = useParams(); // course id
@@ -166,35 +167,18 @@ const EnrollmentDetails = () => {
   const requirements = course?.requirements || ["You must meet the minimum age requirement (usually 16–18).", "You need to provide valid documents such as an ID card, birth certificate, or passport along with proof of address.", "A medical or vision test is required to ensure you are physically fit to drive safely.","You must pass a written or computer-based theory test that covers road signs, traffic rules, and safe driving practices."];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      <div className="px-6 py-8">
-        {/* Header Section with Image */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-gray-200 mb-8">
-          <div className="relative">
-            <div className="h-64 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
-              <img 
-                src={getCourseImage(courseName, id)}
-                alt={courseName}
-                className="w-full h-full object-cover opacity-80"
-                onError={(e) => {
-                  e.target.src = '/images/courses/car.jpeg'; // fallback image
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
-              <div className="absolute bottom-6 left-6 text-white">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
-                    <BookOpen className="w-8 h-8" />
-                  </div>
-                  <h1 className="text-4xl font-bold drop-shadow-lg">{courseName}</h1>
-                </div>
-                <p className="text-white/90 text-lg">Course ID: {id} • Category: {category}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero — match Progress/My Enrollments */}
+      <div className="px-6 pt-6">
+        <ProgressHero
+          title={courseName}
+          subtitle={`Course ID: ${id} • Category: ${category}`}
+          icon={<BookOpen className="w-8 h-8 text-white" />}
+        />
+      </div>
 
-        {/* Main Content */}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Course Information */}
           <div className="lg:col-span-2 space-y-6">
