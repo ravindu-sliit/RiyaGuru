@@ -2,11 +2,11 @@ import Student from "../models/StudentModel.js";
 import Counter from "../models/Counter.js";
 import User from "../models/UserModel.js";
 import Preference from "../models/PreferenceModel.js";
-import { sendEmail } from "../services/emailService.js";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { sendAdminPasswordResetEmail } from "../utils/emailService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -270,26 +270,16 @@ export const updateStudent = async (req, res) => {
       { new: true }
     );
 
-    /**
-     * ✅ Only send password-change email if:
-     *   - a password was provided, AND
-     *   - the authenticated actor is an Admin.
-     * (Requires the route to be protected by JWT middleware.)
-     */
-    const actorRole = req.user?.role;
-    const byAdmin = actorRole === "Admin";
 
-    if (password && byAdmin) {
+    // If an admin performed a password change, notify the student by email
+    let emailNotified = false;
+    if (password && req?.user?.role === "Admin") {
       try {
-        const firstName =
-          String(student?.full_name || "Student").split(" ")[0] || "Student";
-        await sendEmail(
-          nextEmail,
-          "RiyaGuru LK – Your Password Was Reset",
-          `Hello ${firstName},\n\nYour account password was reset by Admin.\n\nTemporary password: ${password}\n\nPlease sign in and change this password immediately from your profile settings.\n\nIf you did not expect this change, please contact support.\n\n— RiyaGuru Team`
-        );
+        await sendAdminPasswordResetEmail(nextEmail, full_name || current.full_name, password);
+        emailNotified = true;
       } catch (e) {
-        console.warn("Failed to send password reset email:", e?.message);
+        // Log but do not fail the request on email error
+        console.warn("Failed to send admin password reset email:", e?.message);
       }
     }
 
@@ -297,7 +287,7 @@ export const updateStudent = async (req, res) => {
       ? `${req.protocol}://${req.get("host")}/uploads/studentProfPics/${student.profilePicPath}`
       : null;
 
-    res.status(200).json({ student: { ...student.toObject(), profilePicUrl } });
+    res.status(200).json({ student: { ...student.toObject(), profilePicUrl }, emailNotified });
   } catch (err) {
     unlinkIfExists(req?.file?.filename);
     const dupField = parseDuplicateKeyField(err);

@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
-export const sendOTPEmail = async (toEmail, otp) => {
-  const transporter = nodemailer.createTransport({
+const createTransporter = () =>
+  nodemailer.createTransport({
     service: "Gmail",
     auth: {
       user: process.env.EMAIL_USER,
@@ -9,17 +9,38 @@ export const sendOTPEmail = async (toEmail, otp) => {
     },
   });
 
+export const sendOTPEmail = async (toEmail, otp) => {
+  const transporter = createTransporter();
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: toEmail,
     subject: "Your OTP Code",
     text: `Your OTP code is: ${otp}. It expires in 5 minutes.`,
   };
-
-  await transporter.sendMail(mailOptions);  
+  await transporter.sendMail(mailOptions);
 };
 
-export const sendCertificateEmail = async (toEmail, studentName, courseName, filePath, verificationHash, certificateId) => {
+// Send a notification when an admin resets a student's password
+export const sendAdminPasswordResetEmail = async (toEmail, studentName, tempPassword) => {
+  const transporter = createTransporter();
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: toEmail,
+    subject: "Your RiyaGuru password was reset by an administrator",
+    text: `Hello ${studentName || "Student"},\n\nYour account password has been reset by an administrator.\n\nTemporary password: ${tempPassword}\n\nFor security, please sign in and change this password immediately from your dashboard.\n\nIf you did not request this change, contact support immediately.`,
+  };
+  await transporter.sendMail(mailOptions);
+};
+
+export const sendCertificateEmail = async (
+  toEmail,
+  studentName,
+  courseName,
+  filePath,
+  verificationHash,
+  certificateId
+) => {
+  const transporter = createTransporter();
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: toEmail,
