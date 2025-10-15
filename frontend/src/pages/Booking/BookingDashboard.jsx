@@ -432,19 +432,19 @@ export default function AdminBookingDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         {b.status === "pending" ? (
                           <div className="flex items-center justify-center gap-2">
-                            <button onClick={() => handleStatusUpdate(b._id, "booked")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors font-medium"><CheckCircle className="w-3 h-3" />Confirm</button>
-                            <button onClick={() => handleStatusUpdate(b._id, "cancelled")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors font-medium"><XCircle className="w-3 h-3" />Cancel</button>
+                            <button onClick={() => handleStatusUpdate(b._id, "booked")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors font-medium"><CheckCircle className="w-3 h-3" />Confirm</button>
+                            <button onClick={() => handleStatusUpdate(b._id, "cancelled")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors font-medium"><XCircle className="w-3 h-3" />Cancel</button>
                           </div>
                         ) : b.status === "booked" ? (
                           <div className="flex items-center justify-center gap-2">
-                            <button onClick={() => handleStatusUpdate(b._id, "started")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded-lg transition-colors font-medium"><CheckCircle className="w-3 h-3" />Start</button>
-                            <button onClick={() => handleStatusUpdate(b._id, "completed")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors font-medium"><CheckCircle className="w-3 h-3" />Complete</button>
-                            <button onClick={() => handleStatusUpdate(b._id, "cancelled")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors font-medium"><XCircle className="w-3 h-3" />Cancel</button>
+                            <button onClick={() => handleStatusUpdate(b._id, "started")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors font-medium"><CheckCircle className="w-3 h-3" />Start</button>
+                            <button onClick={() => handleStatusUpdate(b._id, "completed")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors font-medium"><CheckCircle className="w-3 h-3" />Complete</button>
+                            <button onClick={() => handleStatusUpdate(b._id, "cancelled")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors font-medium"><XCircle className="w-3 h-3" />Cancel</button>
                           </div>
                         ) : b.status === "started" ? (
                           <div className="flex items-center justify-center gap-2">
-                            <button onClick={() => handleStatusUpdate(b._id, "completed")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors font-medium"><CheckCircle className="w-3 h-3" />Complete</button>
-                            <button onClick={() => handleStatusUpdate(b._id, "cancelled")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors font-medium"><XCircle className="w-3 h-3" />Cancel</button>
+                            <button onClick={() => handleStatusUpdate(b._id, "completed")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors font-medium"><CheckCircle className="w-3 h-3" />Complete</button>
+                            <button onClick={() => handleStatusUpdate(b._id, "cancelled")} className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors font-medium"><XCircle className="w-3 h-3" />Cancel</button>
                           </div>
                         ) : (
                           <button className="inline-flex items-center gap-1 px-3 py-1.5 border border-white/40 bg-white/70 backdrop-blur-sm hover:bg-white/80 text-gray-900 text-xs rounded-lg transition-colors font-medium"><Eye className="w-3 h-3" />View</button>
