@@ -20,7 +20,7 @@ router.get("/me/profile", protect, getMe);
 
 router.post("/", StudentProfilePicUpload.single("profilePic"), addStudent);
 router.get("/:id", getStudentById);
-router.put("/:id", StudentProfilePicUpload.single("profilePic"), updateStudent);
+router.put("/:id", protect, StudentProfilePicUpload.single("profilePic"), updateStudent);
 
 // ✅ New endpoint for deleting profile picture only
 router.delete("/:id/profile-pic", deleteProfilePic);
