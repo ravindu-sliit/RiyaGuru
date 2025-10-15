@@ -6,37 +6,25 @@ import {
   updateStudent,
   deleteStudent,
   getMe,
-  deleteProfilePic,
+  deleteProfilePic,   // ✅ added
 } from "../controllers/StudentController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import StudentProfilePicUpload from "../middleware/StudentProfilePicUpload.js";
 
 const router = express.Router();
 
-// Public list (you may lock this down later if needed)
 router.get("/", getAllStudents);
 
 // Logged-in student fetches their own profile
 router.get("/me/profile", protect, getMe);
 
-// Create student (profile pic optional)
 router.post("/", StudentProfilePicUpload.single("profilePic"), addStudent);
-
-// Get single student (public fetch by id)
 router.get("/:id", getStudentById);
+router.put("/:id", protect, StudentProfilePicUpload.single("profilePic"), updateStudent);
 
-// ✅ Update student (needs JWT so we can know role; required for email-on-admin change)
-router.put(
-  "/:id",
-  protect,
-  StudentProfilePicUpload.single("profilePic"),
-  updateStudent
-);
+// ✅ New endpoint for deleting profile picture only
+router.delete("/:id/profile-pic", deleteProfilePic);
 
-// ✅ Delete only the student's profile picture (protect recommended)
-router.delete("/:id/profile-pic", protect, deleteProfilePic);
-
-// ✅ Delete student (protect recommended)
-router.delete("/:id", protect, deleteStudent);
+router.delete("/:id", deleteStudent);
 
 export default router;
