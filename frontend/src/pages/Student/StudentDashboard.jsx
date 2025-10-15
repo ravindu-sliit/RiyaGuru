@@ -71,11 +71,11 @@ export default function StudentDashboard() {
             <img
               src={safeAvatar || defaultAvatar}
               alt={`${firstName}'s profile`}
-              className="w-20 h-20 rounded-full object-cover"
+              className="w-28 h-28 rounded-full object-cover"
               onError={(e) => { e.currentTarget.src = defaultAvatar; }}
             />
           ) : (
-            <User className="w-8 h-8 text-white" />
+            <User className="w-10 h-10 text-white" />
           );
           return (
             <ProgressHero
@@ -83,7 +83,7 @@ export default function StudentDashboard() {
               subtitle={`Student ID: ${student.studentId}`}
               icon={heroIcon}
               padY="py-10"
-              iconContainerClass="w-20 h-20 bg-white bg-opacity-20 rounded-full overflow-hidden flex items-center justify-center"
+              iconContainerClass="w-28 h-28 bg-white bg-opacity-20 rounded-full overflow-hidden flex items-center justify-center"
               transparent
             />
           );
