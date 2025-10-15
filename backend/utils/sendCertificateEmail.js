@@ -1,19 +1,22 @@
 import nodemailer from "nodemailer";
 import path from "path";
 
-// Use environment variables for credentials
+// Prefer SMTP_* credentials; fallback to EMAIL_*
+const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: process.env.EMAIL_SERVICE || "gmail",
   auth: {
-    user: process.env.EMAIL_USER, // your Gmail or SMTP user
-    pass: process.env.EMAIL_PASS, // app password or SMTP password
+    user: smtpUser,
+    pass: smtpPass,
   },
 });
 
 export const sendCertificateEmail = async (toEmail, student, certificate, pdfPath) => {
   try {
+    const fromUser = process.env.SMTP_USER || process.env.EMAIL_USER;
     const mailOptions = {
-      from: `"RiyaGuru.lk Driving School" <${process.env.EMAIL_USER}>`,
+      from: `"RiyaGuru.lk Driving School" <${fromUser}>`,
       to: toEmail,
       subject: `Your Certificate - ${certificate.certificateId}`,
       text: `Hello ${student.full_name},\n\nCongratulations! Your certificate for ${certificate.course_name} is ready.\n\nCertificate ID: ${certificate.certificateId}\nIssued At: ${new Date(certificate.issued_at).toLocaleDateString()}\n\nPlease find the certificate attached. You can verify it online using the verification link provided in the certificate.\n\nRegards,\nRiyaGuru.lk`,
