@@ -40,10 +40,21 @@ export const generateAndEmailStudentReport = async (req, res) => {
     // Generate PDF
     const filePath = await generateStudentProgressPDF({ student, courses, lessonsByCourse });
 
+    // Build public URL for download if uploads is served statically
+    let fileUrl = null;
+    try {
+      const idx = String(filePath).replaceAll("\\", "/").lastIndexOf("uploads/");
+      if (idx !== -1) {
+        const relative = String(filePath).replaceAll("\\", "/").slice(idx);
+        fileUrl = `http://localhost:5000/${relative}`;
+      }
+    } catch {}
+
   // Send email (may return { previewUrl } for ethereal)
   const result = await sendStudentReportEmail(student.email, student, filePath);
 
   const resp = { message: "Report generated and emailed", filePath };
+  if (fileUrl) resp.fileUrl = fileUrl;
   if (result?.previewUrl) resp.previewUrl = result.previewUrl;
 
   return res.json(resp);

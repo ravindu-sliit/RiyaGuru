@@ -9,7 +9,6 @@ import {
   updateBookingStatus,
   getMyCourses,
   deleteBooking,
-  sendBookingEmailById,
 } from "../controllers/bookingController.js";
 
 const router = express.Router();
@@ -34,9 +33,6 @@ router.put("/:id/status", protect, updateBookingStatus);
 
 // ✅ Delete booking
 router.delete("/:id", protect, deleteBooking);
-
-// ✅ Send email for booking receipt
-router.post("/:id/send-email", protect, sendBookingEmailById);
 
 // ✅ Get booking by ID (⚠️ must stay last to avoid conflicts)
 router.get("/:id", protect, getBookingById);

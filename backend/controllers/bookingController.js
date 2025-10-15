@@ -32,8 +32,8 @@ export const sendBookingEmailById = async (req, res) => {
     const pdfPath = await generateBookingPDF(booking, student, instructor, vehicle);
     console.log("✅ PDF generated at:", pdfPath);
 
-    // Send email
-    await sendBookingEmail("codestack80@gmail.com", booking, pdfPath);
+    // Send email to the student's email
+    await sendBookingEmail(student.email, booking, pdfPath);
     console.log("✅ Email sent");
 
     res.json({ message: "Booking receipt emailed successfully" });
@@ -121,11 +121,10 @@ export const createBooking = async (req, res) => {
       vehicle
     );
 
-    // Send PDF via email
-    await sendBookingEmail("codestack80@gmail.com", booking, pdfPath);
+    // Do not send email on creation; email will be sent when admin confirms (status 'booked')
 
     res.status(201).json({
-      message: "Booking created successfully, PDF generated and emailed",
+      message: "Booking created successfully, PDF generated",
       booking,
       pdf: `http://localhost:5000/uploads/booking_${booking.bookingId}.pdf`,
     });
@@ -298,7 +297,8 @@ export const updateBookingStatus = async (req, res) => {
     const { status } = req.body; 
     const booking = await Booking.findById(req.params.id)
       .populate("instructor")
-      .populate("vehicle");
+      .populate("vehicle")
+      .populate("student");
 
     if (!booking) return res.status(404).json({ message: "Booking not found" });
 
@@ -322,6 +322,35 @@ export const updateBookingStatus = async (req, res) => {
       if (booking.vehicle) {
         booking.vehicle.status = "Available";
         await booking.vehicle.save();
+      }
+    }
+
+    // If admin confirms the booking, generate PDF and email the student automatically
+    if (status === "booked") {
+      try {
+        // Resolve student email reliably
+        let recipientEmail = booking?.student?.email;
+        if (!recipientEmail) {
+          const studentDoc = await Student.findOne({ studentId: booking.userId });
+          recipientEmail = studentDoc?.email;
+        }
+
+        if (!recipientEmail) {
+          console.error("❌ No student email found for booking:", booking.bookingId, "userId:", booking.userId);
+        }
+
+        const pdfPath = await generateBookingPDF(
+          booking,
+          booking.student,
+          booking.instructor,
+          booking.vehicle
+        );
+        if (recipientEmail) {
+          console.log("📩 Sending booking confirmation to:", recipientEmail);
+          await sendBookingEmail(recipientEmail, booking, pdfPath);
+        }
+      } catch (emailErr) {
+        console.error("❌ Error sending booking confirmation email:", emailErr);
       }
     }
 

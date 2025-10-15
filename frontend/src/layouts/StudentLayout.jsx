@@ -147,7 +147,7 @@ export default function StudentLayout() {
             <BookOpen className="w-4 h-4 text-white" />
           </div>
           <span className="text-gray-800">
-            Riya<span className="text-indigo-600">Guru.lk</span>
+            Riya<span className="text-orange-600">Guru.lk</span>
           </span>
         </div>
 

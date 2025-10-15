@@ -16,8 +16,8 @@ export const protect = (req, res, next) => {
       process.env.JWT_SECRET || "fallbackSecretKey"
     );
 
-    // Attach user details to request
-    req.user = decoded; // e.g., { userId: "I001", role: "Instructor" }
+    // Attach user details to request (e.g., { userId, role })
+    req.user = decoded;
     next();
   } catch (error) {
     res.status(401).json({ message: "Token failed or expired" });

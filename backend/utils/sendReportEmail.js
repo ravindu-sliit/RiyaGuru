@@ -7,12 +7,14 @@ export const sendStudentReportEmail = async (toEmail, student, filePath) => {
   let transporter;
   let isTestAccount = false;
   try {
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+    const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+    if (smtpUser && smtpPass) {
       transporter = nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE || "gmail",
         auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
+          user: smtpUser,
+          pass: smtpPass,
         },
       });
     } else {
@@ -31,8 +33,9 @@ export const sendStudentReportEmail = async (toEmail, student, filePath) => {
       console.warn("EMAIL_USER not set — using Ethereal test account for email (no real email will be sent)");
     }
 
+    const fromUser = process.env.SMTP_USER || process.env.EMAIL_USER || "ethereal@example.com";
     const mailOptions = {
-      from: `"RiyaGuru.lk Driving School" <${process.env.EMAIL_USER || "ethereal@example.com"}>`,
+      from: `"RiyaGuru.lk Driving School" <${fromUser}>`,
       to: toEmail,
       subject: `Your Progress Report - ${student.full_name || student.studentId}`,
       text: `Hello ${student.full_name || student.studentId},\n\nPlease find attached your progress report.\n\nRegards,\nRiyaGuru.lk`,

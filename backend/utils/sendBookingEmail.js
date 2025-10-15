@@ -1,19 +1,19 @@
 import nodemailer from "nodemailer";
 import path from "path";
 
-// ✅ configure transporter with your Gmail (or SMTP service)
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: process.env.EMAIL_SERVICE || "gmail",
   auth: {
-    user: "codestack80@gmail.com", // your Gmail
-    pass: "wwij bmbk kxho naxj", // app password (not your real Gmail password!)
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
 export const sendBookingEmail = async (toEmail, booking, pdfPath) => {
   try {
+    console.log("📧 Preparing to send booking email to:", toEmail);
     const mailOptions = {
-      from: `"RiyaGuru.lk Driving School" <codestack80@gmail.com>`,
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       to: toEmail, // recipient
       subject: `Booking Confirmation - ${booking.bookingId}`,
       text: `Hello,

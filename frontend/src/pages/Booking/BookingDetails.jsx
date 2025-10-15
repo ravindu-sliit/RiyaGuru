@@ -11,7 +11,6 @@ import {
   X,
   CheckCircle,
   AlertCircle,
-  Send,
 } from "lucide-react";
 
 const BookingDetails = () => {
@@ -35,6 +34,14 @@ const BookingDetails = () => {
     fetchBookings();
   }, []);
 
+  // 🔄 Auto-refresh bookings so status updates when admin confirms
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchBookings();
+    }, 10000); // every 10s
+    return () => clearInterval(intervalId);
+  }, []);
+
   // 🔹 Delete booking
   const handleDelete = async (bookingId) => {
     if (window.confirm("Are you sure you want to delete this booking?")) {
@@ -55,27 +62,7 @@ const BookingDetails = () => {
     window.open(downloadUrl, "_blank");
   };
 
-  // 🔹 Send booking receipt via email (using Mongo _id)
- const handleSendEmail = async (bookingId) => {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/bookings/${bookingId}/send-email`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("rg_token")}`,
-        },
-      }
-    );
-
-    if (!response.ok) throw new Error("Failed to send email");
-    alert("Email sent successfully!");
-  } catch (error) {
-    console.error("Error sending email:", error);
-    alert("Failed to send email. Please try again.");
-  }
-};
+  
 
 
   // 🔹 Status badge
@@ -216,12 +203,6 @@ const BookingDetails = () => {
                           className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition"
                         >
                           <Download className="w-4 h-4" /> Receipt
-                        </button>
-                        <button
-                          onClick={() => handleSendEmail(booking.bookingId)}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition"
-                        >
-                          <Send className="w-4 h-4" /> Send Email
                         </button>
 
                         <button
