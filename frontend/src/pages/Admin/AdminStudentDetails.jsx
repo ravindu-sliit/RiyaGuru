@@ -205,30 +205,31 @@ export default function AdminStudentDetails() {
             </div>
           )}
 
-          {/* Main Content */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-            {/* Profile Header */}
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-8">
-            <div className="flex items-center gap-6">
-              <img
-                src={
-                  student.profilePicUrl ||
-                  "https://via.placeholder.com/128x128.png?text=No+Photo"
-                }
-                alt={`${student.full_name} profile`}
-                className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
-              />
-              <div className="text-white">
-                <h2 className="text-3xl font-bold mb-2">{student.full_name}</h2>
-                <div className="flex items-center gap-2 text-orange-100">
-                  <CreditCard className="w-4 h-4" />
-                  <span className="text-lg">ID: {student.studentId}</span>
+          {/* Profile Header Card - Separate */}
+          <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden mb-6">
+            <div className="bg-white p-8">
+              <div className="flex items-center gap-6">
+                <img
+                  src={
+                    student.profilePicUrl ||
+                    "https://via.placeholder.com/128x128.png?text=No+Photo"
+                  }
+                  alt={`${student.full_name} profile`}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-200 shadow-lg"
+                />
+                <div className="text-gray-800">
+                  <h2 className="text-3xl font-bold mb-2">{student.full_name}</h2>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <CreditCard className="w-4 h-4" />
+                    <span className="text-lg">ID: {student.studentId}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-            {/* Details Grid */}
+          {/* Details Card - Separate */}
+          <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
             <div className="p-8">
               <h3 className="text-lg font-bold text-gray-800 mb-6">Student Information</h3>
               <div className="grid md:grid-cols-2 gap-6">
@@ -299,8 +300,8 @@ export default function AdminStudentDetails() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="mt-8 pt-6 border-t border-gray-200 flex flex-wrap gap-3">
+              {/* Action Buttons - Center Aligned */}
+              <div className="mt-8 pt-6 border-t border-gray-200 flex flex-wrap justify-center gap-3">
                 <button
                   onClick={handleExportPDF}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors shadow-sm"
