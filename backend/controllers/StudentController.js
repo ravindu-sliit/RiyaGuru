@@ -2,6 +2,7 @@ import Student from "../models/StudentModel.js";
 import Counter from "../models/Counter.js";
 import User from "../models/UserModel.js";
 import Preference from "../models/PreferenceModel.js";
+import { sendEmail } from "../services/emailService.js";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
@@ -241,6 +242,20 @@ export const updateStudent = async (req, res) => {
       { new: true }
     );
 
+    // If a new password was provided, email the student with a notification
+    if (password) {
+      try {
+        const firstName = String(student?.full_name || "Student").split(" ")[0] || "Student";
+        await sendEmail(
+          nextEmail,
+          "RiyaGuru LK – Your Password Was Reset",
+          `Hello ${firstName},\n\nYour account password was reset by an administrator.\n\nTemporary password: ${password}\n\nPlease sign in and change this password immediately from your profile settings.\n\nIf you did not expect this change, please contact support.\n\n— RiyaGuru Team`
+        );
+      } catch (e) {
+        console.warn("Failed to send password reset email:", e?.message);
+      }
+    }
+
     const profilePicUrl = student.profilePicPath
       ? `${req.protocol}://${req.get("host")}/uploads/studentProfPics/${student.profilePicPath}`
       : null;
@@ -308,3 +323,8 @@ export const getMe = async (req, res) => {
     res.status(500).json({ message: "Error fetching student profile", error: err.message });
   }
 };
+
+
+
+
+//password eka change krma mail ekak yna eka
