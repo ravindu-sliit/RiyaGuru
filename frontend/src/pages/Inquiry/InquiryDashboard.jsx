@@ -1,3 +1,4 @@
+// src/pages/Inquiry/InquiryDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { Plus, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +28,19 @@ const fetchUsers = async () => {
     : [];
 };
 
+// 🔹 Available statuses (must match your schema text exactly)
+const STATUS_OPTIONS = ["All Statuses", "Pending", "In Progress", "Resolved"];
+
+// Map dropdown value -> canonical status text stored in DB
+const normalizeStatus = (v) => {
+  if (!v || v === "All Statuses") return "ALL";
+  // keep exact casing to match your existing values
+  if (v === "Pending") return "Pending";
+  if (v === "In Progress") return "In Progress";
+  if (v === "Resolved") return "Resolved";
+  return "ALL";
+};
+
 const InquiryDashboard = () => {
   const [activeView, setActiveView] = useState("list");
   const [inquiries, setInquiries] = useState([]);
@@ -35,8 +49,11 @@ const InquiryDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
 
-  // 👇 NEW: sort state
+  // ✅ existing: date sort state
   const [sortDir, setSortDir] = useState("desc");
+
+  // ✅ NEW: status filter state
+  const [statusFilter, setStatusFilter] = useState("All Statuses");
 
   const navigate = useNavigate();
 
@@ -54,7 +71,7 @@ const InquiryDashboard = () => {
       setLoading(true);
       const list = await getAllInquiries();
 
-      // ✅ Normalize createdAt so sorting always works
+      // Normalize createdAt so sorting always works
       const normalized = (Array.isArray(list) ? list : []).map((x) => ({
         ...x,
         createdAt: x?.createdAt || x?.created || x?.date || x?.created_at || null,
@@ -134,18 +151,22 @@ const InquiryDashboard = () => {
     }
   };
 
-  // 👇 Memoized sorted inquiries
-  const sortedInquiries = React.useMemo(() => {
-    const arr = Array.isArray(inquiries) ? [...inquiries] : [];
-    arr.sort((a, b) => {
+  // ✅ Filter first by status, then sort by date (existing sortDir)
+  const filteredAndSorted = React.useMemo(() => {
+    const want = normalizeStatus(statusFilter); // "ALL" | "Pending" | "In Progress" | "Resolved"
+    const filtered = (Array.isArray(inquiries) ? inquiries : []).filter((q) =>
+      want === "ALL" ? true : (q?.status || "").trim() === want
+    );
+
+    filtered.sort((a, b) => {
       const da = new Date(a?.createdAt || 0).getTime();
       const db = new Date(b?.createdAt || 0).getTime();
       return sortDir === "asc" ? da - db : db - da;
     });
-    return arr;
-  }, [inquiries, sortDir]);
 
-  // 👇 Toggle function
+    return filtered;
+  }, [inquiries, statusFilter, sortDir]);
+
   const toggleDateSort = () =>
     setSortDir((d) => (d === "asc" ? "desc" : "asc"));
 
@@ -159,6 +180,27 @@ const InquiryDashboard = () => {
             <p className="dashboard-subtitle">
               Manage and respond to user inquiries
             </p>
+          </div>
+
+          {/* 🔹 NEW: Status filter dropdown on the right */}
+          <div className="header-actions" style={{ display: "flex", gap: 12 }}>
+            <select
+              aria-label="Filter by status"
+              className="form-input"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{
+                minWidth: 180,
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              {STATUS_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -190,13 +232,13 @@ const InquiryDashboard = () => {
         {activeView === "list" && (
           <>
             <InquiryList
-              items={sortedInquiries} // ✅ sorted list
+              items={filteredAndSorted}        // ← filtered + sorted list
               loading={loading}
               onView={handleView}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              sortDir={sortDir} // ✅ pass sort direction
-              onToggleSort={toggleDateSort} // ✅ pass toggle handler
+              sortDir={sortDir}
+              onToggleSort={toggleDateSort}
             />
 
             {/* Back button under table aligned left */}
