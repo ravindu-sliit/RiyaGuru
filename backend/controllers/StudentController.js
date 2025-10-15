@@ -249,7 +249,7 @@ export const updateStudent = async (req, res) => {
         await sendEmail(
           nextEmail,
           "RiyaGuru LK – Your Password Was Reset",
-          `Hello ${firstName},\n\nYour account password was reset by an administrator.\n\nTemporary password: ${password}\n\nPlease sign in and change this password immediately from your profile settings.\n\nIf you did not expect this change, please contact support.\n\n— RiyaGuru Team`
+          `Hello ${firstName},\n\nYour account password was reset by Admin.\n\nTemporary password: ${password}\n\nPlease sign in and change this password immediately from your profile settings.\n\nIf you did not expect this change, please contact support.\n\n— RiyaGuru Team`
         );
       } catch (e) {
         console.warn("Failed to send password reset email:", e?.message);
