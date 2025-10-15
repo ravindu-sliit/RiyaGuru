@@ -2,6 +2,21 @@ import Payment from "../models/Payment.js";
 import { processCardPayment } from "../utils/gateway.js";
 import { paymentSchema } from "../validators/paymentValidation.js";
 
+// Sanitize payment object before sending to clients
+const sanitizePayment = (p) => {
+  if (!p) return p;
+  const obj = typeof p.toObject === "function" ? p.toObject() : JSON.parse(JSON.stringify(p));
+  if (obj.cardDetails) {
+    const raw = String(obj.cardDetails.cardNumber || "").replace(/\D/g, "");
+    const last4 = raw.slice(-4);
+    obj.cardDetails = {
+      cardNumber: last4,
+      cardHolder: obj.cardDetails.cardHolder || undefined,
+    };
+  }
+  return obj;
+};
+
 // POST /api/payments/upload-slip
 export const uploadSlip = async (req, res) => {
   try {
@@ -35,7 +50,8 @@ export const getAllPayments = async (req, res) => {
     if (courseName) filter.courseName = { $regex: courseName, $options: "i" };
 
     const payments = await Payment.find(filter).sort({ createdAt: -1 });
-    return res.status(200).json({ payments });
+    const safe = payments.map(sanitizePayment);
+    return res.status(200).json({ payments: safe });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error" });
@@ -82,7 +98,7 @@ export const addPayment = async (req, res) => {
     }
 
     const payment = await Payment.create(paymentData);
-    return res.status(201).json({ payment });
+    return res.status(201).json({ payment: sanitizePayment(payment) });
   } catch (err) {
     console.error(" Error in addPayment:", err);
     return res.status(500).json({ message: "Unable to add payment" });
@@ -94,7 +110,7 @@ export const getPaymentById = async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id);
     if (!payment) return res.status(404).json({ message: "Payment not found" });
-    return res.status(200).json({ payment });
+    return res.status(200).json({ payment: sanitizePayment(payment) });
   } catch (err) {
     console.error(err);
     return res.status(400).json({ message: "Invalid ID" });
@@ -150,7 +166,7 @@ export const updatePayment = async (req, res) => {
 
     if (!payment)
       return res.status(404).json({ message: "Unable to update payment" });
-    return res.status(200).json({ payment });
+    return res.status(200).json({ payment: sanitizePayment(payment) });
   } catch (err) {
     console.error(" Error in updatePayment:", err);
     return res.status(400).json({ message: "Invalid data or ID" });
@@ -163,7 +179,7 @@ export const deletePayment = async (req, res) => {
     const payment = await Payment.findByIdAndDelete(req.params.id);
     if (!payment)
       return res.status(404).json({ message: "Unable to delete payment" });
-    return res.status(200).json({ payment });
+    return res.status(200).json({ payment: sanitizePayment(payment) });
   } catch (err) {
     console.error(err);
     return res.status(400).json({ message: "Invalid ID" });
