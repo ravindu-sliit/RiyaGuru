@@ -564,6 +564,12 @@ export const ReviewModal = ({ payment, onClose, onApprove, onReject, comment, se
     return `${origin}${p.startsWith("/") ? p : `/${p}`}`;
   };
   const isPDF = payment?.slipURL ? /\.pdf(\?|#|$)/i.test(payment.slipURL) : false;
+  const maskCardNumber = (num) => {
+    const raw = String(num || "").replace(/\D/g, "");
+    if (!raw) return "xxxx";
+    const last = raw.slice(-4);
+    return `xxxxxx${last}`;
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -616,10 +622,8 @@ export const ReviewModal = ({ payment, onClose, onApprove, onReject, comment, se
             ) : isCard && payment.cardDetails ? (
               <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-sm text-blue-900">
                 <div className="font-medium mb-1">Card Details</div>
-                <div>Card Number: {payment.cardDetails.cardNumber}</div>
+                <div>Card Number: {maskCardNumber(payment.cardDetails.cardNumber)}</div>
                 <div>Card Holder: {payment.cardDetails.cardHolder}</div>
-                <div>Expiry: {payment.cardDetails.expiryDate}</div>
-                <div>CVV: {payment.cardDetails.cvv}</div>
               </div>
             ) : (
               <div className="text-sm text-gray-500">No additional attachments</div>

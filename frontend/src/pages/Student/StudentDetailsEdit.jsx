@@ -276,17 +276,20 @@ export default function StudentDetailsEdit() {
   if (loading) return <div className="sde-loading">Loading…</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 student-surface">
+    <>
       {/* Hero — match Progress/My Enrollments */}
-      <div className="px-6 pt-6">
-        <ProgressHero
-          title="Profile Settings"
-          subtitle="Update your profile."
-          icon={<UserIcon className="w-8 h-8 text-white" />}
-        />
+      <div className="mb-6">
+        {/* Constrain hero width to match content card width */}
+        <div style={{ maxWidth: 880, margin: "0 auto" }}>
+          <ProgressHero
+            title="Profile Settings"
+            subtitle="Update your profile."
+            icon={<UserIcon className="w-8 h-8 text-white" />}
+          />
+        </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto">
         <div className="sde">
       <div className="sde-messages">
         {err && (
@@ -481,6 +484,6 @@ export default function StudentDetailsEdit() {
       )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
