@@ -88,10 +88,12 @@ const EditInstallmentPlanModal = ({
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+    try {
+      return new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(amount);
+    } catch {
+      const n = Number(amount || 0);
+      return `LKR ${n.toFixed(2)}`;
+    }
   };
 
   return (
@@ -469,10 +471,12 @@ const MyInstallmentPlans = () => {
 
   // Format helpers
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+    try {
+      return new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(amount);
+    } catch {
+      const n = Number(amount || 0);
+      return `LKR ${n.toFixed(2)}`;
+    }
   };
 
   const formatDate = (dateString) => {

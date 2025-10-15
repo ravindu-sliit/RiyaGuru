@@ -4,6 +4,7 @@ import { StudentCourseAPI } from "../../api/studentCourseApi";
 import { AlertCircle, BookOpen, Loader2, ArrowRight } from "lucide-react";
 import ProgressHero from "../../components/ProgressHero";
 import { CourseAPI } from "../../api/courseApi";
+import "../../styles/student-dashboard.css";
 
 const MyEnrollments = () => {
   const navigate = useNavigate();
@@ -90,6 +91,12 @@ const MyEnrollments = () => {
     );
   }
 
+  // Filter out the Van course from display (UI-only, no backend changes)
+  const visibleCourses = courses.filter((c) => {
+    const name = String(c?.course_name || c?.course_id || "").trim().toLowerCase();
+    return name !== "van";
+  });
+
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -118,7 +125,7 @@ const MyEnrollments = () => {
         />
       </div>
 
-      {courses.length === 0 ? (
+      {visibleCourses.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100 hover:shadow-md transition-shadow">
           <div className="bg-blue-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
             <BookOpen className="w-12 h-12 text-blue-500" />
@@ -130,15 +137,18 @@ const MyEnrollments = () => {
           </button>
         </div>
       ) : (
-        <div className="px-6 py-8 grid md:grid-cols-2 gap-5">
-          {courses.map((c, idx) => (
-            <div key={c._id || idx} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200">
+        <div className="px-6 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {visibleCourses.map((c, idx) => (
+            <div
+              key={c._id || idx}
+              className="card p-4 transition-all duration-200 hover:shadow-md"
+            >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-base md:text-lg mb-0.5" style={{ color: "#0A1A2F" }}>
+                  <h4 className="font-semibold text-sm md:text-base mb-0.5" style={{ color: "#0A1A2F" }}>
                     {c.course_name || c.course_id || `Course #${idx + 1}`}
                   </h4>
                   <div className="text-xs md:text-sm text-gray-600">Course ID: {c.course_id || "N/A"}</div>
@@ -158,17 +168,15 @@ const MyEnrollments = () => {
                   <div className="mb-3 min-h-[56px] flex flex-col justify-end">
                     {price != null ? (
                       <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
-                        <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Price</span>
-                        <div className="text-lg font-semibold text-slate-900">
-                          {new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" })
-                            .format(price)
-                            .replace("LKR", "Rs.")}
+                        <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Price</span>
+                        <div className="text-base font-semibold text-slate-900">
+                          {new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(price)}
                         </div>
                       </div>
                     ) : (
                       <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-lg p-3 shadow-sm">
-                        <span className="text-[11px] font-medium text-gray-600 uppercase tracking-wider">Price</span>
-                        <div className="text-lg font-semibold text-gray-600">Rs.</div>
+                        <span className="text-[10px] font-medium text-gray-600 uppercase tracking-wider">Price</span>
+                        <div className="text-base font-semibold text-gray-600">LKR</div>
                       </div>
                     )}
                   </div>
@@ -177,7 +185,7 @@ const MyEnrollments = () => {
 
               <div className="flex justify-between items-center">
                 <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200 px-3 py-1.5 shadow-sm">
-                  <span className="text-[11px] font-medium text-blue-700 uppercase tracking-wider">Status</span>
+                  <span className="text-[10px] font-medium text-blue-700 uppercase tracking-wider">Status</span>
                   <div className="text-xs font-semibold text-blue-700">{c.status || "Active"}</div>
                 </div>
                 <button
@@ -192,10 +200,10 @@ const MyEnrollments = () => {
                     }).toString();
                     navigate(`/enrollments/${encodeURIComponent(c.course_id)}?${qs}`);
                   }}
-                  className="group bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm font-medium py-2 px-4 rounded-md transition-all duration-200 flex items-center gap-1.5 shadow-sm hover:shadow-md"
+                  className="text-xs font-semibold py-1.5 px-3 rounded-md transition-colors duration-200 flex items-center gap-1.5 bg-orange-100 text-orange-700 border border-orange-200 hover:bg-orange-200"
                 >
                   View Details
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
