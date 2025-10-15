@@ -89,7 +89,7 @@ export const getAllPreferences = async (req, res) => {
 export const getPreferenceByStudentId = async (req, res) => {
   try {
     const preference = await Preference.findOne({ studentId: req.params.studentId });
-    if (!preference) return res.status(404).json({ message: "Preference not found" });
+    if (!preference) return res.status(404).json({ message: "Student preference not found. Set preference first." });
     res.status(200).json({ preference });
   } catch (err) {
     console.error(err);

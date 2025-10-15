@@ -147,7 +147,7 @@ export default function StudentLayout() {
             <BookOpen className="w-4 h-4 text-white" />
           </div>
           <span className="text-gray-800">
-            Riya<span className="text-indigo-600">Guru.lk</span>
+            Riya<span className="text-orange-600">Guru.lk</span>
           </span>
         </div>
 
@@ -197,12 +197,13 @@ export default function StudentLayout() {
             >
               {/* Avatar — force transparent background */}
               <img
-                src={avatar || "https://via.placeholder.com/40x40.png?text=%F0%9F%91%A4"}
+                src={avatar || `${process.env.PUBLIC_URL || ""}/user.png`}
                 alt="Profile"
                 className="w-9 h-9 rounded-full object-cover bg-transparent"
                 style={{ background: "transparent", border: "none", boxShadow: "none" }}
                 loading="lazy"
                 decoding="async"
+                onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/40x40.png?text=User"; }}
               />
               {/* One line, same weight */}
               <span className="text-sm font-medium text-gray-800">
@@ -222,12 +223,13 @@ export default function StudentLayout() {
                 {/* Top user panel */}
                 <div className="flex items-center gap-3 px-4 py-3 bg-transparent">
                   <img
-                    src={avatar || "https://via.placeholder.com/48x48.png?text=%F0%9F%91%A4"}
+                    src={avatar || `${process.env.PUBLIC_URL || ""}/user.png`}
                     alt="Profile"
                     className="w-12 h-12 rounded-full object-cover border border-gray-200 bg-transparent"
                     style={{ background: "transparent" }}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/48x48.png?text=User"; }}
                   />
                   <div className="min-w-0">
                     <div className="font-semibold text-gray-800 truncate">

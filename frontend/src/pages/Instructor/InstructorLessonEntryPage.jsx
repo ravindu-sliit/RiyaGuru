@@ -37,6 +37,7 @@ export default function InstructorLessonEntryPage() {
     lessonsCompleted: 0,
     pendingEntries: 0,
   });
+  const [selectedCompletedCount, setSelectedCompletedCount] = useState(0);
 
   // Load students
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function InstructorLessonEntryPage() {
     if (!form.student_id) {
       setCourses([]);
       setForm((f) => ({ ...f, student_course_id: "", vehicle_type: "" }));
+      setSelectedCompletedCount(0);
       return;
     }
     async function loadCourses() {
@@ -115,7 +117,11 @@ export default function InstructorLessonEntryPage() {
   useEffect(() => {
     async function loadExistingLessons() {
       setExistingLessonNumbers([]);
-      if (!form.student_id || !form.vehicle_type) return;
+      if (!form.student_id || !form.vehicle_type) {
+        setSelectedCompletedCount(0);
+        setStats((prev) => ({ ...prev, lessonsCompleted: 0 }));
+        return;
+      }
       try {
         // vehicle_type holds the course_name
         const data = await lessonProgressService.getLessonsByStudentAndCourse(form.student_id, form.vehicle_type);
@@ -123,9 +129,14 @@ export default function InstructorLessonEntryPage() {
         const lessons = Array.isArray(data) ? data : (data?.lessons || data || []);
         const nums = lessons.map((l) => Number(l.lesson_number)).filter((n) => !Number.isNaN(n));
         setExistingLessonNumbers(nums);
+        const completedCount = lessons.filter((l) => String(l.status).toLowerCase() === "completed").length;
+        setSelectedCompletedCount(completedCount);
+        setStats((prev) => ({ ...prev, lessonsCompleted: completedCount }));
       } catch (err) {
         console.error("Failed to load existing lessons for uniqueness check", err);
         setExistingLessonNumbers([]);
+        setSelectedCompletedCount(0);
+        setStats((prev) => ({ ...prev, lessonsCompleted: 0 }));
       }
     }
 
@@ -171,8 +182,11 @@ export default function InstructorLessonEntryPage() {
     toast.success("Lesson saved and progress updated!");
     setStats((prev) => ({
       ...prev,
-      lessonsCompleted: prev.lessonsCompleted + 1,
+      lessonsCompleted: prev.lessonsCompleted + (form.status === "Completed" ? 1 : 0),
     }));
+    if (form.status === "Completed") {
+      setSelectedCompletedCount((c) => c + 1);
+    }
   } catch (err) {
     const serverMsg = err?.message || "Failed to save";
     // If server indicates a duplicate lesson, show it inline on lesson_number
@@ -309,6 +323,11 @@ async function validateLessonNumberUnique() {
                 </option>
               ))}
             </select>
+            {form.student_id && form.vehicle_type && (
+              <div className="text-sm text-gray-700 mt-1">
+                Completed lessons for this course: <span className="font-semibold">{selectedCompletedCount}</span>
+              </div>
+            )}
 
             {/* Lesson number */}
             <input
