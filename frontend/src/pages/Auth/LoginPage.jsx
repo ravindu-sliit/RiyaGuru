@@ -123,7 +123,7 @@ export default function LoginPage() {
               className="forgot"
               onClick={() => navigate("/forgot-password")}
             >
-              Forgot Code?
+              
             </button>
           </div>
           <input

@@ -279,11 +279,14 @@ export default function StudentDetailsEdit() {
     <div className="min-h-screen bg-gray-50 student-surface">
       {/* Hero — match Progress/My Enrollments */}
       <div className="px-6 pt-6">
-        <ProgressHero
-          title="Profile Settings"
-          subtitle="Update your profile."
-          icon={<UserIcon className="w-8 h-8 text-white" />}
-        />
+        {/* Constrain hero width to match content card width */}
+        <div style={{ maxWidth: 880, margin: "0 auto", padding: "0 18px" }}>
+          <ProgressHero
+            title="Profile Settings"
+            subtitle="Update your profile."
+            icon={<UserIcon className="w-8 h-8 text-white" />}
+          />
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">

@@ -122,12 +122,12 @@ export default function StudentDashboard() {
                 >
                   Edit Profile
                 </button>
-               {/* <button
+                <button
                   className="btn btn-soft"
                   onClick={() => navigate(`/student/${id}/password`)}
                 >
                   Change Password
-                </button>  */}
+                </button>
               </div>
             </section>
           </main>
