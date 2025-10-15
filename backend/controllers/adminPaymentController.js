@@ -73,9 +73,25 @@ export const rejectPayment = async (req, res) => {
         `Course: ${payment.courseName}`,
         `Amount: ${payment.amount}`,
         adminComment ? `Reason: ${adminComment}` : null,
-        `Please re-submit the payment with corrections.`,
-      ].filter(Boolean);
-      try { await sendEmail(payment.studentEmail, subject, lines.join("\n")); } catch {}
+      ];
+      // Method-specific guidance (no model changes)
+      if (payment.paymentMethod === "Card") {
+        lines.push(
+          `If your card was charged, a refund will be initiated by the office. Please allow 5-7 business days.`,
+          `If you don't see the refund in that time, contact the office with this payment reference.`
+        );
+      } else if (payment.paymentMethod === "Bank") {
+        lines.push(
+          `If you already transferred funds, please visit or contact the office to arrange a refund using your slip reference.`,
+          `If no funds were received, you may re-submit with a valid slip.`
+        );
+      } else if (payment.paymentMethod === "Cash") {
+        lines.push(
+          `Please visit the office regarding any refund or to settle corrections.`
+        );
+      }
+      lines.push(`Please re-submit the payment with corrections.`);
+      try { await sendEmail(payment.studentEmail, subject, lines.filter(Boolean).join("\n")); } catch {}
     }
 
     return res.status(200).json({ payment });
