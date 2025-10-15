@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+
 import {
   CreditCard,
   Building,
@@ -6,7 +7,9 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
+  Upload,
 } from "lucide-react";
+
 import { PaymentAPI } from "../../api/paymentApi";
 import { useNavigate } from "react-router-dom";
 import { StudentAPI } from "../../api/studentApi";
@@ -39,6 +42,8 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
   const [studentNameResolved, setStudentNameResolved] = useState("");
   const [serverError, setServerError] = useState("");
   const [successInfo, setSuccessInfo] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef(null);
 
   const validationRules = {
     cardNumber: /^[0-9]{16}$/,
@@ -227,6 +232,28 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
     }
 
     return null;
+  };
+
+  // Drag & drop handlers (UI only, reusing handleFileChange)
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    const file = e.dataTransfer?.files?.[0];
+    if (file) {
+      // Reuse existing handler by crafting a compatible event shape
+      handleFileChange({ target: { files: [file] } });
+    }
   };
 
   const handleInputChange = (e) => {
@@ -919,12 +946,30 @@ const NormalPayment = ({ totalAmount, courseName, courseId, studentId, onSwitchT
             <div className="text-sm text-gray-600">
               Please upload a clear bank slip. Max size 20MB. Accepted formats: JPG, PNG, or PDF.
             </div>
+            {/* Modern upload dropzone */}
             <input
+              ref={fileInputRef}
               type="file"
               accept=".jpg,.jpeg,.png,.pdf"
               onChange={handleFileChange}
-              className="w-full"
+              className="hidden"
             />
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`flex flex-col items-center justify-center text-center w-full rounded-2xl border-2 border-dashed transition-colors cursor-pointer select-none p-6 sm:p-8 ${
+                dragActive ? "border-orange-400 bg-orange-50" : "border-gray-300 bg-gray-50"
+              }`}
+            >
+              <Upload className={`mb-3 ${dragActive ? "text-orange-500" : "text-slate-400"}`} size={34} strokeWidth={1.8} />
+              <div className="text-sm">
+                <span className="font-semibold text-orange-600">Click to upload</span>
+                <span className="text-gray-500"> or drag and drop</span>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">PNG, JPG or PDF up to 20MB</div>
+            </div>
             {uploading && (
               <div className="w-full">
                 <p className="text-sm text-gray-500 flex items-center gap-2 mb-1">

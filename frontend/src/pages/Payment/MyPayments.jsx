@@ -147,10 +147,12 @@ const MyPayments = () => {
 
   // Format currency
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+    try {
+      return new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(amount);
+    } catch {
+      const n = Number(amount || 0);
+      return `LKR ${n.toFixed(2)}`;
+    }
   };
 
   // Format date
@@ -282,7 +284,7 @@ const MyPayments = () => {
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-52 min-w-[13rem]">
                       Actions
                     </th>
                   </tr>
@@ -323,32 +325,34 @@ const MyPayments = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(payment.createdAt)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex justify-end items-center gap-2 flex-wrap min-w-[13rem]">
                         {payment.status === "Pending" && (
                           <button
                             onClick={() => handleDelete(payment._id)}
                             disabled={deletingId === payment._id}
-                            className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+                            className="inline-flex items-center gap-1.5 border border-red-300 bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-60 disabled:cursor-not-allowed text-xs font-semibold py-1.5 px-2.5 rounded-md transition-colors"
                             title="Delete pending payment"
                           >
                             {deletingId === payment._id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             ) : (
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                             )}
-                            <span className="text-sm font-medium">Delete</span>
+                            Delete
                           </button>
                         )}
                         {payment.status === "Approved" && (
                           <button
                             onClick={() => handleDownloadReceipt(payment._id)}
-                            className="inline-flex items-center gap-2 ml-3 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-2 px-3 rounded-lg shadow-sm hover:shadow transition-all"
+                            className="inline-flex items-center gap-1.5 border border-orange-300 bg-orange-100 text-orange-700 hover:bg-orange-200 text-xs font-semibold py-1.5 px-2.5 rounded-md transition-colors"
                             title="Download receipt"
                           >
-                            <Download className="w-4 h-4" />
-                            <span>Download Receipt</span>
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Receipt</span>
                           </button>
                         )}
+                        </div>
                       </td>
                     </tr>
                   ))}

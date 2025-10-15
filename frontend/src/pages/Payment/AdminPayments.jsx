@@ -43,6 +43,16 @@ const AdminPayments = () => {
     }
   };
 
+  // Mask card number to show only first 2 and last 4 digits (dots, no dash)
+  const maskCardNumber = (num) => {
+    const raw = String(num || "").replace(/\D/g, "");
+    if (!raw) return "••••";
+    const first = raw.slice(0, 2);
+    const last = raw.slice(-4);
+    const hiddenLen = Math.max(0, raw.length - 6);
+    return `${first}${"•".repeat(hiddenLen)}${last}`;
+  };
+
   useEffect(() => {
     fetchPayments();
   }, []);
@@ -156,21 +166,20 @@ const AdminPayments = () => {
   });
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+    try {
+      return new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(amount);
+    } catch {
+      return `LKR ${Number(amount || 0).toFixed(2)}`;
+    }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const formatDateParts = (dateString) => {
+    if (!dateString) return null;
+    const d = new Date(dateString);
+    return {
+      date: d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }),
+      time: d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
+    };
   };
 
   const getStatusBadge = (status) => {
@@ -335,10 +344,10 @@ const AdminPayments = () => {
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-44 min-w-[11rem]">
                       Date
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-56 min-w-[14rem]">
                       Actions
                     </th>
                   </tr>
@@ -375,42 +384,63 @@ const AdminPayments = () => {
                         <td className="px-6 py-4">
                           {getStatusBadge(payment.status)}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
-                          {formatDate(payment.createdAt)}
-                          {payment.paidDate && (
-                            <div className="text-xs mt-1">
-                              Paid: {formatDate(payment.paidDate)}
-                            </div>
-                          )}
+                        <td className="px-6 py-4 align-top">
+                          {(() => {
+                            const created = formatDateParts(payment.createdAt);
+                            const paid = payment.paidDate ? formatDateParts(payment.paidDate) : null;
+                            return (
+                              <div className="space-y-1.5 min-w-[10rem]">
+                                {created ? (
+                                  <div>
+                                    <div className="text-sm font-semibold text-slate-800">{created.date}</div>
+                                    <div className="inline-flex items-center text-xs text-slate-600 bg-slate-100 rounded-full px-2 py-0.5 mt-0.5">{created.time}</div>
+                                  </div>
+                                ) : (
+                                  <div className="text-sm text-gray-500">N/A</div>
+                                )}
+                                {paid && (
+                                  <div className="text-xs text-emerald-700">
+                                    <span className="inline-flex items-center bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full px-2 py-0.5 mr-1">Paid</span>
+                                    <span>{paid.date}</span>
+                                    <span className="ml-1 text-emerald-800">{paid.time}</span>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
                         </td>
                         <td className="px-6 py-4">
                           {payment.status === "Pending" ? (
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => openReview(payment)}
-                                className="flex items-center gap-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors"
-                              >
-                                Review
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleStatusUpdate(
-                                    payment._id,
-                                    "Approved",
-                                    ""
-                                  )
-                                }
-                                disabled={savingId === payment._id}
-                                className="flex items-center gap-2 px-3 py-2 bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white text-sm rounded-lg transition-colors"
-                              >
-                                {savingId === payment._id ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <CheckCircle className="w-4 h-4" />
-                                )}
-                                Approve
-                              </button>
-                              <div className="flex items-center gap-2">
+                            <div className="flex flex-col gap-2 min-w-[14rem]">
+                              {/* Row 1: Review + Approve */}
+                              <div className="flex flex-wrap items-center gap-2">
+                                <button
+                                  onClick={() => openReview(payment)}
+                                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-md border border-blue-200 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
+                                >
+                                  Review
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleStatusUpdate(
+                                      payment._id,
+                                      "Approved",
+                                      ""
+                                    )
+                                  }
+                                  disabled={savingId === payment._id}
+                                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-md border border-green-200 bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-60 transition-colors"
+                                >
+                                  {savingId === payment._id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <CheckCircle className="w-4 h-4" />
+                                  )}
+                                  Approve
+                                </button>
+                              </div>
+                              {/* Row 2: Reason input + Reject icon button */}
+                              <div className="flex items-center gap-2 flex-1 min-w-[12rem]">
                                 <input
                                   type="text"
                                   placeholder="Reason for rejection..."
@@ -430,7 +460,7 @@ const AdminPayments = () => {
                                       );
                                     }
                                   }}
-                                  className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-red-500"
+                                  className="flex-1 w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-red-500"
                                   disabled={savingId === payment._id}
                                 />
                                 <button
@@ -442,7 +472,7 @@ const AdminPayments = () => {
                                     )
                                   }
                                   disabled={savingId === payment._id}
-                                  className="p-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white rounded-lg transition-colors"
+                                  className="p-2 border border-red-200 bg-red-100 hover:bg-red-200 disabled:opacity-60 text-red-700 rounded-md transition-colors"
                                   title="Reject with comment"
                                 >
                                   <XCircle className="w-4 h-4" />
@@ -458,40 +488,16 @@ const AdminPayments = () => {
                       </tr>
 
                       {/* Card Details Row (Admin Only) */}
-                      {payment.cardDetails && (
+                      {false && payment.cardDetails && (
                         <tr className="bg-blue-50 border-t">
                           <td colSpan="7" className="px-6 py-3">
                             <div className="text-xs text-blue-800 font-medium mb-1">
-                              🔒 Card Details (Admin View Only)
+                              🔒 Card Details (Masked)
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-                              <div>
-                                <span className="font-medium">
-                                  Card Number:
-                                </span>{" "}
-                                {payment.cardDetails.cardNumber}
-                              </div>
-                              <div>
-                                <span className="font-medium">
-                                  Card Holder:
-                                </span>{" "}
-                                {payment.cardDetails.cardHolder}
-                              </div>
-                              <div>
-                                <span className="font-medium">Expiry:</span>{" "}
-                                {payment.cardDetails.expiryDate}
-                              </div>
-                              <div>
-                                <span className="font-medium">CVV:</span>{" "}
-                                {payment.cardDetails.cvv}
-                              </div>
+                            <div className="text-xs">
+                              <span className="font-medium">Card Number:</span>{" "}
+                              {maskCardNumber(payment.cardDetails.cardNumber)}
                             </div>
-                            {payment.adminComment && (
-                              <div className="mt-2 p-2 bg-yellow-100 rounded text-xs text-yellow-800">
-                                <span className="font-medium">Admin Note:</span>{" "}
-                                {payment.adminComment}
-                              </div>
-                            )}
                           </td>
                         </tr>
                       )}

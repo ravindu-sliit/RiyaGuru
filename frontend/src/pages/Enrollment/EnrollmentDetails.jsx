@@ -133,9 +133,7 @@ const EnrollmentDetails = () => {
 
   const toCurrency = (amount) => {
     const a = parseFloat(String(amount)) || 0;
-    return new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" })
-      .format(a)
-      .replace("LKR", "Rs.");
+    return new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(a);
   };
 
   if (loading) {
