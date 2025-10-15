@@ -319,8 +319,15 @@ const MyPayments = () => {
                           <span>{payment.paymentMethod}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(payment.status)}
+                      <td className="px-6 py-4 whitespace-nowrap align-top">
+                        <div>
+                          {getStatusBadge(payment.status)}
+                          {payment.status === "Rejected" && payment.adminComment && (
+                            <div className="mt-1 text-xs text-red-700 break-words max-w-[18rem]">
+                              <span className="font-medium">Reason:</span> {payment.adminComment}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(payment.createdAt)}
