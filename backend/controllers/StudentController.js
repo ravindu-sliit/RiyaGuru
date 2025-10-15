@@ -326,5 +326,3 @@ export const getMe = async (req, res) => {
 
 
 
-
-//password eka change krma mail ekak yna eka
