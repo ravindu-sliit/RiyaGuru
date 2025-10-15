@@ -142,13 +142,12 @@ export default function StudentLayout() {
         }}
       >
         {/* Branding (match header height) */}
-        <div className="h-16 px-6 flex items-center font-bold text-lg gap-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-lg flex items-center justify-center">
-            <BookOpen className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-gray-800">
-            Riya<span className="text-orange-600">Guru.lk</span>
-          </span>
+        <div className="h-16 px-6 pt-4 flex items-center">
+          <img 
+            src="/logo.png" 
+            alt="RiyaGuru.lk" 
+            className="w-44 h-auto"
+          />
         </div>
 
         {/* Navigation */}
