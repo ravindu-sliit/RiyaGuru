@@ -28,8 +28,8 @@ body{ background:var(--rg-gray-50); color:#0E223A; font-family:var(--rg-font); }
 
 /* Root container */
 .sde{
-  max-width:900px;
-  margin: 24px auto;
+  max-width:880px;
+  margin: 5px auto;
   padding: 0 16px 32px;
 }
 

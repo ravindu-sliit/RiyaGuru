@@ -154,7 +154,7 @@ export default function StudentPasswordChange() {
             <button type="submit" className="btn btn-navy">
               Change Password
             </button>
-            <Link to={`/student`} className="btn btn-outline">
+            <Link to={`/student/${id}/dashboard`} className="btn btn-outline">
               Cancel
             </Link>
           </div>
