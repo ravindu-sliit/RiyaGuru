@@ -101,7 +101,7 @@ export default function StudentProgressPage() {
         )
       : 0;
 
-  // Helper: toggle expansion for a course card (fetch completed lessons when opening)
+  // Helper: toggle expansion for a course card (fetch completed lessons when opening). Multiple cards can be open.
   async function handleToggleExpand(course) {
     const name = course.course_name;
     const existing = expandedCourses[name];
@@ -239,7 +239,8 @@ export default function StudentProgressPage() {
             No active courses found.
           </div>
         ) : (
-          courses.map((c) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
+          {courses.map((c) => {
             const pct = Number(c?.progress_percent || 0);
 
             // Build certificate file path if issued
@@ -256,7 +257,7 @@ export default function StudentProgressPage() {
             return (
               <div
                 key={c.course_name}
-                className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 mb-3 hover:shadow-xl transition"
+                className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 mb-3 hover:shadow-xl transition self-start"
               >
                 {/* Header */}
                 <div className="flex justify-between items-center mb-2">
@@ -306,52 +307,46 @@ export default function StudentProgressPage() {
                     </div>
                   </div>
                 </div>
-                {/* Expanded area: show completed lessons inline when the card is expanded (animated) */}
-                {
-                  (() => {
-                    const key = c.course_name;
-                    const state = expandedCourses[key] || { open: false, loading: false, lessons: [] };
-                    const isOpen = !!state.open;
-                    return (
-                      <div
-                        className={`mt-4 border-t pt-4 overflow-hidden transition-[max-height] duration-300 ease-in-out ${
-                          isOpen ? "max-h-96" : "max-h-0"
-                        }`}
-                        aria-hidden={!isOpen}
-                      >
-                        {state.loading ? (
-                          <p className="text-sm text-gray-500">Loading completed lessons...</p>
-                        ) : state.error ? (
-                          <p className="text-sm text-red-600">Error: {state.error}</p>
-                        ) : state.lessons.length === 0 ? (
-                          <p className="text-sm text-gray-500">No completed lessons found for this course.</p>
-                        ) : (
-                          <div className="space-y-2">
-                            {/* Header row */}
-                            <div className="hidden md:grid grid-cols-12 gap-3 text-xs text-gray-500 px-3 py-2 border-b">
-                              <div className="col-span-1 font-medium">#</div>
-                              <div className="col-span-3">Date</div>
-                              <div className="col-span-3">Instructor</div>
-                              <div className="col-span-5">Feedback</div>
-                            </div>
-
-                            {/* Rows */}
-                            {state.lessons
-                              .sort((a, b) => a.lesson_number - b.lesson_number)
-                              .map((l) => (
-                                <div key={l._id} className="grid grid-cols-12 gap-3 items-center px-3 py-2 bg-gray-50 border rounded-lg">
-                                  <div className="col-span-1 font-semibold">{l.lesson_number}</div>
-                                  <div className="col-span-3 text-xs text-gray-600">{new Date(l.date).toLocaleString()}</div>
-                                  <div className="col-span-3 text-xs text-gray-800">{(instructorCache[l.instructor_id] && instructorCache[l.instructor_id].name) || l.instructor_id}</div>
-                                  <div className="col-span-5 text-xs text-gray-700 truncate">{l.feedback || "No feedback"}</div>
-                                </div>
-                              ))}
+                {/* Expanded area: render only when open to avoid other cards visually changing */}
+                {(() => {
+                  const key = c.course_name;
+                  const state = expandedCourses[key] || { open: false, loading: false, lessons: [] };
+                  const isOpen = !!state.open;
+                  if (!isOpen) return null;
+                  return (
+                    <div className="mt-3 border-t pt-3">
+                      {state.loading ? (
+                        <p className="text-sm text-gray-500">Loading completed lessons...</p>
+                      ) : state.error ? (
+                        <p className="text-sm text-red-600">Error: {state.error}</p>
+                      ) : state.lessons.length === 0 ? (
+                        <p className="text-sm text-gray-500">No completed lessons found for this course.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {/* Header row */}
+                          <div className="hidden md:grid grid-cols-12 gap-3 text-xs text-gray-500 px-3 py-2 border-b">
+                            <div className="col-span-1 font-medium">#</div>
+                            <div className="col-span-3">Date</div>
+                            <div className="col-span-3">Instructor</div>
+                            <div className="col-span-5">Feedback</div>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })()
-                }
+
+                          {/* Rows */}
+                          {state.lessons
+                            .sort((a, b) => a.lesson_number - b.lesson_number)
+                            .map((l) => (
+                              <div key={l._id} className="grid grid-cols-12 gap-3 items-center px-3 py-2 bg-gray-50 border rounded-lg">
+                                <div className="col-span-1 font-semibold">{l.lesson_number}</div>
+                                <div className="col-span-3 text-xs text-gray-600">{new Date(l.date).toLocaleString()}</div>
+                                <div className="col-span-3 text-xs text-gray-800">{(instructorCache[l.instructor_id] && instructorCache[l.instructor_id].name) || l.instructor_id}</div>
+                                <div className="col-span-5 text-xs text-gray-700 truncate">{l.feedback || "No feedback"}</div>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* Last Lesson (hidden when the card is expanded) */}
                 {!expandedCourses[c.course_name]?.open && (
@@ -451,7 +446,8 @@ export default function StudentProgressPage() {
                 </div>
               </div>
             );
-          })
+          })}
+          </div>
         )}
       </div>
     </div>
