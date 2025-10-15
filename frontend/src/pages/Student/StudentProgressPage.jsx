@@ -161,7 +161,32 @@ export default function StudentProgressPage() {
                   });
                   const json = await res.json();
                   if (!res.ok) throw new Error(json.message || "Failed to generate report");
-                  toast.success("Report generated and emailed to your address");
+                  toast.success("Report generated. Check your email, or download now.");
+                  if (json.fileUrl) {
+                    // Try to force download via blob to avoid browser preview; fallback to open in new tab
+                    const filename = (json.fileUrl.split("/").pop() || "student_progress_report.pdf").split("?")[0];
+                    try {
+                      const fileRes = await fetch(json.fileUrl, { method: "GET" });
+                      const blob = await fileRes.blob();
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = filename || "student_progress_report.pdf";
+                      document.body.appendChild(a);
+                      a.click();
+                      a.remove();
+                      URL.revokeObjectURL(url);
+                    } catch (e) {
+                      // Fallback: open in new tab
+                      const a = document.createElement("a");
+                      a.href = json.fileUrl;
+                      a.target = "_blank";
+                      a.rel = "noreferrer";
+                      document.body.appendChild(a);
+                      a.click();
+                      a.remove();
+                    }
+                  }
                   if (json.previewUrl) {
                     // open Ethereal preview in a new tab for developer debugging
                     toast.info("Preview available (dev): opening in new tab");
