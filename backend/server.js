@@ -1,5 +1,4 @@
-
-import 'dotenv/config';
+import "dotenv/config";
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -31,13 +30,11 @@ import docRoutes from "./route/DocRoute.js";
 
 import adminPaymentRoutes from "./route/adminPaymentRoutes.js";
 import adminInstallmentRoutes from "./route/adminInstallmentRoutes.js";
-import adminRoutes from "./route/AdminRoutes.js"; 
+import adminRoutes from "./route/AdminRoutes.js";
 
-// -----------------------------
 // Routes (plural folder)
-// -----------------------------
 import inquiryRoutes from "./route/inquiryroutes.js";
-import maintenanceRoutes from "./route/maintenanceroutes.js"; // ✅ your maintenance routes (with PDF)
+import maintenanceRoutes from "./route/maintenanceroutes.js";
 import publicReportRoutes from "./route/reportroutes.js";
 import progressReportRoutes from "./route/progressReportRoutes.js";
 import studentReportRoutes from "./route/studentReportRoutes.js";
@@ -55,9 +52,11 @@ const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, "uploads");
 const studentDocsDir = path.join(uploadsDir, "studentDocs");
 const instructorDir = path.join(uploadsDir, "instructors");
+const vehicleDir = path.join(uploadsDir, "vehicles");
 
 fs.mkdirSync(studentDocsDir, { recursive: true });
 fs.mkdirSync(instructorDir, { recursive: true });
+fs.mkdirSync(vehicleDir, { recursive: true });
 
 // -----------------------------
 // Core middleware
@@ -66,9 +65,8 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
     credentials: true,
-    // ✅ allow frontend to read Content-Disposition header (needed for filename)
     exposedHeaders: ["Content-Disposition"],
   })
 );
@@ -77,10 +75,7 @@ app.use(
 // Serve static uploads
 // -----------------------------
 app.use("/uploads", express.static(uploadsDir));
-
 app.use("/uploads/receipts", express.static(path.join(uploadsDir, "receipts")));
-const vehicleDir = path.join(uploadsDir, "vehicles");
-fs.mkdirSync(vehicleDir, { recursive: true });
 
 // -----------------------------
 // Health route
@@ -93,7 +88,7 @@ app.get("/", (req, res) => {
 // API Routes
 // -----------------------------
 app.use("/api/inquiries", inquiryRoutes);
-app.use("/api/maintenance", maintenanceRoutes); // ✅ includes your new /pdf endpoint
+app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/reports", publicReportRoutes);
 app.use("/api/reports", studentReportRoutes);
 app.use("/api/progress-reports", progressReportRoutes);
@@ -114,12 +109,9 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/installments", installmentRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/certificates", certificateRoutes);
-
 
 app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/admin/installments", adminInstallmentRoutes);
-app.use("/api/students", studentRoutes);
 app.use("/api/admins", adminRoutes);
 
 // -----------------------------

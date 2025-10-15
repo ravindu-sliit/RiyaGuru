@@ -2,6 +2,7 @@ import Student from "../models/StudentModel.js";
 import Counter from "../models/Counter.js";
 import User from "../models/UserModel.js";
 import Preference from "../models/PreferenceModel.js";
+import { sendEmail } from "../services/emailService.js";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
@@ -27,7 +28,6 @@ function parseDuplicateKeyField(err) {
   if (kp.email === 1) return "email";
   if (kp.nic === 1) return "nic";
   if (kp.phone === 1) return "phone";
-  // fallback: inspect errmsg
   const msg = String(err?.errmsg || "").toLowerCase();
   if (msg.includes("email")) return "email";
   if (msg.includes("nic")) return "nic";
@@ -53,22 +53,42 @@ export const addStudent = async (req, res) => {
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       unlinkIfExists(req?.file?.filename);
-      return res.status(409).json({ message: "This email is already registered. Please use another email or sign in.", field: "email" });
+      return res
+        .status(409)
+        .json({
+          message: "This email is already registered. Please use another email or sign in.",
+          field: "email",
+        });
     }
     const existingStudentEmail = await Student.findOne({ email: normalizedEmail });
     if (existingStudentEmail) {
       unlinkIfExists(req?.file?.filename);
-      return res.status(409).json({ message: "This email is already registered. Please use another email or sign in.", field: "email" });
+      return res
+        .status(409)
+        .json({
+          message: "This email is already registered. Please use another email or sign in.",
+          field: "email",
+        });
     }
     const existingNic = await Student.findOne({ nic: normalizedNIC });
     if (existingNic) {
       unlinkIfExists(req?.file?.filename);
-      return res.status(409).json({ message: "This NIC is already registered. Please check and try again.", field: "nic" });
+      return res
+        .status(409)
+        .json({
+          message: "This NIC is already registered. Please check and try again.",
+          field: "nic",
+        });
     }
     const existingPhone = await Student.findOne({ phone: normalizedPhone });
     if (existingPhone) {
       unlinkIfExists(req?.file?.filename);
-      return res.status(409).json({ message: "This phone number is already registered. Please use another number.", field: "phone" });
+      return res
+        .status(409)
+        .json({
+          message: "This phone number is already registered. Please use another number.",
+          field: "phone",
+        });
     }
 
     const counter = await Counter.findOneAndUpdate(
@@ -150,14 +170,14 @@ export const getStudentById = async (req, res) => {
   try {
     const student = await Student.findOne({ studentId: req.params.id });
     if (!student) return res.status(404).json({ message: "Student not found" });
-    
+
     const profilePicUrl = student.profilePicPath
       ? `${req.protocol}://${req.get("host")}/uploads/studentProfPics/${student.profilePicPath}`
       : null;
-    
-    // Fetch student preferences (vehicle category and types)
+
+    // Also include preference summary to the frontend
     const preference = await Preference.findOne({ studentId: req.params.id });
-    
+
     const studentData = {
       ...student.toObject(),
       profilePicUrl,
@@ -165,7 +185,7 @@ export const getStudentById = async (req, res) => {
       vehicleType: preference?.vehicleType || null,
       schedulePref: preference?.schedulePref || null,
     };
-    
+
     res.status(200).json({ student: studentData });
   } catch (err) {
     console.error(err);
@@ -188,7 +208,7 @@ export const updateStudent = async (req, res) => {
     const nextNIC = nic ? String(nic).trim().toUpperCase() : current.nic;
     const nextPhone = phone ? String(phone).trim() : current.phone;
 
-    // uniqueness checks
+    // Uniqueness checks
     if (nextEmail !== current.email) {
       const emailTakenUser = await User.findOne({ email: nextEmail, userId: { $ne: req.params.id } });
       if (emailTakenUser) {
@@ -231,7 +251,16 @@ export const updateStudent = async (req, res) => {
 
     const student = await Student.findOneAndUpdate(
       { studentId: req.params.id },
-      { full_name, nic: nextNIC, phone: nextPhone, birthyear, gender, address, email: nextEmail, profilePicPath },
+      {
+        full_name,
+        nic: nextNIC,
+        phone: nextPhone,
+        birthyear,
+        gender,
+        address,
+        email: nextEmail,
+        profilePicPath,
+      },
       { new: true }
     );
 
@@ -240,6 +269,29 @@ export const updateStudent = async (req, res) => {
       { email: nextEmail, ...(hashedPassword && { password: hashedPassword }) },
       { new: true }
     );
+
+    /**
+     * ✅ Only send password-change email if:
+     *   - a password was provided, AND
+     *   - the authenticated actor is an Admin.
+     * (Requires the route to be protected by JWT middleware.)
+     */
+    const actorRole = req.user?.role;
+    const byAdmin = actorRole === "Admin";
+
+    if (password && byAdmin) {
+      try {
+        const firstName =
+          String(student?.full_name || "Student").split(" ")[0] || "Student";
+        await sendEmail(
+          nextEmail,
+          "RiyaGuru LK – Your Password Was Reset",
+          `Hello ${firstName},\n\nYour account password was reset by Admin.\n\nTemporary password: ${password}\n\nPlease sign in and change this password immediately from your profile settings.\n\nIf you did not expect this change, please contact support.\n\n— RiyaGuru Team`
+        );
+      } catch (e) {
+        console.warn("Failed to send password reset email:", e?.message);
+      }
+    }
 
     const profilePicUrl = student.profilePicPath
       ? `${req.protocol}://${req.get("host")}/uploads/studentProfPics/${student.profilePicPath}`
