@@ -151,7 +151,7 @@ const InquiryDashboard = () => {
     }
   };
 
-  // ✅ Filter first by status, then sort by date (existing sortDir)
+  // Filter first by status, then sort by date (existing sortDir)
   const filteredAndSorted = React.useMemo(() => {
     const want = normalizeStatus(statusFilter); // "ALL" | "Pending" | "In Progress" | "Resolved"
     const filtered = (Array.isArray(inquiries) ? inquiries : []).filter((q) =>
@@ -182,7 +182,7 @@ const InquiryDashboard = () => {
             </p>
           </div>
 
-          {/* 🔹 NEW: Status filter dropdown on the right */}
+          {/* Status filter dropdown on the right */}
           <div className="header-actions" style={{ display: "flex", gap: 12 }}>
             <select
               aria-label="Filter by status"
